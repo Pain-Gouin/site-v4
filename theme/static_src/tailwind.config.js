@@ -42,7 +42,33 @@ module.exports = {
         // '../../**/*.py'
     ],
     theme: {
-        extend: {},
+        extend: {
+            colors: {
+                primary: {
+                    DEFAULT: '#ffb22e' /* Jaune PainGouin */
+                },
+                secondary: {
+                    DEFAULT: '#2f281e' /* Marron PainGouin */
+                },
+                tertiary: {
+                    DEFAULT: '#fbba00'
+                },
+                quaternary: {
+                    DEFAULT: '#bace00'
+                },
+                gris: {
+                    DEFAULT: '#F8F8F9',
+                    100: '#162240',
+                },
+                bleu: {
+                    DEFAULT: '#232853'
+                }
+            },
+        },
+        fontFamily: {
+            montserrat: ['Montserrat', 'sans-serif'],
+            lobster: ['Lobster', 'sans-serif']
+        },
     },
     plugins: [
         /**

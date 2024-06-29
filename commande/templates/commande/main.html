@@ -1,7 +1,33 @@
+{% load static %}
 {% load static tailwind_tags %}
 <head>
-   {% tailwind_css %}
+    <link rel="stylesheet" href="{%static 'style.css'%}">
+   <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lobster&display=swap" rel="stylesheet">
+
+    <title>Pain'Gouin</title>
+
+    <link rel="shortcut icon" href="{%static '/logo/logo.ico'%}" type="image/x-icon">
+    {% tailwind_css %}
+
 </head>
+
+<header>
+    <div class="shadow grid xl:grid-cols-3 bg-white xl:h-44 top-0 left-0 right-0 xl:fixed z-40 content-center items-stretch	">
+        <div class="w-40 justify-self-center">
+            <img src="{%static 'logo/logo.webp'%}" alt="logo">
+        </div>
+        <div class="xl:pt-16 justify-self-center pt-4">
+            <div class="align-middle">
+                <p class="text-black text-5xl font-bold tracking-wide font-lobster">Pain'Gouin</p>
+            </div>
+        </div>
+        <div class="justify-self-center content-center">
+           <div><button class="w-96 bg-inherit border-primary text-primary font-montserrat rounded-lg inline-block box-border border-2 rounded-x1 hover:bg-primary hover:text-white duration-1000 h-12 font-bold align-middle">Commander votre pain dès maintenant !</button></div>
+        </div>
+    </div>
+</header>
 
 <body>
     <p class="text-xl text-center">Bienvenue sur le site !</p>
