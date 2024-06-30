@@ -51,7 +51,7 @@ module.exports = {
                     DEFAULT: '#2f281e' /* Marron PainGouin */
                 },
                 tertiary: {
-                    DEFAULT: '#fbba00'
+                    DEFAULT: '#eca054' /*Marron plus clair*/
                 },
                 quaternary: {
                     DEFAULT: '#bace00'
@@ -67,7 +67,8 @@ module.exports = {
         },
         fontFamily: {
             montserrat: ['Montserrat', 'sans-serif'],
-            lobster: ['Lobster', 'sans-serif']
+            lobster: ['Lobster', 'sans-serif'],
+            bebas: ['Bebas Neue', 'sans-serif']
         },
     },
     plugins: [

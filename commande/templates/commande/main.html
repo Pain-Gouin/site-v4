@@ -14,13 +14,13 @@
 </head>
 
 <header>
-    <div class="shadow grid xl:grid-cols-3 bg-white xl:h-44 top-0 left-0 right-0 xl:fixed z-40 content-center items-stretch	">
+    <div class="shadow grid xl:grid-cols-3 bg-white xl:h-44 top-0 left-0 right-0 z-40 content-center items-stretch	">
         <div class="w-40 justify-self-center">
             <img src="{%static 'logo/logo.webp'%}" alt="logo">
         </div>
         <div class="xl:pt-16 justify-self-center pt-4">
             <div class="align-middle">
-                <p class="text-black text-5xl font-bold tracking-wide font-lobster">Pain'Gouin</p>
+                <p class="text-black text-5xl font-bold tracking-wide font-lobster text-secondary">Pain'Gouin</p>
             </div>
         </div>
         <div class="justify-self-center content-center">
@@ -30,5 +30,18 @@
 </header>
 
 <body>
-    <p class="text-xl text-center">Bienvenue sur le site !</p>
+    <div class="relative">
+    <img src="{%static 'illustration/banner.jpg'%}" alt="banner" class="w-screen max-h-[650px] object-cover blur-[2px]">
+    <div class="flex absolute top-1/3 items-center justify-center w-screen">
+        <p class="text-5xl font-bebas drop-shadow-[0_1.7px_1.7px_rgba(0,0,0,0.8)] text-tertiary">Du pain frais à la Rez tous les jours (ou presque...)</p>
+    </div>
+    <div class="flex absolute top-1/2 items-center justify-center w-screen">
+        <button class=" mx-auto w-[500px] bg-primary border-primary drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)] text-white font-montserrat rounded-lg inline-block box-border border-2 rounded-x1 hover:bg-inherit hover:text-primary duration-1000 h-14 font-bold align-middle">Passer commande</button>
+    </div>
+    </div>
+
+    <h2 class="text-3xl text-center py-10 font-bebas">Mais c'est génial !  Comment ça fonctionne ?</h2>
+    <div class="grid grid-cols-2">
+
+    </div>
 </body>
