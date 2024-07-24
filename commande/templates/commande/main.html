@@ -29,12 +29,12 @@
                     </div>
                 </div>
                 <div class="justify-self-center content-center items-center gap-7">
-                        <button id="dropdownInformationButton" data-dropdown-toggle="dropdownInformation" class="font-montserrat hover:text-primary duration-500 rounded-lg px-5 py-2.5 text-center inline-flex items-center" type="button">Bienvenue {{user.first_name}}, ton solde est de {{user.credit}}€ <svg class="w-2.5 h-2.5 ms-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
+                        <button id="dropdownInformationButton" data-dropdown-toggle="dropdownInformation" class="font-montserrat hover:text-primary duration-500 rounded-lg px-5 py-2.5 text-center inline-flex items-center" type="button">Bienvenue {{user.first_name}},&nbsp <b>ton solde est de {{user.credit}}€</b> <svg class="w-2.5 h-2.5 ms-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
                             <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 4 4 4-4"/>
                             </svg>
                         </button>
 
-                        <div id="dropdownInformation" class="z-10 hidden bg-white divide-y divide-gray-100 rounded-lg shadow w-44">
+                        <div id="dropdownInformation" class="z-10 hidden bg-white divide-y divide-gray-100 rounded-lg shadow w-44 font-montserrat">
                             <div class="px-4 py-3 text-sm text-gray-900">
                               <div>{{user.first_name}} {{user.last_name}}</div>
                               <div class="font-medium truncate">{{user.username}}</div>
@@ -92,8 +92,59 @@
     </div>
     </div>
 
-    <h2 class="text-3xl text-center py-10 font-bebas">Mais c'est génial !  Comment ça fonctionne ?</h2>
-    <div class="grid grid-cols-2">
+    <h2 class="text-4xl text-center py-10 font-bebas">Mais c'est génial !  Comment ça fonctionne ?</h2>
+    <div class="grid xl:grid-cols-2  place-items-center pb-10">
+        <div>
+            <img src="{%static 'illustration/PainGouinOrdi.png'%}" alt="Commande PainGouin">
+        </div>
+        <div class="max-w-xl">
+            <h3 class="text-4xl font-bebas pb-10 text-primary">Il faut tout d'abord commander !</h3>
+            <p class="text-xl font-montserrat pb-5">Nous livrons <b class="text-secondary">tous les jours</b> (sauf dimanche et jours fériés) et tu peux commander n'importe quand depuis ton téléphone ou ton ordinateur pour la livraison du lendemain. </p>
+            <p class="text-xl font-montserrat"><b class="text-secondary">Pour recharger ton compte,</b> tu peux contacter un membre de l'association.</p>
+        </div>
 
     </div>
+
+    <div class="grid xl:grid-cols-2  place-items-center pb-10">
+        <div class="max-w-xl order-2 xl:order-1">
+            <h3 class="text-4xl font-bebas pb-10 text-primary">Et puis... c'est tout !</h3>
+            <p class="text-xl font-montserrat pb-5">Une fois commandée, ta livraison arrivera devant ta porte <b class="text-secondary">avant que tu ailles en cours</b> (il y a un peu de retard parfois, désolé si ça n'arrive pas à temps...) </p>
+            <p class="text-xl font-montserrat">Pour faciliter la livraison et éviter que ton pain soit posé sur le sol, pense à <b class="text-secondary">accrocher un sac</b> à ta poignée de porte.</p>
+        </div>
+
+        <div class="order-1 xl:order-2">
+            <img src="{%static 'illustration/PainGouinPorte.png'%}" alt="Sac PainGouin">
+        </div>
+
+    </div>
+
+    <div class="grid xl:grid-cols-2  place-items-center pb-10">
+        <div>
+            <img src="{%static 'illustration/PainGouinBoulangerie.png'%}" alt="Boulangerie PainGouin">
+        </div>
+        <div class="max-w-xl">
+            <h3 class="text-4xl font-bebas pb-10 text-primary">Tu peux également livrer !</h3>
+            <p class="text-xl font-montserrat pb-5">Pour assurer le bon fonctionnement de l'association, tu peux <b class="text-secondary">devenir livreur</b>. Les livreurs vont à la boulangerie et amènent le pain et les viennoiseries à toute la résidence.</p>
+            <p class="text-xl font-montserrat pb-5">Ne  t'en fais pas, tu ne livreras que <b class="text-secondary">quelquefois dans l'année</b> (en moyenne 5-6 fois).</p>
+            <p class="text-xl font-montserrat">Si tu désires nous aider, n'hésite pas à <b class="text-secondary">contacter un membre de l'association</b> (et on te remercie !)</p>
+        </div>
+
+    </div>
+
 </body>
+
+{%block footer%}
+<footer class="grid grid-cols-3 text-center font-montserrat">
+    <div>
+        Association Pain'Gouin
+    </div>
+
+    <div>
+        <a href="" class="hover:text-primary duration-500">Mentions Légales</a> - <a href="https://www.facebook.com/pain.gouin.372" class="hover:text-primary duration-500">Nous contacter</a>
+    </div>
+
+    <div>
+        Réalisé en 2024 par <a href="https://github.com/mrimbert" class="hover:text-primary duration-500">Mathis Rimbert</a>
+    </div>
+</footer>
+{%endblock%}

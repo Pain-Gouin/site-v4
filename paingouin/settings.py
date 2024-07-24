@@ -139,3 +139,5 @@ INTERNAL_IPS = [
 STATIC_URL = 'static/'
 
 AUTH_USER_MODEL = 'commande.Utilisateur'
+
+LOGIN_REDIRECT_URL = "/"

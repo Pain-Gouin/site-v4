@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import login, authenticate, logout
+from django.conf import settings
 from . import forms
 
 # Create your views here.
@@ -7,7 +8,7 @@ def index(request):
     return render(request, "commande/main.html")
 
 def login_page(request):
-    message=""
+    invalidCredential=False
     form = forms.LoginForm()
     if request.method == 'POST':
         form = forms.LoginForm(request.POST)
@@ -20,9 +21,19 @@ def login_page(request):
                 login(request,user)
                 return redirect(index)
             else:
-                message ="Idenftifiants Invalides !"
-    return render(request, 'commande/login.html', context={'form': form, "message":message})
+                invalidCredential = True
+    return render(request, 'commande/login.html', context={'form': form, "invalidCredential":invalidCredential})
 
 def logout_user(request):
     logout(request)
     return redirect(index)
+
+def signup_page(request):
+    form = forms.SignupForm()
+    if request.method == 'POST':
+        form = forms.SignupForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            login(request, user)
+            return redirect(settings.LOGIN_REDIRECT_URL)
+    return render(request, 'commande/signup.html', context={'form': form})
