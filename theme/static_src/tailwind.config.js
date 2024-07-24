@@ -54,7 +54,7 @@ module.exports = {
                     DEFAULT: '#eca054' /*Marron plus clair*/
                 },
                 quaternary: {
-                    DEFAULT: '#bace00'
+                    DEFAULT: '#FFF6F6' /* Orange de fond assez sympa*/
                 },
                 gris: {
                     DEFAULT: '#F8F8F9',

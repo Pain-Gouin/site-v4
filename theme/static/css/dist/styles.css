@@ -824,8 +824,20 @@ select {
   margin-right: auto;
 }
 
+.mb-2 {
+  margin-bottom: 0.5rem;
+}
+
+.mb-5 {
+  margin-bottom: 1.25rem;
+}
+
 .box-border {
   box-sizing: border-box;
+}
+
+.block {
+  display: block;
 }
 
 .inline-block {
@@ -868,12 +880,24 @@ select {
   width: 500px;
 }
 
+.w-full {
+  width: 100%;
+}
+
 .w-screen {
   width: 100vw;
 }
 
+.max-w-lg {
+  max-width: 32rem;
+}
+
 .grid-cols-2 {
   grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.flex-row {
+  flex-direction: row;
 }
 
 .content-center {
@@ -900,8 +924,17 @@ select {
   border-radius: 0.5rem;
 }
 
+.border {
+  border-width: 1px;
+}
+
 .border-2 {
   border-width: 2px;
+}
+
+.border-gray-300 {
+  --tw-border-opacity: 1;
+  border-color: rgb(209 213 219 / var(--tw-border-opacity));
 }
 
 .border-primary {
@@ -923,6 +956,11 @@ select {
   background-color: rgb(255 178 46 / var(--tw-bg-opacity));
 }
 
+.bg-quaternary {
+  --tw-bg-opacity: 1;
+  background-color: rgb(255 246 246 / var(--tw-bg-opacity));
+}
+
 .bg-white {
   --tw-bg-opacity: 1;
   background-color: rgb(255 255 255 / var(--tw-bg-opacity));
@@ -933,13 +971,37 @@ select {
      object-fit: cover;
 }
 
+.p-2 {
+  padding: 0.5rem;
+}
+
+.p-2\.5 {
+  padding: 0.625rem;
+}
+
 .py-10 {
   padding-top: 2.5rem;
   padding-bottom: 2.5rem;
 }
 
+.pb-10 {
+  padding-bottom: 2.5rem;
+}
+
+.pb-2 {
+  padding-bottom: 0.5rem;
+}
+
+.pt-2 {
+  padding-top: 0.5rem;
+}
+
 .pt-4 {
   padding-top: 1rem;
+}
+
+.pt-5 {
+  padding-top: 1.25rem;
 }
 
 .text-center {
@@ -972,8 +1034,22 @@ select {
   line-height: 1;
 }
 
+.text-lg {
+  font-size: 1.125rem;
+  line-height: 1.75rem;
+}
+
+.text-sm {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+}
+
 .font-bold {
   font-weight: 700;
+}
+
+.font-medium {
+  font-weight: 500;
 }
 
 .leading-normal {
@@ -991,6 +1067,11 @@ select {
 .text-black {
   --tw-text-opacity: 1;
   color: rgb(0 0 0 / var(--tw-text-opacity));
+}
+
+.text-gray-900 {
+  --tw-text-opacity: 1;
+  color: rgb(17 24 39 / var(--tw-text-opacity));
 }
 
 .text-primary {
@@ -1038,6 +1119,10 @@ select {
   transition-duration: 1000ms;
 }
 
+.duration-500 {
+  transition-duration: 500ms;
+}
+
 .hover\:bg-inherit:hover {
   background-color: inherit;
 }
@@ -1055,6 +1140,16 @@ select {
 .hover\:text-white:hover {
   --tw-text-opacity: 1;
   color: rgb(255 255 255 / var(--tw-text-opacity));
+}
+
+.focus\:border-secondary:focus {
+  --tw-border-opacity: 1;
+  border-color: rgb(47 40 30 / var(--tw-border-opacity));
+}
+
+.focus\:ring-secondary:focus {
+  --tw-ring-opacity: 1;
+  --tw-ring-color: rgb(47 40 30 / var(--tw-ring-opacity));
 }
 
 @media (min-width: 1280px) {

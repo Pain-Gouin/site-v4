@@ -1,5 +1,7 @@
 {% load static %}
 {% load static tailwind_tags %}
+{% load widget_tweaks %}
+
 <head>
     <link rel="stylesheet" href="{%static 'style.css'%}">
    <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -13,9 +15,38 @@
 
 </head>
 
+<header>
+    <div class="shadow grid xl:grid-cols-3 bg-white xl:h-44 top-0 left-0 right-0 z-40 content-center items-stretch	">
+        <div class="w-40 justify-self-center">
+            <img src="{%static 'logo/logo.webp'%}" alt="logo">
+        </div>
+        <div class="xl:pt-16 justify-self-center pt-4">
+            <div class="align-middle">
+                <p class="text-black text-5xl font-bold tracking-wide font-lobster text-secondary">Pain'Gouin</p>
+            </div>
+        </div>
+    </div>
+</header>
+
 <p>{{ message }}</p>
-<form method="post">
-    {{ form.as_p }}
+<body class="bg-quaternary">
+<h1 class="text-3xl text-center font-bebas py-10 text-secondary">Connexion à votre compte Pain'Gouin</h1>
+<form class="max-w-lg mx-auto pt-5 pb-10" method="post">
     {% csrf_token %}
-    <button type="submit" >Se connecter</button>
-</form>
+    <div class="mb-5">
+      <label for="email" class="block mb-2 text-sm font-medium text-gray-900">Mail :</label>
+      {%render_field form.username class="bg-gray-50 border border-gray-300 text-secondary text-sm rounded-lg focus:ring-secondary focus:border-secondary block w-full p-2.5"%}
+    </div>
+    <div class="mb-5">
+    <div class="mb-5">
+            <label for="email" class="block mb-2 text-sm font-medium text-gray-900">Mot de passe : </label>
+            {%render_field form.password class="bg-gray-50 border border-gray-300 text-secondary text-sm rounded-lg focus:ring-secondary focus:border-secondary block w-full p-2.5"%}
+    </div>
+    <div class="flex justify-center flex-row">
+        <button type="submit" class="w-96 bg-inherit border-primary text-primary font-montserrat rounded-lg inline-block box-border border-2 rounded-x1 hover:bg-primary hover:text-white duration-1000 h-12 font-bold align-middle">Se connecter</button>
+    </div>
+    <div class="flex justify-center flex-row py-10">
+        <button type="submit" class="w-96 bg-inherit border-primary text-primary font-montserrat rounded-lg inline-block box-border border-2 rounded-x1 hover:bg-primary hover:text-white duration-1000 h-12 font-bold align-middle">Pas encore de compte ? S'inscrire</button>
+    </div>
+  </form>
+</body>
