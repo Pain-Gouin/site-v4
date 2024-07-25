@@ -45,6 +45,7 @@ class Commande(models.Model):
     client = models.ForeignKey(Utilisateur, on_delete = models.CASCADE)
     date = models.ForeignKey(Livraison, on_delete=models.CASCADE)
     produit = models.ManyToManyField(Produit)
+    chambre = models.CharField(max_length=10)
     total_commande = models.FloatField(default=0)
 
     def __str__(self) -> str:

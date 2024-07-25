@@ -976,6 +976,10 @@ select {
   width: 100vw;
 }
 
+.max-w-32 {
+  max-width: 8rem;
+}
+
 .max-w-\[8rem\] {
   max-width: 8rem;
 }
@@ -1038,6 +1042,10 @@ select {
 
 .gap-10 {
   gap: 2.5rem;
+}
+
+.gap-3 {
+  gap: 0.75rem;
 }
 
 .gap-7 {
@@ -1274,6 +1282,11 @@ select {
 .text-xl {
   font-size: 1.25rem;
   line-height: 1.75rem;
+}
+
+.text-xs {
+  font-size: 0.75rem;
+  line-height: 1rem;
 }
 
 .font-bold {

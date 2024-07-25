@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.decorators import login_required
 from django.conf import settings
+
 from . import forms
 
 from datetime import datetime
@@ -47,8 +48,25 @@ def signup_page(request):
 
 @login_required
 def commande(request):
-    produit_query = Produit.objects.all()
+    produit_query = list(Produit.objects.all())
     categorie_query = CategorieProduit.objects.all()
 
-    context = {'produit': produit_query, 'categorie':categorie_query}
+    number_of_product = len(produit_query)
+
+    produit = []
+
+    for i in range(number_of_product):
+        a = forms.ProductOrderForm()
+        temp = []
+        temp.append(produit_query[i])
+        temp.append(a)
+        produit.append(temp)
+
+    if request.method == 'POST':
+       quantity = request.POST.getlist("quantity")
+       for f in produit:
+           f[1] = forms.ProductOrderForm(request.POST)
+
+
+    context = {'produit': produit, 'categorie':categorie_query}
     return render(request, 'commande/order.html', context)
