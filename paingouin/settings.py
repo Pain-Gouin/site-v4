@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
 from pathlib import Path
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -85,7 +86,10 @@ DATABASES = {
         'PORT': '3306',
         'USER': 'myuser',
         'PASSWORD': 'monpassword',
-    }
+        'OPTIONS':{
+        "init_command": "SET foreign_key_checks = 0;",
+        }
+    },
 }
 
 
@@ -141,3 +145,6 @@ STATIC_URL = 'static/'
 AUTH_USER_MODEL = 'commande.Utilisateur'
 
 LOGIN_REDIRECT_URL = "/"
+
+MEDIA_URL = "/media/"
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media').replace('\\', '/')

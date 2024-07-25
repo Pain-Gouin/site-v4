@@ -3,6 +3,8 @@ from django.contrib.auth import login, authenticate, logout
 from django.conf import settings
 from . import forms
 
+from datetime import datetime
+
 # Create your views here.
 def index(request):
     return render(request, "commande/main.html")
@@ -17,6 +19,7 @@ def login_page(request):
                 username = form.cleaned_data["username"],
                 password = form.cleaned_data["password"],
             )
+            user.last_login = datetime.now
             if user is not None :
                 login(request,user)
                 return redirect(index)
