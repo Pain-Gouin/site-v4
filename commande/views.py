@@ -5,6 +5,8 @@ from . import forms
 
 from datetime import datetime
 
+from .models import Produit, CategorieProduit
+
 # Create your views here.
 def index(request):
     return render(request, "commande/main.html")
@@ -40,3 +42,10 @@ def signup_page(request):
             login(request, user)
             return redirect(settings.LOGIN_REDIRECT_URL)
     return render(request, 'commande/signup.html', context={'form': form})
+
+def commande(request):
+    produit_query = Produit.objects.all()
+    categorie_query = CategorieProduit.objects.all()
+
+    context = {'produit': produit_query, 'categorie':categorie_query}
+    return render(request, 'commande/order.html', context)
