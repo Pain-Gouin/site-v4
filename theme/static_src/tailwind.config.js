@@ -60,8 +60,11 @@ module.exports = {
                     DEFAULT: '#F8F8F9',
                     100: '#162240',
                 },
-                bleu: {
-                    DEFAULT: '#232853'
+                orangemoinsclair: {
+                    DEFAULT: '#f9e8e8'
+                },
+                orangeclair: {
+                    DEFAULT: "#f4dcdc"
                 }
             },
         },
