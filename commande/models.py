@@ -4,6 +4,8 @@ from django.contrib.auth.models import UserManager
 
 from datetime import datetime
 
+import json
+
 # Create your models here.
 
 class Utilisateur(AbstractUser):
@@ -36,15 +38,21 @@ class Produit(models.Model):
 
     def __str__(self) -> str:
         return self.nom
-    
+
+def defaultJson():
+    return ["None"]
+
 class Livraison(models.Model):
     date = models.DateField(default=datetime.now)
-    produit = models.JSONField(default=dict)
+    produit = models.JSONField(default=defaultJson)
+
+    def __str__(self) -> str:
+        return str(self.date)
 
 class Commande(models.Model):
-    client = models.ForeignKey(Utilisateur, on_delete = models.CASCADE)
-    date = models.ForeignKey(Livraison, on_delete=models.CASCADE)
-    produit = models.ManyToManyField(Produit)
+    client = models.CharField(max_length=100)
+    date = models.DateField()
+    produit = models.JSONField(default=defaultJson)
     chambre = models.CharField(max_length=10)
     total_commande = models.FloatField(default=0)
 

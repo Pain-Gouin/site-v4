@@ -6,8 +6,9 @@ from django.conf import settings
 from . import forms
 
 from datetime import datetime
+import json
 
-from .models import Produit, CategorieProduit
+from .models import Produit, CategorieProduit, Commande, Livraison
 
 # Create your views here.
 def index(request):
@@ -48,6 +49,9 @@ def signup_page(request):
 
 @login_required
 def commande(request):
+    errorFondInsuffisant = False
+    order = []
+    livraison_query = Livraison.objects.exclude(date__lt = datetime.today().strftime('%Y-%m-%d'))
     produit_query = list(Produit.objects.all())
     categorie_query = CategorieProduit.objects.all()
 
@@ -63,10 +67,31 @@ def commande(request):
         produit.append(temp)
 
     if request.method == 'POST':
-       quantity = request.POST.getlist("quantity")
-       for f in produit:
-           f[1] = forms.ProductOrderForm(request.POST)
+        if request.user.is_authenticated:
+            user = request.user.get_username()
+            solde = request.user.credit
+
+        total_commande = 0
+        
+        for i in range(1,len(produit_query)+1):
+            product = produit_query[i-1].nom
+            quantity = request.POST["quantity" + str(i)]
+            total_commande += int(quantity)*produit_query[i-1].prix
+            order.append([product, quantity])
+        order = json.dumps(order)
+
+        if total_commande > solde:
+            errorFondInsuffisant = True
+        else:
+            chambre = request.POST["chambre"]
+            date = list(Livraison.objects.filter(id = request.POST["date"]))[0].date
+            solde -= total_commande
+            request.user.credit = solde
+            request.user.save()
+
+            comm = Commande(client = user, date = date, produit = order, chambre = chambre, total_commande = total_commande)
+            comm.save()
 
 
-    context = {'produit': produit, 'categorie':categorie_query}
+    context = {'produit': produit, 'categorie':categorie_query, 'livraison':livraison_query, "errorFondInsuffisant":errorFondInsuffisant}
     return render(request, 'commande/order.html', context)

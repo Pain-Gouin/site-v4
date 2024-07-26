@@ -86,6 +86,17 @@
     <h1 class="text-4xl text-secondary text-center py-10">Votre commande :</h1>
     <form method="POST">
     {% csrf_token %}
+    {%if errorFondInsuffisant%}
+    <div id="alert-4" class="flex items-center p-4 mb-4 text-yellow-800 rounded-lg bg-yellow-50" role="alert">
+        <svg class="flex-shrink-0 w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+      <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z"/>
+    </svg>
+    <span class="sr-only">Info</span>
+    <div class="ms-3 text-sm font-medium">
+      Fond insuffisant, veuillez recharger votre compte !
+    </div>
+</div>
+    {%endif%}
     {%for cat in categorie%}
     <h1 class="text-3xl text-primary text-center py-5 font-bold">{{cat.nom}}</h1>
     <div class="flex flex-row  place-content-center">
@@ -98,13 +109,13 @@
                 <p class="text-xl font-bebas text-center pt-2">Prix : {{prod.0.prix}}€</p>
                 <label for="quantity-input" class="block mb-2 font-medium text-gray-900 text-center pt-2">Quantité :</label>
                     <div class="relative flex items-center max-w-[8rem]">
-                        <button type="button" id="decrement-button" data-input-counter-decrement="quantity-input" class="bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded-s-lg p-3 h-11 focus:ring-gray-100 focus:ring-2 focus:outline-none">
+                        <button type="button" id="decrement-button" data-input-counter-decrement="id_quantity{{prod.0.id}}" class="bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded-s-lg p-3 h-11 focus:ring-gray-100 focus:ring-2 focus:outline-none">
                             <svg class="w-3 h-3 text-gray-900" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 2">
                                 <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 1h16"/>
                             </svg>
                         </button>
-                        {%render_field prod.1.quantity class="bg-gray-50 border-x-0 border-gray-300 h-11 text-center text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full py-2.5"%}
-                        <button type="button" id="increment-button" data-input-counter-increment="quantity-input" class="bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded-e-lg p-3 h-11 focus:ring-gray-100 focus:ring-2 focus:outline-none">
+                        <input type="text" name="quantity{{prod.0.id}}" data-input-counter value="0" data-input-counter-min="0" data-input-counter-max="20" class="bg-gray-50 border-x-0 border-gray-300 h-11 text-center text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full py-2.5" required="" id="id_quantity{{prod.0.id}}">
+                        <button type="button" id="increment-button" data-input-counter-increment="id_quantity{{prod.0.id}}" class="bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded-e-lg p-3 h-11 focus:ring-gray-100 focus:ring-2 focus:outline-none">
                             <svg class="w-3 h-3 text-gray-900" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 18">
                                 <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 1v16M1 9h16"/>
                             </svg>
@@ -117,8 +128,16 @@
     </div>
     {%endfor%}
     <div class="flex flex-row place-content-center items-center gap-3">
-        <label for="small-input" class="block mb-2 text-sm font-medium text-gray-900">Chambre à livrer :</label>
-        <input type="text" id="small-input" class=" max-w-32 font-montserrat w-full p-2 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 text-sm focus:ring-secondary focus:border-secondary" value={{user.chambre}}>
+        <label for="chambre" class="block mb-2 text-sm font-medium text-gray-900">Chambre à livrer :</label>
+        <input type="text" name="chambre" class=" max-w-32 font-montserrat w-full p-2 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 text-sm focus:ring-secondary focus:border-secondary" value={{user.chambre}}>
+    </div>
+    <div class="flex flex-row place-content-center items-center gap-3 py-3">
+        <label for="date" class="block mb-2 text-sm font-medium text-gray-900">Date de la livraison :</label>
+        <select name="date" type="text" class=" max-w-44 font-montserrat w-full p-2 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 text-sm focus:ring-secondary focus:border-secondary">
+            {%for liv in livraison%}
+            <option value={{liv.id}}>{{liv.date}}</option>
+            {%endfor%}
+        </select>
     </div>
     <div class="flex justify-center flex-row py-10">
         <button type="submit" class="w-96 bg-inherit border-primary text-primary font-montserrat rounded-lg inline-block box-border border-2 rounded-x1 hover:bg-primary hover:text-white duration-1000 h-12 font-bold align-middle">Passer commande</button>
