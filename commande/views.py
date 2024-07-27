@@ -51,9 +51,10 @@ def signup_page(request):
 def commande(request):
     errorFondInsuffisant = False
     order = []
-    livraison_query = Livraison.objects.exclude(date__lt = datetime.today().strftime('%Y-%m-%d'))
+    livraison_query = Livraison.objects.exclude(date__lt = datetime.today().strftime('%Y-%m-%d')).order_by("date")
     produit_query = list(Produit.objects.all())
     categorie_query = CategorieProduit.objects.all()
+    successOrder = request.GET.get('successOrder',False)
 
     number_of_product = len(produit_query)
 
@@ -77,7 +78,8 @@ def commande(request):
             product = produit_query[i-1].nom
             quantity = request.POST["quantity" + str(i)]
             total_commande += int(quantity)*produit_query[i-1].prix
-            order.append([product, quantity])
+            if int(quantity) > 0:
+                order.append([product, quantity])
         order = json.dumps(order)
 
         if total_commande > solde:
@@ -92,6 +94,49 @@ def commande(request):
             comm = Commande(client = user, date = date, produit = order, chambre = chambre, total_commande = total_commande)
             comm.save()
 
+            add_to_livraison(date,order)
+            return redirect("./commande?successOrder=True")
 
-    context = {'produit': produit, 'categorie':categorie_query, 'livraison':livraison_query, "errorFondInsuffisant":errorFondInsuffisant}
+
+    context = {'produit': produit, 'categorie':categorie_query, 'livraison':livraison_query, "errorFondInsuffisant":errorFondInsuffisant, "successOrder":successOrder}
     return render(request, 'commande/order.html', context)
+
+def add_to_livraison(date, commande):
+    livraison = Livraison.objects.get(date = date).produit
+    liste_commande = json.loads(commande)
+
+    if livraison == ['None']:
+        livraison.pop()
+    else:
+        livraison = json.loads(livraison)
+
+    for produit in liste_commande:
+        compteur = 0
+        for liv in livraison:
+            if produit[0] == liv[0]:
+                a = int(liv[1]) + int(produit[1])
+                liv[1] = str(a)
+                break
+            compteur +=1
+        if compteur == len(livraison) and int(produit[1])!=0:
+            livraison.append(produit) 
+    
+    update =  Livraison.objects.filter(date=date).update(produit = json.dumps(livraison))
+    return
+
+@login_required
+def livreur(request):
+    try:
+        livraison_query = Livraison.objects.get(date = datetime.today().strftime('%Y-%m-%d'))
+    except:
+        livraison_query = None
+    
+    produit = livraison_query.produit
+
+    if produit == ['None']:
+        produit = False
+    else :
+        produit = json.loads(produit)
+
+    context = {'livraison':livraison_query, 'produit':produit}
+    return render(request, "commande/livreur.html", context)
