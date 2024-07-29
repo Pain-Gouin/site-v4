@@ -66,9 +66,6 @@
 <body class="bg-quaternary">
     {%if livraison%}
     <h1 class="text-4xl text-secondary text-center py-5">Commande du {{livraison.date}} </h1>
-    {%else%}
-    <h1 class="text-4xl text-secondary text-center py-10">Pas de livraison aujourd'hui ! </h1>
-    {%endif%}
 
     {%if produit%}
     <h2 class="text-3xl text-primary text-center py-2 font-bold ">Commande globale :</h2>
@@ -101,8 +98,46 @@
     </div>
   </div>
 
+  <h2 class="text-3xl text-primary text-center py-2 font-bold ">Liste des livraisons :</h2>
+  <div class="flex flex-row justify-center">
+    <div class="relative overflow-x-auto pb-10 pt-5">
+      <table class="w-full text-sm text-left rtl:text-right text-secondary">
+          <thead class="text-xs text-gray-700 uppercase bg-orangemoinsclair">
+            <tr>
+              <th scope="col" class="px-6 py-3">
+                Chambre à livrer
+              </th>
+              <th scope="col" class="px-6 py-3">
+                Commande
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {%for comm in commande%}
+            <tr class="bg-white border-b">
+              <th scope="row" class="px-6 py-4 font-medium text-secondary whitespace-nowrap">
+                {{comm.0}}
+              </th>
+              <td class="px-6 py-4">
+                {%for prod in comm.1%}
+                {{prod.1}} {{prod.0}} <br>
+                {%endfor%}
+              </td>
+            </tr>
+            {%endfor%}
+          </tbody>
+      </table>
+    </div>
+  </div>
+
   {%else%}
   <h2 class="text-3xl text-primary text-center py-5 font-bold">Personne n'a encore commandé !</h2>
+  {%endif%}
+
+
+
+    {%else%}
+    <h1 class="text-4xl text-secondary text-center py-10">Pas de livraison aujourd'hui ! </h1>
     {%endif%}
 </body>
 

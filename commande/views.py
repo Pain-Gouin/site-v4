@@ -126,17 +126,25 @@ def add_to_livraison(date, commande):
 
 @login_required
 def livreur(request):
+    produit = ['None']
     try:
         livraison_query = Livraison.objects.get(date = datetime.today().strftime('%Y-%m-%d'))
+        produit = livraison_query.produit
     except:
         livraison_query = None
-    
-    produit = livraison_query.produit
+
+    commande = list(Commande.objects.filter(date = datetime.today().strftime('%Y-%m-%d')).order_by("chambre"))
+    commande_list = []
+
+    for comm in commande :
+        commande_list.append([comm.chambre, json.loads(comm.produit)])
+        print(commande_list)
+
 
     if produit == ['None']:
         produit = False
     else :
         produit = json.loads(produit)
 
-    context = {'livraison':livraison_query, 'produit':produit}
+    context = {'livraison':livraison_query, 'produit':produit, 'commande':commande_list}
     return render(request, "commande/livreur.html", context)
