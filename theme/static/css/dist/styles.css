@@ -1012,6 +1012,14 @@ select {
   flex-shrink: 0;
 }
 
+.basis-1\/2 {
+  flex-basis: 50%;
+}
+
+.basis-1\/4 {
+  flex-basis: 25%;
+}
+
 .grid-cols-3 {
   grid-template-columns: repeat(3, minmax(0, 1fr));
 }
@@ -1042,6 +1050,10 @@ select {
 
 .justify-center {
   justify-content: center;
+}
+
+.justify-around {
+  justify-content: space-around;
 }
 
 .justify-items-center {

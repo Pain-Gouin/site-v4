@@ -68,8 +68,9 @@
     <h1 class="text-4xl text-secondary text-center py-5">Commande du {{livraison.date}} </h1>
 
     {%if produit%}
+    <div class="flex flex-row justify-around pb-10">
+    <div class="basis-1/4">
     <h2 class="text-3xl text-primary text-center py-2 font-bold ">Commande globale :</h2>
-    <div class="flex flex-row justify-center">
     <div class="relative overflow-x-auto pb-10 pt-5">
       <table class="w-full text-sm text-left rtl:text-right text-secondary">
           <thead class="text-xs text-gray-700 uppercase bg-orangemoinsclair">
@@ -96,11 +97,104 @@
           </tbody>
       </table>
     </div>
+    </div>
+<div class="basis-1/4">
+  <h2 class="text-3xl text-primary text-center py-2 font-bold ">Livraisons par bâtiments :</h2>
+    <div class="relative overflow-x-auto pb-10 pt-5">
+      <table class="w-full text-sm text-left rtl:text-right text-secondary">
+          <thead class="text-xs text-gray-700 uppercase bg-orangemoinsclair">
+            <tr>
+              <th scope="col" class="px-6 py-3">
+                Bâtiment
+              </th>
+              <th scope="col" class="px-6 py-3">
+                Commande
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {%if commande_batiment.0%}
+            <tr class="bg-white border-b">
+              <th scope="row" class="px-6 py-4 font-medium text-secondary whitespace-nowrap">
+                Bâtiment A
+              </th>
+              <td class="px-6 py-4">
+                {%for prod in commande_batiment.0%}
+                {{prod.1}} {{prod.0}} <br>
+                {%endfor%}
+              </td>
+            </tr>
+            {%endif%}
+            {%if commande_batiment.1%}
+            <tr class="bg-white border-b">
+              <th scope="row" class="px-6 py-4 font-medium text-secondary whitespace-nowrap">
+                Bâtiment B
+              </th>
+              <td class="px-6 py-4">
+                {%for prod in commande_batiment.1%}
+                {{prod.1}} {{prod.0}} <br>
+                {%endfor%}
+              </td>
+            </tr>
+            {%endif%}
+            {%if commande_batiment.2%}
+            <tr class="bg-white border-b">
+              <th scope="row" class="px-6 py-4 font-medium text-secondary whitespace-nowrap">
+                Bâtiment C
+              </th>
+              <td class="px-6 py-4">
+                {%for prod in commande_batiment.2%}
+                {{prod.1}} {{prod.0}} <br>
+                {%endfor%}
+              </td>
+            </tr>
+            {%endif%}
+            {%if commande_batiment.3%}
+            <tr class="bg-white border-b">
+              <th scope="row" class="px-6 py-4 font-medium text-secondary whitespace-nowrap">
+                Bâtiment D
+              </th>
+              <td class="px-6 py-4">
+                {%for prod in commande_batiment.3%}
+                {{prod.1}} {{prod.0}} <br>
+                {%endfor%}
+              </td>
+            </tr>
+            {%endif%}
+            {%if commande_batiment.4%}
+            <tr class="bg-white border-b">
+              <th scope="row" class="px-6 py-4 font-medium text-secondary whitespace-nowrap">
+                Bâtiment E
+              </th>
+              <td class="px-6 py-4">
+                {%for prod in commande_batiment.4%}
+                {{prod.1}} {{prod.0}} <br>
+                {%endfor%}
+              </td>
+            </tr>
+            {%endif%}
+            {%if commande_batiment.5%}
+            <tr class="bg-white border-b">
+              <th scope="row" class="px-6 py-4 font-medium text-secondary whitespace-nowrap">
+                Bâtiment F
+              </th>
+              <td class="px-6 py-4">
+                {%for prod in commande_batiment.5%}
+                {{prod.1}} {{prod.0}} <br>
+                {%endfor%}
+              </td>
+            </tr>
+            {%endif%}
+          </tbody>
+      </table>
+    </div>
   </div>
+</div>
+
 
   <h2 class="text-3xl text-primary text-center py-2 font-bold ">Liste des livraisons :</h2>
   <div class="flex flex-row justify-center">
-    <div class="relative overflow-x-auto pb-10 pt-5">
+    <div class="relative overflow-x-auto pb-10 pt-5 basis-1/2">
       <table class="w-full text-sm text-left rtl:text-right text-secondary">
           <thead class="text-xs text-gray-700 uppercase bg-orangemoinsclair">
             <tr>
@@ -140,7 +234,6 @@
     <h1 class="text-4xl text-secondary text-center py-10">Pas de livraison aujourd'hui ! </h1>
     {%endif%}
 </body>
-
 
 {%block footer%}
 <footer class="grid grid-cols-3 text-center font-montserrat">

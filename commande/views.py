@@ -119,10 +119,27 @@ def add_to_livraison(date, commande):
                 break
             compteur +=1
         if compteur == len(livraison) and int(produit[1])!=0:
-            livraison.append(produit) 
+            livraison.append(produit.copy()) 
     
     update =  Livraison.objects.filter(date=date).update(produit = json.dumps(livraison))
     return
+
+def add_livraison_batiment(batiment, commande_batiment, produit_client):
+    if commande_batiment[batiment] == []:
+        commande_batiment[batiment] = produit_client.copy()
+    else : 
+        for comm_client in produit_client:
+            i = 0
+            for prod in commande_batiment[batiment]:
+                if prod[0] == comm_client[0]:
+                        a = str(int(prod[1]) + int(comm_client[1]))
+                        prod[1] = a
+                        break
+                i += 1
+            if i==len(commande_batiment[batiment]):           
+                commande_batiment[batiment].append(comm_client.copy())
+    print(produit_client)
+    return commande_batiment
 
 @login_required
 def livreur(request):
@@ -135,16 +152,30 @@ def livreur(request):
 
     commande = list(Commande.objects.filter(date = datetime.today().strftime('%Y-%m-%d')).order_by("chambre"))
     commande_list = []
+    commande_batiment = [[],[],[],[],[],[]]
 
     for comm in commande :
-        commande_list.append([comm.chambre, json.loads(comm.produit)])
-        print(commande_list)
-
+        produit_client = json.loads(comm.produit)
+        produit_client2 = json.loads(comm.produit)
+        commande_list.append([comm.chambre, produit_client])
+        match comm.chambre[0]:
+            case 'A':
+                commande_batiment = add_livraison_batiment(0, commande_batiment, produit_client2)
+            case 'B':
+                commande_batiment = add_livraison_batiment(1, commande_batiment, produit_client2)
+            case 'C':
+                commande_batiment = add_livraison_batiment(2, commande_batiment, produit_client2)
+            case 'D':
+                commande_batiment = add_livraison_batiment(3, commande_batiment, produit_client2)
+            case 'E':
+                commande_batiment = add_livraison_batiment(4, commande_batiment, produit_client2)
+            case 'F':
+                commande_batiment = add_livraison_batiment(5, commande_batiment, produit_client2)
 
     if produit == ['None']:
         produit = False
     else :
         produit = json.loads(produit)
 
-    context = {'livraison':livraison_query, 'produit':produit, 'commande':commande_list}
+    context = {'livraison':livraison_query, 'produit':produit, 'commande':commande_list, 'commande_batiment':commande_batiment}
     return render(request, "commande/livreur.html", context)
