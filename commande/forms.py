@@ -1,6 +1,6 @@
 # authentication/forms.py
 from django import forms
-from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 from django.contrib.auth import get_user_model
 
 from django.forms import ModelForm
@@ -13,6 +13,11 @@ class LoginForm(forms.Form):
 
 class SignupForm(UserCreationForm):
     class Meta(UserCreationForm.Meta):
+        model = get_user_model()
+        fields = ('username', 'first_name', 'last_name', 'chambre', 'tel','isPermis')
+
+class UpdateForm(UserChangeForm):
+    class Meta(UserChangeForm.Meta):
         model = get_user_model()
         fields = ('username', 'first_name', 'last_name', 'chambre', 'tel','isPermis')
 

@@ -2,6 +2,9 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.decorators import login_required
 from django.conf import settings
+from django.core.mail import send_mail
+from django.template.loader import render_to_string
+from django.utils.html import strip_tags
 
 from . import forms
 
@@ -45,6 +48,17 @@ def signup_page(request):
             login(request, user)
             return redirect(settings.LOGIN_REDIRECT_URL)
     return render(request, 'commande/signup.html', context={'form': form})
+
+def update_user_page(request):
+    if request.method == 'POST':
+        form = forms.UpdateForm(data=request.POST, instance=request.user)
+        if form.is_valid():
+            form.save()
+            return redirect(settings.LOGIN_REDIRECT_URL)
+    else:
+        form = forms.UpdateForm(instance=request.user)
+
+    return render(request, "commande/update.html", context={"form":form})
 
 
 @login_required
@@ -95,6 +109,23 @@ def commande(request):
             comm.save()
 
             add_to_livraison(date,order)
+
+            receiver_email = request.user.username
+            template_name = "mail/signup_mail.html"
+            convert_to_html_content =  render_to_string(
+                template_name=template_name,
+            )
+            plain_message = strip_tags(convert_to_html_content)
+
+            yo_send_it = send_mail(
+                subject="Confirmation de commande",
+                message=plain_message,
+                from_email=settings.EMAIL_HOST_USER,
+                recipient_list=[receiver_email,],
+                html_message=convert_to_html_content,
+                fail_silently=True
+            )
+
             return redirect("./commande?successOrder=True")
 
 
