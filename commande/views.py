@@ -5,6 +5,10 @@ from django.conf import settings
 from django.core.mail import send_mail
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
+from django.contrib.auth.views import PasswordResetView
+from django.contrib.messages.views import SuccessMessageMixin
+from django.urls import reverse_lazy
+
 
 from . import forms
 
@@ -35,6 +39,18 @@ def login_page(request):
                 invalidCredential = True
     return render(request, 'commande/login.html', context={'form': form, "invalidCredential":invalidCredential})
 
+class ResetPasswordView(SuccessMessageMixin, PasswordResetView):
+    template_name = 'commande/password_reset.html'
+    email_template_name = 'mail/password_reset_mail.html'
+    subject_template_name = 'mail/password_reset_subject.txt'
+    search_field = ['email']
+    from_email = settings.EMAIL_HOST_USER
+    success_message = "We've emailed you instructions for setting your password, " \
+                      "if an account exists with the email you entered. You should receive them shortly." \
+                      " If you don't receive an email, " \
+                      "please make sure you've entered the address you registered with, and check your spam folder."
+    success_url = reverse_lazy("index")
+
 def logout_user(request):
     logout(request)
     return redirect(index)
@@ -46,7 +62,9 @@ def signup_page(request):
         if form.is_valid():
             user = form.save()
             login(request, user)
+            request.user.email = request.user.username
             receiver_email = request.user.username
+            request.user.save()
             template_name = "mail/signup_mail.html"
             convert_to_html_content =  render_to_string(
                 template_name=template_name,

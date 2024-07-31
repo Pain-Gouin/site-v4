@@ -18,6 +18,8 @@ class Utilisateur(AbstractUser):
     last_order = models.DateTimeField(default=datetime.now)
     created_at = models.DateTimeField(default=datetime.now)
     credit = models.FloatField(default=0)
+
+    email = models.EmailField()
     
     USERNAME_FIELD = "username"
     REQUIRED_FIELDS = []
