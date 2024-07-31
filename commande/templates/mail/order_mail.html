@@ -1,4 +1,42 @@
 <!DOCTYPE html>
 <html>
     <h1>Votre commande Pain'Gouin a bien été prise en compte !</h1>
+    <p>Bonjour {{prenom}},</p>
+
+    <p>Ta commande Pain'Gouin pour la livraison du {{date}} a bien été enregistrée.</p>
+
+    Résumé de la commande :
+    <table>
+        <thead>
+            <tr>
+                <th>
+                    Produit
+                </th>
+                <th>
+                    Quantité
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            {%for comm in commande%}
+            <tr>
+            <th>
+                {{comm.0}}
+            </th>
+            <th>
+                {{comm.1}}
+            </th>
+            </tr>
+            {%endfor%}
+        </tbody>
+    </table> 
+
+    <p>Total de la commande : {{total|floatformat:-2}}€</p>
+
+    <p>En cas de problème lors de la livraison, n'hésite pas à t'adresser à un membre du bureau de l'association.</p>
+
+    <p>Bon petit-déjeuner à toi ! <br>
+        Pain'Gouin
+    </p>
+
 </html>

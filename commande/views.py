@@ -27,7 +27,7 @@ def login_page(request):
                 username = form.cleaned_data["username"],
                 password = form.cleaned_data["password"],
             )
-            user.last_login = datetime.now
+            request.user.last_login = datetime.now
             if user is not None :
                 login(request,user)
                 return redirect(index)
@@ -46,9 +46,28 @@ def signup_page(request):
         if form.is_valid():
             user = form.save()
             login(request, user)
+            receiver_email = request.user.username
+            template_name = "mail/signup_mail.html"
+            convert_to_html_content =  render_to_string(
+                template_name=template_name,
+                context = {
+                    'prenom':request.user.first_name,
+                }
+            )
+            plain_message = strip_tags(convert_to_html_content)
+
+            send_mail(
+                subject="Inscription confirmée",
+                message=plain_message,
+                from_email=settings.EMAIL_HOST_USER,
+                recipient_list=[receiver_email,],
+                html_message=convert_to_html_content,
+                fail_silently=True
+            )
             return redirect(settings.LOGIN_REDIRECT_URL)
     return render(request, 'commande/signup.html', context={'form': form})
 
+@login_required
 def update_user_page(request):
     if request.method == 'POST':
         form = forms.UpdateForm(data=request.POST, instance=request.user)
@@ -111,13 +130,19 @@ def commande(request):
             add_to_livraison(date,order)
 
             receiver_email = request.user.username
-            template_name = "mail/signup_mail.html"
+            template_name = "mail/order_mail.html"
             convert_to_html_content =  render_to_string(
                 template_name=template_name,
+                context = {
+                    'prenom':request.user.first_name,
+                    'date': date,
+                    'commande':json.loads(order),
+                    'total':total_commande
+                }
             )
             plain_message = strip_tags(convert_to_html_content)
 
-            yo_send_it = send_mail(
+            send_mail(
                 subject="Confirmation de commande",
                 message=plain_message,
                 from_email=settings.EMAIL_HOST_USER,
