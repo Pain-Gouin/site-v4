@@ -9,7 +9,7 @@ https://docs.djangoproject.com/en/5.0/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.0/ref/settings/
 """
-
+from django.templatetags.static import static
 from pathlib import Path
 import os
 
@@ -33,6 +33,7 @@ ALLOWED_HOSTS = []
 
 INSTALLED_APPS = [
     'widget_tweaks',
+    "unfold",
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -158,3 +159,26 @@ EMAIL_HOST = 'ssl0.ovh.net'
 EMAIL_PORT = 587
 EMAIL_HOST_USER = 'contact@ic-art.fr'
 EMAIL_HOST_PASSWORD = 'Demarchage'
+
+UNFOLD = {
+    "SITE_TITLE":"Panel administrateur de Pain'Gouin",
+    "SITE_HEADER":"Panel administrateur de Pain'Gouin",
+    "SITE_LOGO": {
+        "light": lambda request: static("logo/logo.svg"),  # light mode
+        "dark": lambda request: static("logo/logo.svg"),  # dark mode
+    },
+    "SITE_ICON": {
+        "light": lambda request: static("logo/logo.svg"),  # light mode
+        "dark": lambda request: static("logo/logo.svg"),  # dark mode
+    },
+    "SITE_FAVICONS": [
+        {
+            "rel": "icon",
+            "sizes": "32x32",
+            "type": "image/svg+xml",
+            "href": lambda request: static("logo/logo.ico"),
+        },
+    ],
+    "THEME": "light",
+    "SHOW_HISTORY": False,
+}
