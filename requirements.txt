@@ -8,6 +8,7 @@ click==8.1.7
 cookiecutter==2.6.0
 Django==5.0.6
 django-tailwind==3.8.0
+django-unfold==0.33.0
 django-widget-tweaks==1.5.0
 idna==3.7
 Jinja2==3.1.4
