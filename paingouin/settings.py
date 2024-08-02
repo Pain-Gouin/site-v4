@@ -13,6 +13,9 @@ from django.templatetags.static import static
 from pathlib import Path
 import os
 
+from django.urls import reverse_lazy
+from django.utils.translation import gettext_lazy as _
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -179,6 +182,36 @@ UNFOLD = {
             "href": lambda request: static("logo/logo.ico"),
         },
     ],
+    "SIDEBAR": {
+        "show_search": False,  # Search in applications and models names
+        "show_all_applications": False,  # Dropdown with all applications and models
+        "navigation": [
+            {
+                "title": _("Accueil"),
+                "separator": True,  # Top border
+                "collapsible": True,  # Collapsible group of links
+                "items": [
+                    {
+                        "title": _("Dashboard"),
+                        "icon": "dashboard",
+                        "link": reverse_lazy("admin:index"),
+                    },
+                ],
+            },
+            {
+                "title": _("Navigation"),
+                "separator": True,  # Top border
+                "collapsible": True,  # Collapsible group of links
+                "items": [
+                    {
+                        "title": _("Gestion des soldes"),
+                        "icon": "account_balance",
+                        "link": reverse_lazy("admin:solde"),
+                    },
+                ],
+            },
+        ],
+    },
     "THEME": "light",
     "SHOW_HISTORY": False,
 }
