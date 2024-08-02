@@ -212,7 +212,6 @@ def add_livraison_batiment(batiment, commande_batiment, produit_client):
                 i += 1
             if i==len(commande_batiment[batiment]):           
                 commande_batiment[batiment].append(comm_client.copy())
-    print(produit_client)
     return commande_batiment
 
 @login_required
@@ -264,7 +263,45 @@ def historique(request):
         passe = False
         if commande.date <= datetime.today().date():
             passe = True
-        historique.append([commande.date, json.loads(commande.produit), commande.total_commande, passe])
+        historique.append([commande.date, json.loads(commande.produit), commande.total_commande, passe, commande.id])
 
     context = {"historique":historique}
     return render(request, "commande/historique.html", context)
+
+@login_required
+def del_order(request, order):
+    query_order = Commande.objects.get(id = order)
+    if query_order.client != request.user.username or query_order.date <= datetime.today().date():
+        return redirect(settings.LOGIN_REDIRECT_URL)
+    else:
+        request.user.credit += query_order.total_commande
+        request.user.save()
+        
+        del_to_livraison(query_order.date,query_order.produit)
+
+        query_order.delete()
+
+        return redirect(settings.LOGIN_REDIRECT_URL)
+    
+
+def del_to_livraison(date, commande):
+    livraison = Livraison.objects.get(date = date).produit
+    liste_commande = json.loads(commande)
+
+    if livraison == ['None']:
+        livraison.pop()
+    else:
+        livraison = json.loads(livraison)
+
+    for produit in liste_commande:
+        for liv in livraison:
+            if produit[0] == liv[0]:
+                a = int(liv[1]) - int(produit[1])
+                if a == 0:
+                    livraison.remove(liv)
+                else:
+                    liv[1] = str(a)
+                break
+    
+    update =  Livraison.objects.filter(date=date).update(produit = json.dumps(livraison))
+    return

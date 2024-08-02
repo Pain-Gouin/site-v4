@@ -79,7 +79,7 @@
                     Total
                 </th>
                 <th scope="col" class="px-6 py-3">
-                    Modifier la commande
+                    
                 </th>
               </tr>
             </thead>
@@ -99,9 +99,9 @@
                 </td>
                 <td class="px-6 py-4">
                     {%if commande.3%}
-                        Non modifiable
+                  
                     {%else%}
-                        <a href="" class="hover:text-primary duration-500">Modifier</a>
+                        <a href="del-order/{{commande.4}}" class="hover:text-primary duration-500">Supprimer</a>
                     {%endif%}
                 </td>
               </tr>
