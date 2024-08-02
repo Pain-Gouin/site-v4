@@ -196,10 +196,42 @@ UNFOLD = {
                         "icon": "dashboard",
                         "link": reverse_lazy("admin:index"),
                     },
+                    {
+                        "title": _("Utilisateurs"),
+                        "icon": "person",
+                        "link": reverse_lazy("admin:commande_utilisateur_changelist"),
+                    },
                 ],
             },
             {
-                "title": _("Navigation"),
+                "title": _("Commande"),
+                "separator": True,  # Top border
+                "collapsible": True,  # Collapsible group of links
+                "items": [
+                    {
+                        "title": _("Gestion des catégories"),
+                        "icon": "mist",
+                        "link": reverse_lazy("admin:commande_categorieproduit_changelist"),
+                    },
+                    {
+                        "title": _("Gestion des articles"),
+                        "icon": "bakery_dining",
+                        "link": reverse_lazy("admin:commande_produit_changelist"),
+                    },
+                    {
+                        "title": _("Gestion des livraisons"),
+                        "icon": "local_shipping",
+                        "link": reverse_lazy("admin:commande_livraison_changelist"),
+                    },
+                    {
+                        "title": _("Gestion des commandes"),
+                        "icon": "mouse",
+                        "link": reverse_lazy("admin:commande_commande_changelist"),
+                    },
+                ],
+            },
+            {
+                "title": _("Trésorerie"),
                 "separator": True,  # Top border
                 "collapsible": True,  # Collapsible group of links
                 "items": [
