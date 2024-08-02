@@ -253,3 +253,18 @@ def livreur(request):
 
     context = {'livraison':livraison_query, 'produit':produit, 'commande':commande_list, 'commande_batiment':commande_batiment}
     return render(request, "commande/livreur.html", context)
+
+
+@login_required
+def historique(request):
+    user_order = Commande.objects.filter(client = request.user.username).order_by("date")
+    historique = []
+
+    for commande in user_order:
+        passe = False
+        if commande.date <= datetime.today().date():
+            passe = True
+        historique.append([commande.date, json.loads(commande.produit), commande.total_commande, passe])
+
+    context = {"historique":historique}
+    return render(request, "commande/historique.html", context)
