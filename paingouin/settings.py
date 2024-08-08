@@ -240,6 +240,11 @@ UNFOLD = {
                         "icon": "account_balance",
                         "link": reverse_lazy("admin:solde"),
                     },
+                    {
+                        "title": _("Export d'une livraison vers Excel"),
+                        "icon": "table",
+                        "link": reverse_lazy("admin:tableur"),
+                    },
                 ],
             },
         ],
@@ -247,3 +252,4 @@ UNFOLD = {
     "THEME": "light",
     "SHOW_HISTORY": False,
 }
+

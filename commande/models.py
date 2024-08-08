@@ -34,6 +34,7 @@ class Produit(models.Model):
     nom = models.CharField(max_length=100)
     image = models.FileField(upload_to="images")
     prix = models.FloatField(default=0)
+    prix_achat = models.FloatField(default=0)
     isQuota = models.BooleanField(default=False, verbose_name="Présence de quota pour le produit")
     quota = models.IntegerField(default=0)
     categorie = models.ForeignKey(CategorieProduit, on_delete=models.CASCADE)
