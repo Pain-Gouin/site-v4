@@ -24,17 +24,21 @@ Pour récupérer le contenu du repo, créez un nouveau dossier puis initialisez 
 
 ### Mise en place de l'environnement virtuel
 Pour développer dans de bonnes conditions, il faut mettre en place un environnement virtuel (ou venv), cela permet d'installer toutes les libraries dont nous auront besoin dans un endroit à part afin d'éviter qu'elles interragissent avec d'autres libraries que vous auriez pu installer sur votre machine (et permettre aussi de lister proprement les libraries dont le projet a besoin pour fonctionner). Pour ce faire dans le dossier exécuter la commande : 
-
+```console
     python -m venv <nom du venv>
+```
 Puis, entrons dans l'environnement avec la commande : 
-
+```console
     source <nom du venv>/bin/activate
+```
 On va désormais pouvoir travailler tranquillement et pouvoir installer toutes les libraries dont le site a besoin pour fonctionner à l'aide de la commande : 
-
+```console
     pip install -r requirements.txt
+```
 ### Démarrer le serveur local
 Une fois tout ceci fait, il suffit de mettre à jour le fichier *settings* disponible dans le dossier paingouin pour correspondre à votre base de donnée locale. Vous devez modifier les informations suivantes : 
 
+```Python
     DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
@@ -48,22 +52,25 @@ Une fois tout ceci fait, il suffit de mettre à jour le fichier *settings* dispo
         }
     },
     }
+```
 
 Pour créer une base de donnée en local vous pouvez utiliser l'outil Docker, Rézoléo peut fournir une formation pour l'utilisation de cet outil en cas de problème. 
 Une fois les informations modifiées, exécutez les commandes suivantes : 
-
+```console
     python manage.py makemigrations
     python manage.py migrate
-    
+ ```   
 Vous venez de mettre en place les différentes tables dont le site (et Django) a besoin pour fonctionner. Il ne vous reste plus qu'à démarrer le serveur local avec la commande : 
-
+```console
     python manage.py runserver
+```
 Le serveur est désormais lancé et vous n'avez qu'à cliquer sur le lien renvoyé dans la console par Django pour y accéder. 
 
 ### Créer un administrateur local sur le site
 Pour créer un utilisateur ayant les permissions super-admin sur le site exécutez dans la console la commande suivante : 
-
+```console
     python manage.py createsuperuser
+```
  Puis suivez les informations renvoyées dans la console pour créer l'utilisateur. 
 
 
