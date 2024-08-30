@@ -86,11 +86,11 @@ WSGI_APPLICATION = 'paingouin.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'dbdjango',
-        'HOST': '127.0.0.1',
+        'NAME': 'paingouindev',
+        'HOST': '185.132.74.134',
         'PORT': '3306',
-        'USER': 'myuser',
-        'PASSWORD': 'monpassword',
+        'USER': 'paingouindev',
+        'PASSWORD': '(Op71PX@d7TepxC_',
         'OPTIONS':{
         "init_command": "SET foreign_key_checks = 0;",
         }
