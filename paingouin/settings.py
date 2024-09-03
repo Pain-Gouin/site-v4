@@ -27,9 +27,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-=5sf8@fhdxzr8(c!%-5xx1!5x6x07$%vc^0rr&$4ljgh&v5!w%'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
-ALLOWED_HOSTS = ['paingouindev.rezoleo.fr', 'www.paingouindev.rezoleo.fr']
+ALLOWED_HOSTS = ['paingouindev.rezoleo.fr', 'www.paingouindev.rezoleo.fr', '127.0.0.1']
 
 
 # Application definition
@@ -86,11 +86,11 @@ WSGI_APPLICATION = 'paingouin.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'paingouindev',
-        'HOST': '185.132.74.134',
+       'NAME': 'dbdjango',
+        'HOST': '127.0.0.1',
         'PORT': '3306',
-        'USER': 'paingouindev',
-        'PASSWORD': '(Op71PX@d7TepxC_',
+        'USER': 'myuser',
+        'PASSWORD': 'monpassword',
         'OPTIONS':{
         "init_command": "SET foreign_key_checks = 0;",
         }

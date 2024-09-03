@@ -1,0 +1,158 @@
+{% load static %}
+{% load static tailwind_tags %}
+<head>
+    <link rel="stylesheet" href="{%static 'style.css'%}">
+   <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lobster&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/flowbite@2.4.1/dist/flowbite.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/flowbite@2.4.1/dist/flowbite.min.js"></script>
+
+
+    <title>Pain'Gouin</title>
+
+    <link rel="shortcut icon" href="{%static '/logo/logo.ico'%}" type="image/x-icon">
+    {% tailwind_css %}
+
+</head>
+
+{%if user.is_authenticated%}
+        <header>
+            <div class="shadow grid xl:grid-cols-3 bg-white xl:h-44 top-0 left-0 right-0 z-40 content-center items-stretch	">
+                <div class="w-40 justify-self-center">
+                    <a href="{%url 'index' %}"><img src="{%static 'logo/logo.webp'%}" alt="logo"></a>
+                </div>
+                <div class="xl:pt-16 justify-self-center pt-4">
+                    <div class="align-middle">
+                        <p class="text-black text-5xl font-bold tracking-wide font-lobster text-secondary">Pain'Gouin</p>
+                    </div>
+                </div>
+                <div class="justify-self-center content-center items-center gap-7">
+                        <button id="dropdownInformationButton" data-dropdown-toggle="dropdownInformation" class="font-montserrat hover:text-primary duration-500 rounded-lg px-5 py-2.5 text-center inline-flex items-center" type="button">Bienvenue {{user.first_name}},&nbsp <b>ton solde est de {{user.credit|floatformat:-2}}€</b> <svg class="w-2.5 h-2.5 ms-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
+                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 4 4 4-4"/>
+                            </svg>
+                        </button>
+
+                        <div id="dropdownInformation" class="z-10 hidden bg-white divide-y divide-gray-100 rounded-lg shadow w-44 font-montserrat">
+                            <div class="px-4 py-3 text-sm text-gray-900">
+                              <div>{{user.first_name}} {{user.last_name}}</div>
+                              <div class="font-medium truncate">{{user.username}}</div>
+                            </div>
+                            <ul class="py-2 text-sm text-gray-700" aria-labelledby="dropdownInformationButton">
+                                {%if user.is_staff%}
+                              <li>
+                                <a href="admin/login" class="block px-4 py-2 hover:bg-quaternary">Panel administrateur</a>
+                              </li>
+                                {%endif%}
+                                {%if user.isLivreur%}
+                                <li>
+                                  <a href="{%url 'livreur'%}" class="block px-4 py-2 hover:bg-quaternary">Espace livreur</a>
+                                </li>
+                                  {%endif%}
+                                  <li>
+                                    <a href="{%url 'historique'%}" class="block px-4 py-2 hover:bg-quaternary">Historique des commandes</a>
+                                  </li>
+                              <li>
+                                <a href="{%url 'update'%}" class="block px-4 py-2 hover:bg-quaternary">Options</a>
+                              </li>
+            
+                            </ul>
+                            <div class="py-2">
+                              <a href="logout" class="block px-4 py-2 text-sm text-gray-700 hover:bg-quaternary">Se déconnecter</a>
+                            </div>
+                        </div>
+                        <div><a href="{%url 'commande'%}"><button class="w-96 bg-inherit border-primary text-primary font-montserrat rounded-lg inline-block box-border border-2 rounded-x1 hover:bg-primary hover:text-white duration-1000 h-12 font-bold align-middle">Passer une commande !</button></a></div>
+                    </div>
+            </div>
+        </header>
+        {%else%}
+        <header>
+            <div class="shadow grid xl:grid-cols-3 bg-white xl:h-44 top-0 left-0 right-0 z-40 content-center items-stretch	">
+                <div class="w-40 justify-self-center">
+                    <a href="{%url 'index' %}"><img src="{%static 'logo/logo.webp'%}" alt="logo"></a>
+                </div>
+                <div class="xl:pt-16 justify-self-center pt-4">
+                    <div class="align-middle">
+                        <p class="text-black text-5xl font-bold tracking-wide font-lobster text-secondary">Pain'Gouin</p>
+                    </div>
+                </div>
+                <div class="justify-self-center content-center">
+                   <div><a href="login"><button class="w-96 bg-inherit border-primary text-primary font-montserrat rounded-lg inline-block box-border border-2 rounded-x1 hover:bg-primary hover:text-white duration-1000 h-12 font-bold align-middle">Commander votre pain dès maintenant !</button></a></div>
+                </div>
+            </div>
+        </header>
+{%endif%}
+
+<body class="bg-quaternary">
+    <h2 class="text-3xl text-primary text-center py-2 pt-5 font-bold ">Mentions légales et conditions d'utilisation : </h2>
+
+    <div class="grid justify-items-center pb-10">
+    <div class="max-w-screen-lg">
+        <h3 class="text-2xl text-tertiary text-center py-2 pb-2 font-bold ">Présentation du site internet : </h3>
+        En vertu de l'article 6 de la loi n° 2004-575 du 21 juin 2004 pour la confiance dans l'économie numérique, il est précisé aux utilisateurs du site internet  l'identité des différents intervenants dans le cadre de sa réalisation et de son suivi :
+        <li>
+                <b>Propriétaire :</b> Pain'Gouin Cité Scientifique - BP 48 59651 Villeneuve d'Ascq Cedex
+        </li>
+        <li>
+            <b>Responsable de la publication :</b> M. Cédric PROVOST - paingouin.eclille@gmail.com
+        </li>
+        <li>
+            <b>Développement du site : </b> M. Mathis RIMBERT - mathis.rimbert@centrale.centralelille.fr
+        </li>
+        <li>
+            <b>Responsable web chargé du suivi du site : </b> M. Mathis RIMBERT - mathis.rimbert@centrale.centralelille.fr
+        </li>
+        <li>
+            <b>Illustrateur : </b> M. Alexandre MARTEL
+        </li>
+        <li>
+            <b>Hébergement : </b> Association Rézoléo  – Résidence Léonard de Vinci Avenue Paul Langevin 59650 Villeneuve d'Ascq
+        </li>
+
+
+        <h3 class="text-2xl text-tertiary text-center py-2 pb-2 font-bold ">Conditions générales d'utilisation du site et des services proposés (CGU) </h3>
+        Le Site constitue une œuvre de l’esprit protégée par les dispositions du Code de la Propriété Intellectuelle et des Réglementations Internationales applicables. Le Client ne peut en aucune manière réutiliser, céder ou exploiter pour son propre compte tout ou partie des éléments ou travaux du Site.
+        <br>
+        L’utilisation du site <a href="https://paingouin.rezoleo.fr" class="text-primary hover:text-tertiary transition duration-500">https://paingouin.rezoleo.fr/</a>  implique l’acceptation pleine et entière des conditions générales d’utilisation ci-après décrites. Ces conditions d’utilisation sont susceptibles d’être modifiées ou complétées à tout moment, les utilisateurs du site <a href="https://paingouin.rezoleo.fr" class="text-primary hover:text-tertiary transition duration-500">https://paingouin.rezoleo.fr/</a>  sont donc invités à les consulter de manière régulière.
+        <br>
+        Ce site internet est normalement accessible à tout moment aux utilisateurs. Une interruption pour raison de maintenance technique peut être toutefois décidée par Pain'Gouin , qui s’efforcera alors de communiquer préalablement aux utilisateurs les dates et heures de l’intervention. Le site web <a href="https://paingouin.rezoleo.fr" class="text-primary hover:text-tertiary transition duration-500">https://paingouin.rezoleo.fr/</a>  est mis à jour régulièrement par Pain'Gouin et plus particulièrement par son responsable web. De la même façon, les mentions légales peuvent être modifiées à tout moment : elles s’imposent néanmoins à l’utilisateur qui est invité à s’y référer le plus souvent possible afin d’en prendre connaissance.
+
+        <h3 class="text-2xl text-tertiary text-center py-2 pb-2 font-bold ">Description des services fournis </h3>
+        Le site internet <a href="https://paingouin.rezoleo.fr" class="text-primary hover:text-tertiary transition duration-500">https://paingouin.rezoleo.fr/</a>  a pour objet de fournir une information concernant l’ensemble des activités de la société. Pain'Gouin s’efforce de fournir sur le site <a href="https://paingouin.rezoleo.fr" class="text-primary hover:text-tertiary transition duration-500">https://paingouin.rezoleo.fr/</a>  des informations aussi précises que possible. Toutefois, il ne pourra être tenu responsable des oublis, des inexactitudes et des carences dans la mise à jour, qu’elles soient de son fait ou du fait des tiers partenaires qui lui fournissent ces informations. 
+        <br>
+        Toutes les informations indiquées sur le site <a href="https://paingouin.rezoleo.fr" class="text-primary hover:text-tertiary transition duration-500">https://paingouin.rezoleo.fr/</a>  sont données à titre indicatif, et sont susceptibles d’évoluer. Par ailleurs, les renseignements figurant sur le site <a href="https://paingouin.rezoleo.fr" class="text-primary hover:text-tertiary transition duration-500">https://paingouin.rezoleo.fr/</a>   ne sont pas exhaustifs. Ils sont donnés sous réserve de modifications ayant été apportées depuis leur mise en ligne.
+
+        <h3 class="text-2xl text-tertiary text-center py-2 pb-2 font-bold ">Limitations contractuelles sur les données techniques </h3>
+        Le site utilise la technologie JavaScript. Le site Internet ne pourra être tenu responsable de dommages matériels liés à l’utilisation du site. De plus, l’utilisateur du site s’engage à accéder au site en utilisant un matériel récent, ne contenant pas de virus et avec un navigateur de dernière génération mis-à-jour Le site <a href="https://paingouin.rezoleo.fr" class="text-primary hover:text-tertiary transition duration-500">https://paingouin.rezoleo.fr/</a>  est hébergé chez un prestataire sur le territoire de l’Union Européenne conformément aux dispositions du Règlement Général sur la Protection des Données (RGPD: n° 2016-679)
+        <br>
+        L’objectif est d’apporter une prestation qui assure le meilleur taux d’accessibilité. L’hébergeur assure la continuité de son service 24 Heures sur 24, tous les jours de l’année. Il se réserve néanmoins la possibilité d’interrompre le service d’hébergement pour les durées les plus courtes possibles notamment à des fins de maintenance, d’amélioration de ses infrastructures, de défaillance de ses infrastructures ou si les Prestations et Services génèrent un trafic réputé anormal.
+        <br>
+        Pain'Gouin et l’hébergeur ne pourront être tenus responsables en cas de dysfonctionnement du réseau Internet, des lignes téléphoniques ou du matériel informatique et de téléphonie lié notamment à l’encombrement du réseau empêchant l’accès au serveur.
+
+        <h3 class="text-2xl text-tertiary text-center py-2 pb-2 font-bold ">Propriété intellectuelle et contrefaçons </h3>
+        Pain'Gouin est propriétaire des droits de propriété intellectuelle et détient les droits d’usage sur tous les éléments accessibles sur le site internet, notamment les textes, images, graphismes, logos, vidéos, icônes et sons. Toute reproduction, représentation, modification, publication, adaptation de tout ou partie des éléments du site, quel que soit le moyen ou le procédé utilisé, est interdite, sauf autorisation écrite préalable de Pain'Gouin.
+        <br>
+        Toute exploitation non autorisée du site ou de l’un quelconque des éléments qu’il contient sera considérée comme constitutive d’une contrefaçon et poursuivie conformément aux dispositions des articles L.335-2 et suivants du Code de Propriété Intellectuelle.
+        
+
+
+    </div>
+    </div>
+
+
+    {%block footer%}
+<footer class="grid grid-cols-3 text-center font-montserrat">
+    <div>
+        Association Pain'Gouin
+    </div>
+
+    <div>
+        <a href="{%url 'mentions'%}" class="hover:text-primary duration-500">Mentions Légales</a> - <a href="https://www.facebook.com/pain.gouin.372" class="hover:text-primary duration-500">Nous contacter</a>
+    </div>
+
+    <div>
+        Réalisé en 2024 par <a href="https://github.com/mrimbert" class="hover:text-primary duration-500">Mathis Rimbert</a>
+    </div>
+</footer>
+{%endblock%}
+</body>

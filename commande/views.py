@@ -21,6 +21,9 @@ from .models import Produit, CategorieProduit, Commande, Livraison
 def index(request):
     return render(request, "commande/main.html")
 
+def mentions(request):
+    return render(request, "commande/mentions.html")
+
 def login_page(request):
     invalidCredential=False
     form = forms.LoginForm()
