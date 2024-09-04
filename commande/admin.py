@@ -14,6 +14,9 @@ from django.http import HttpResponse
 from django.shortcuts import render
 import json
 
+from django.db.models import Q
+
+
 from .forms import LivraisonForm, ExportForm
 
 
@@ -43,13 +46,25 @@ class SoldeView(UnfoldModelAdminViewMixin, TemplateView):
 
 def autocomplete_user(request):
     if 'term' in request.GET:
-        qs = Utilisateur.objects.filter(
-            first_name__icontains=request.GET.get('term'),
-        )
-        names = list()
-        for user in qs:
-            names.append(user.first_name + ' ' + user.last_name)
+        term = request.GET.get('term')
+        # Splitter le terme en mots pour gérer les prénoms et noms multiples
+        terms = term.split()
+
+        if len(terms) == 1:
+            # Si un seul terme est saisi, chercher dans les prénoms ou les noms de famille
+            qs = Utilisateur.objects.filter(
+                Q(first_name__icontains=terms[0]) | Q(last_name__icontains=terms[0])
+            )
+        else:
+            # Si plusieurs termes sont saisis, chercher par prénom et nom
+            qs = Utilisateur.objects.filter(
+                Q(first_name__icontains=terms[0], last_name__icontains=terms[-1]) |
+                Q(first_name__icontains=terms[-1], last_name__icontains=terms[0])
+            )
+
+        names = [f"{user.first_name} {user.last_name}" for user in qs]
         return JsonResponse(names, safe=False)
+    
 
 def get_user_solde(request):
     if 'first_name' in request.GET and 'last_name' in request.GET:
@@ -70,7 +85,7 @@ def update_credit(request):
         new_credit = request.POST.get('new_credit')
         try:
             user = Utilisateur.objects.get(first_name=first_name, last_name=last_name)
-            user.credit = new_credit
+            user.credit = float(new_credit)
             user.save()
             return JsonResponse({'message': 'Crédit mis à jour avec succès.'})
         except Utilisateur.DoesNotExist:
