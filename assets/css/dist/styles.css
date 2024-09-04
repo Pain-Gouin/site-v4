@@ -1558,8 +1558,20 @@ select {
     order: 2;
   }
 
+  .xl\:block {
+    display: block;
+  }
+
   .xl\:h-44 {
     height: 11rem;
+  }
+
+  .xl\:w-44 {
+    width: 11rem;
+  }
+
+  .xl\:w-96 {
+    width: 24rem;
   }
 
   .xl\:grid-cols-2 {
@@ -1576,6 +1588,16 @@ select {
 
   .xl\:pt-16 {
     padding-top: 4rem;
+  }
+
+  .xl\:text-base {
+    font-size: 1rem;
+    line-height: 1.5rem;
+  }
+
+  .xl\:text-sm {
+    font-size: 0.875rem;
+    line-height: 1.25rem;
   }
 }
 
