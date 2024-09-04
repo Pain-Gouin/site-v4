@@ -27,42 +27,42 @@
             </div>
         </div>
         <div class="justify-self-center content-center items-center gap-7">
-                <button id="dropdownInformationButton" data-dropdown-toggle="dropdownInformation" class="font-montserrat hover:text-primary duration-500 rounded-lg px-5 py-2.5 text-center inline-flex items-center" type="button">Bienvenue {{user.first_name}},&nbsp <b>ton solde est de {{user.credit|floatformat:-2}}€</b> <svg class="w-2.5 h-2.5 ms-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
-                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 4 4 4-4"/>
-                    </svg>
-                </button>
+          <button id="dropdownInformationButton" data-dropdown-toggle="dropdownInformation" class="font-montserrat hover:text-primary duration-500 rounded-lg px-5 py-2.5 text-center inline-flex items-center xl:text-base text-2xl" type="button">Bienvenue {{user.first_name}},&nbsp <b>ton solde est de {{user.credit|floatformat:-2}}€</b> <svg class="w-2.5 h-2.5 ms-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
+            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 4 4 4-4"/>
+            </svg>
+        </button>
 
-                <div id="dropdownInformation" class="z-10 hidden bg-white divide-y divide-gray-100 rounded-lg shadow w-44 font-montserrat">
-                    <div class="px-4 py-3 text-sm text-gray-900">
-                      <div>{{user.first_name}} {{user.last_name}}</div>
-                      <div class="font-medium truncate">{{user.username}}</div>
-                    </div>
-                    <ul class="py-2 text-sm text-gray-700" aria-labelledby="dropdownInformationButton">
-                        {%if user.is_staff%}
-                      <li>
-                        <a href="admin/login" class="block px-4 py-2 hover:bg-quaternary">Panel administrateur</a>
-                      </li>
-                        {%endif%}
-                        {%if user.isLivreur%}
-                        <li>
-                          <a href="{%url 'livreur'%}" class="block px-4 py-2 hover:bg-quaternary">Espace livreur</a>
-                        </li>
-                          {%endif%}
-                          <li>
-                            <a href="{%url 'historique'%}" class="block px-4 py-2 hover:bg-quaternary">Historique des commandes</a>
-                          </li>
-                      <li>
-                        <a href="{%url 'update'%}" class="block px-4 py-2 hover:bg-quaternary">Options</a>
-                      </li>
-    
-                    </ul>
-                    <div class="py-2">
-                      <a href="logout" class="block px-4 py-2 text-sm text-gray-700 hover:bg-quaternary">Se déconnecter</a>
-                    </div>
-                </div>
-                <div><a href="{%url 'commande'%}"><button class="w-96 bg-inherit border-primary text-primary font-montserrat rounded-lg inline-block box-border border-2 rounded-x1 hover:bg-primary hover:text-white duration-1000 h-12 font-bold align-middle">Passer une commande !</button></a></div>
+        <div id="dropdownInformation" class="z-10 hidden bg-white divide-y divide-gray-100 rounded-lg shadow xl:w-44 font-montserrat">
+            <div class="px-4 py-3 xl:text-sm text-xl text-gray-900">
+              <div>{{user.first_name}} {{user.last_name}}</div>
+              <div class="font-medium truncate">{{user.username}}</div>
             </div>
-    </div>
+            <ul class="py-2 xl:text-sm text-xl text-gray-700" aria-labelledby="dropdownInformationButton">
+                {%if user.is_staff%}
+              <li>
+                <a href="admin/login" class="block px-4 py-2 hover:bg-quaternary">Panel administrateur</a>
+              </li>
+                {%endif%}
+                {%if user.isLivreur%}
+                <li>
+                  <a href="{%url 'livreur'%}" class="block px-4 py-2 hover:bg-quaternary">Espace livreur</a>
+                </li>
+                  {%endif%}
+                  <li>
+                    <a href="{%url 'historique'%}" class="block px-4 py-2 hover:bg-quaternary">Historique des commandes</a>
+                  </li>
+              <li>
+                <a href="{%url 'update'%}" class="block px-4 py-2 hover:bg-quaternary">Options</a>
+              </li>
+
+            </ul>
+            <div class="py-2">
+              <a href="logout" class="block px-4 py-2 xl:text-sm text-xl  text-gray-700 hover:bg-quaternary">Se déconnecter</a>
+            </div>
+        </div>
+              <div><a href="{%url 'commande'%}"><button class="xl:w-96 w-full bg-inherit border-primary text-primary font-montserrat rounded-lg inline-block box-border border-2 rounded-x1 hover:bg-primary hover:text-white duration-1000 h-12 font-bold align-middle">Passer une commande !</button></a></div>
+          </div>
+  </div>
 </header>
 
 
