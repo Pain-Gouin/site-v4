@@ -119,6 +119,12 @@ class TableurView(UnfoldModelAdminViewMixin, FormView):
         year = month.year
         month = month.month
 
+        solde_total = 0
+
+        solde_query = list(Utilisateur.objects.all())
+        for i in solde_query:
+            solde_total += i.credit
+
         try:
             livraison_query = Livraison.objects.filter(date__year=year, date__month=month)
             produit = []
@@ -196,7 +202,11 @@ class TableurView(UnfoldModelAdminViewMixin, FormView):
 
         
         worksheet.write(f'E{len(liv_mois)+5}', 'Total dépense', header_format)
-        worksheet.write(f'F{len(liv_mois)+5}', str("{:.2f}".format(liv_mois[-1][2])), header_format)
+        worksheet.write(f'F{len(liv_mois)+5}', str("{:.2f}".format(liv_mois[-1][2]))+"€", header_format)
+
+        worksheet.write(f'E{len(liv_mois)+6}','Total des soldes utilisateurs', header_format)
+        worksheet.write(f'F{len(liv_mois)+6}',str("{:.2f}".format(solde_total))+"€", header_format)
+
 
 
         worksheet.set_column('A:A', col_widths[0] + 2)  # Ajout d'une marge pour rendre le texte plus aéré
@@ -205,6 +215,7 @@ class TableurView(UnfoldModelAdminViewMixin, FormView):
         worksheet.set_column('D:D', col_widths[3] + 2)
         worksheet.set_column('E:E', col_widths[4] + 2)
         worksheet.set_column('F:F', col_widths[5] + 2)
+
 
         workbook.close()
 
