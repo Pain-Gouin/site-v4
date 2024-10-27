@@ -13,6 +13,8 @@ import xlsxwriter
 from django.http import HttpResponse
 from django.shortcuts import render
 import json
+from django.db.models import Sum
+
 
 from django.db.models import Q
 
@@ -127,16 +129,21 @@ class TableurView(UnfoldModelAdminViewMixin, FormView):
 
         try:
             livraison_query = Livraison.objects.filter(date__year=year, date__month=month)
+            commande_query = Commande.objects.filter(date__year =year, date__month =month)
+            user_solde = Utilisateur.objects.aggregate(Sum("credit"))["credit__sum"]
+            nbre_commande = len(commande_query)
             produit = []
             for liv in livraison_query:
-                if liv.produit != ['None'] and liv.produit !='[]':
+                if liv.produit != ['None'] and liv.produit !='[]' and liv.produit != "[None]":
                     produit.append(json.loads(liv.produit))
+
         except Exception as e:
             print(f"Error: {e}")
             livraison_query = None
             produit = "Pas de produit commandé"
         
         liv_mois = add_livraison_mois(produit)
+    
 
         # Création du tableur
         output = BytesIO()
@@ -163,6 +170,13 @@ class TableurView(UnfoldModelAdminViewMixin, FormView):
             'align':'center',
             'valign': 'vcenter',
         })
+        
+        table_with_wrap = workbook.add_format({
+            'border': 1,
+            'align': 'center',
+            'valign': 'vcenter',
+            'text_wrap': True  # Active le retour à la ligne dans la cellule
+        })
 
         info_format = workbook.add_format({
             'italic':True,
@@ -170,7 +184,10 @@ class TableurView(UnfoldModelAdminViewMixin, FormView):
 
         date_format = workbook.add_format({'num_format': 'mm-yyyy'})
 
-        worksheet = workbook.add_worksheet()
+        worksheet = workbook.add_worksheet("Bilan général")
+        worksheet2 = workbook.add_worksheet("Détail des commandes")
+
+
         worksheet.write('A1', 'Mois', header_format)
         worksheet.write('A2', f'{year}-{month:02}', date_format)
         worksheet.write('A4', 'Produit', header_format)
@@ -185,27 +202,37 @@ class TableurView(UnfoldModelAdminViewMixin, FormView):
         for i in range(len(liv_mois)-1):
             worksheet.write(f'A{5+i}', str(liv_mois[i][0]), produit_format)
             worksheet.write(f'B{5+i}', str(liv_mois[i][1]), table)
-            worksheet.write(f'C{5+i}', str(liv_mois[i][2]), table)
-            worksheet.write(f'D{5+i}', str(liv_mois[i][3]), table)
-            worksheet.write(f'E{5+i}', str("{:.2f}".format(liv_mois[i][4])), table)
-            worksheet.write(f'F{5+i}', str("{:.2f}".format(liv_mois[i][5])), table)
+            worksheet.write(f'C{5+i}', str(liv_mois[i][2]).replace('.',','), table)
+            worksheet.write(f'D{5+i}', str(liv_mois[i][3]).replace('.',','), table)
+            worksheet.write(f'E{5+i}', str("{:.2f}".format(liv_mois[i][4]).replace('.',',')), table)
+            worksheet.write(f'F{5+i}', str("{:.2f}".format(liv_mois[i][5]).replace('.',',')), table)
 
             col_widths[0] = max(col_widths[0], len(str(liv_mois[i][0])))
             col_widths[1] = max(col_widths[1], len(str(liv_mois[i][1])))
             col_widths[2] = max(col_widths[2], len(str(liv_mois[i][2])))
             col_widths[3] = max(col_widths[3], len(str(liv_mois[i][3])))
-            col_widths[4] = max(col_widths[4], len(str("{:.2f}".format(liv_mois[i][4]))))
-            col_widths[5] = max(col_widths[5], len(str("{:.2f}".format(liv_mois[i][5]))))
+            col_widths[4] = max(col_widths[4], len(str("{:.2f}".format(liv_mois[i][4])).replace('.',',')))
+            col_widths[5] = max(col_widths[5], len(str("{:.2f}".format(liv_mois[i][5])).replace('.',',')))
 
         
         worksheet.write('A3', 'Tout étant automatisé, veuillez vérifier la cohérence des résultats et contacter le responsable web en cas de problème',info_format)
 
         
         worksheet.write(f'E{len(liv_mois)+5}', 'Total dépense', header_format)
-        worksheet.write(f'F{len(liv_mois)+5}', str("{:.2f}".format(liv_mois[-1][2]))+"€", header_format)
+        worksheet.write(f'F{len(liv_mois)+5}', str("{:.2f}".format(liv_mois[-1][2])).replace('.',',')+"€", header_format)
 
         worksheet.write(f'E{len(liv_mois)+6}','Total des soldes utilisateurs', header_format)
-        worksheet.write(f'F{len(liv_mois)+6}',str("{:.2f}".format(solde_total))+"€", header_format)
+        worksheet.write(f'F{len(liv_mois)+6}',str("{:.2f}".format(solde_total)).replace('.',',')+"€", header_format)
+
+        worksheet.write(f'E{len(liv_mois)+8}', 'Nombre de commande', header_format)
+        worksheet.write(f'F{len(liv_mois)+8}', str(nbre_commande), header_format)
+
+        worksheet.write(f'E{len(liv_mois)+9}', 'Solde utilisateur', header_format)
+        worksheet.write(f'F{len(liv_mois)+9}', str("{:.2f}".format(user_solde)).replace('.',',')+"€", header_format)
+
+        worksheet.write(f'G{len(liv_mois)+9}', 'NB : Le solde utilisateur est calculé au moment de la génération du Excel', info_format)
+
+
 
 
 
@@ -215,6 +242,43 @@ class TableurView(UnfoldModelAdminViewMixin, FormView):
         worksheet.set_column('D:D', col_widths[3] + 2)
         worksheet.set_column('E:E', col_widths[4] + 2)
         worksheet.set_column('F:F', col_widths[5] + 2)
+        worksheet.set_column('G:G', len("NB : Le solde utilisateur est calculé au moment de la génération du Excel") + 2)
+
+
+        worksheet2.write('A1', 'Détail des commandes du mois', header_format)
+        worksheet2.write('A2', f'{year}-{month:02}', date_format)
+        worksheet2.write('A4', 'Utilisateur', header_format)
+        worksheet2.write('B4', 'Date de la commande', header_format)
+        worksheet2.write('C4', 'Contenu de la commande', header_format)
+        worksheet2.write('D4', 'Total de la commande', header_format)
+
+        col_widths = [len('Utilisateur'), len('Date de la commande'), len('Contenu de la commande'), len('Total de la commande')]
+
+
+        compteur=0
+        for i in commande_query:
+            worksheet2.write(f'A{5+compteur}', str(i.client), table)
+            worksheet2.write(f'B{5+compteur}', str(i.date), table)
+
+            produits = json.loads(i.produit)
+            produits_text = "\n".join(str(produit[1]) + " " + str(produit[0]) for produit in produits)
+            worksheet2.write(f'C{5+compteur}', str(produits_text), table_with_wrap)
+
+            worksheet2.write(f'D{5+compteur}', str("{:.2f}".format(i.total_commande)).replace('.',','), table)
+
+            col_widths[0] = max(col_widths[0], len(str(i.client)))
+            col_widths[1] = max(col_widths[1], len(str(i.date)))
+            col_widths[2] = max(col_widths[2], len(str(i.produit)))
+            col_widths[3] = max(col_widths[3], len(f"{i.total_commande:.2f}"))
+
+            compteur +=1
+
+        worksheet2.set_column('A:A', col_widths[0] + 2)  # Ajout d'une marge pour un affichage aéré
+        worksheet2.set_column('B:B', col_widths[1] + 2)
+        worksheet2.set_column('C:C', col_widths[2] + 2)
+        worksheet2.set_column('D:D', col_widths[3] + 2)
+
+
 
 
         workbook.close()
@@ -255,7 +319,7 @@ def add_livraison_mois(livraison):
                 break
             compteur +=1
 
-        if compteur == len(liv_mois):
+        if compteur == len(liv_mois) :
             liv_mois.append(i.copy())
 
     total_depense = 0
