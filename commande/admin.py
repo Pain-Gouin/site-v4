@@ -14,6 +14,12 @@ from django.http import HttpResponse
 from django.shortcuts import render
 import json
 from django.db.models import Sum
+from django.shortcuts import render, get_object_or_404, redirect
+from django.urls import reverse
+from django.views import View
+from django.db.models import F
+from datetime import datetime
+
 
 
 from django.db.models import Q
@@ -346,9 +352,99 @@ def add_livraison_mois(livraison):
     return liv_mois
 
 
+class ModificationCommandeView(UnfoldModelAdminViewMixin, TemplateView):
+    title = "Modification d'une commande"
+    permission_required = ("auth.view_group",)  # Ajout de la permission
+    template_name = "admin/modification.html"
+    
+
+def get_commandes_by_date(request):
+    date_str = request.GET.get('date', None)
+    commandes_data = []
+
+    if date_str:
+        try:
+            # Convertir la chaîne de date en objet date
+            selected_date = datetime.strptime(date_str, "%Y-%m-%d").date()
+            commandes = Commande.objects.filter(date=selected_date)
+            # Préparer les données des commandes pour le JSON
+            commandes_data = [
+                {
+                    'id': commande.id,
+                    'client': str(commande.client),
+                    'total': commande.total_commande,
+                    # Ajoutez d'autres champs au besoin
+                }
+                for commande in commandes
+            ]
+        except ValueError:
+            # Gérer le cas où la date n'est pas valide
+            pass
+    return JsonResponse(commandes_data, safe=False)
+
+def get_commandes_details(request, commande_id):
+    produit_data = []
+    try:
+        commande = Commande.objects.get(id=commande_id)
+        commande_produit = json.loads(commande.produit)
+
+        produit_data = [
+            {
+                'nom': produit[0],
+                'quantite': produit[1]
+            }
+            for produit in commande_produit
+        ]
+
+        
+    except Commande.DoesNotExist:
+        return JsonResponse({'error': 'Commande non trouvée.'}, status=404)
+
+    return JsonResponse(produit_data, safe=False)
+
+@csrf_exempt
+def delete_commandes(request, commande_id):
+    try:
+            commande = Commande.objects.get(id=commande_id)
+            date_livraison = commande.date
+            total = commande.total_commande
+            produit_commande = json.loads(commande.produit)
+
+            utilisateur = Utilisateur.objects.get(username = commande.client)
+
+
+            livraison = Livraison.objects.get(date = date_livraison)
+            produit_livraison = json.loads(livraison.produit)
+
+            for p in produit_commande:
+                for m in produit_livraison :
+                    if p[0] == m[0]:
+                        new = int(m[1])-int(p[1])
+                        m[1] = str(new)
+
+            livraison.produit = json.dumps(produit_livraison)
+            livraison.save()
+            
+            commande.delete()
+
+            utilisateur.credit += total
+            utilisateur.save()
+
+            return JsonResponse({'success': True})
+    except Commande.DoesNotExist:
+            return JsonResponse({'error': 'Commande non trouvée.'}, status=404)
+    except Livraison.DoesNotExist:
+            return JsonResponse({'error': 'Livraison non trouvée.'}, status=404)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+    
+
+
+
 
 
 class CustomAdmin(BaseGroupAdmin, ModelAdmin):
+    actions = None
     def get_urls(self):
         custom_urls = [
             path("solde/", SoldeView.as_view(model_admin=self), name="solde"),
@@ -357,6 +453,12 @@ class CustomAdmin(BaseGroupAdmin, ModelAdmin):
             path("solde/update_credit/", update_credit, name="update_credit"),
             path("solde/add_credit/", add_credit, name="add_credit"),
             path("tableur/", TableurView.as_view(model_admin=self), name="tableur"),
+            path("modification_commande/", ModificationCommandeView.as_view(model_admin=self), name="modification_commande"),
+            path("modification_commande/date/", get_commandes_by_date, name='get_commandes_by_date'),
+            path('modification_commande/<int:commande_id>/details/', get_commandes_details, name='detailler_commande'),
+            path('modification_commande/<int:commande_id>/supprimer/', delete_commandes, name='detailler_commande'),
+
+
         ]
         return custom_urls + super().get_urls()
 

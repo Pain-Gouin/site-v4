@@ -234,6 +234,11 @@ UNFOLD = {
                         "icon": "mouse",
                         "link": reverse_lazy("admin:commande_commande_changelist"),
                     },
+                    {
+                        "title": _("Modification d'une commande"),
+                        "icon": "contract_edit",
+                        "link": reverse_lazy("admin:modification_commande"),
+                    },
                 ],
             },
             {

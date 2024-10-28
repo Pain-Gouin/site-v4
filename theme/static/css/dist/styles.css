@@ -795,6 +795,10 @@ select {
   border-width: 0;
 }
 
+.collapse {
+  visibility: collapse;
+}
+
 .static {
   position: static;
 }
@@ -1014,6 +1018,10 @@ select {
 
 .basis-1\/4 {
   flex-basis: 25%;
+}
+
+.border-collapse {
+  border-collapse: collapse;
 }
 
 .grid-cols-3 {

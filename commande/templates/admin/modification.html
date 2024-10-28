@@ -1,0 +1,150 @@
+{% extends "unfold/layouts/base.html" %}
+
+{% load static %}
+{% load static tailwind_tags %}
+
+{% block content %}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<div style="text-align: center;">
+    <h1>Sélectionnez une date pour afficher les commandes :</h1>
+    <input type="date" id="commande-date" name="date">
+</div>
+
+<div id="commandes-list" style="margin: 20px auto; width: 80%; display: none;"> <!-- Masquer par défaut -->
+    <table id="commandes-table" border="1" style="width: 100%; border-collapse: collapse; margin: 0 auto;">
+        <thead>
+            <tr>
+                <th>Commande ID</th>
+                <th>Client</th>
+                <th>Total (€)</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Les lignes de commande seront insérées ici -->
+        </tbody>
+    </table>
+</div>
+
+<div id="produits-details" style="margin-top: 20px; text-align: left; width: 80%; margin: 20px auto; display: none;"> <!-- Masquer par défaut -->
+    <h3>Détails des Produits</h3>
+    <table id="produits-table" border="1" style="width: 100%; border-collapse: collapse;">
+        <thead>
+            <tr>
+                <th>Nom du Produit</th>
+                <th>Quantité</th>
+            </tr>
+        </thead>
+        <tbody id="produits-list">
+            <!-- Les détails des produits seront insérés ici -->
+        </tbody>
+    </table>
+</div>
+
+<script>
+$('#commande-date').on('change', function() {
+    const date = $(this).val();
+
+    if (date) {
+        // Afficher les tableaux
+        $('#commandes-list').show();
+        $('#produits-details').show();
+
+        $.ajax({
+            url: `/admin/auth/group/modification_commande/date/`,
+            data: { date: date },
+            success: function(data) {
+                const commandesTableBody = $('#commandes-table tbody');
+                commandesTableBody.empty(); // Effacer le contenu existant
+
+                if (data.length > 0) {
+                    data.forEach(commande => {
+                        commandesTableBody.append(`
+                            <tr data-id="${commande.id}" class="commande-row">
+                                <td>${commande.id}</td>
+                                <td>${commande.client}</td>
+                                <td>${commande.total} €</td>
+                                <td><button class="delete-btn">Supprimer</button></td>
+                            </tr>
+                        `);
+                    });
+                } else {
+                    commandesTableBody.append('<tr><td colspan="4">Aucune commande pour cette date.</td></tr>');
+                }
+            },
+            error: function() {
+                $('#commandes-table tbody').html('<tr><td colspan="4">Erreur lors du chargement des commandes.</td></tr>');
+            }
+        });
+    } else {
+        // Masquer les tableaux si aucune date n'est sélectionnée
+        $('#commandes-list').hide();
+        $('#produits-details').hide();
+    }
+});
+
+// Gestion des clics sur les lignes de commande pour afficher les détails des produits
+$(document).on('click', '.commande-row', function() {
+    const commandeId = $(this).data('id');
+
+    // Mettre en surbrillance la ligne sélectionnée
+    $('.commande-row').removeClass('selected-row'); // Retirer la surbrillance de toutes les lignes
+    $(this).addClass('selected-row'); // Ajouter la surbrillance à la ligne sélectionnée
+
+    $.ajax({
+        url: `/admin/auth/group/modification_commande/${commandeId}/details/`, // URL pour obtenir les détails de la commande
+        success: function(produits) {
+            const produitsList = $('#produits-list');
+            produitsList.empty(); // Effacer le contenu existant
+
+            if (produits.length > 0) {
+                produits.forEach(produit => {
+                    produitsList.append(`
+                        <tr>
+                            <td>${produit.nom}</td>
+                            <td>${produit.quantite}</td>
+                        </tr>
+                    `);
+                });
+            } else {
+                produitsList.html('<tr><td colspan="2">Aucun produit trouvé pour cette commande.</td></tr>');
+            }
+        },
+        error: function() {
+            $('#produits-list').html('<tr><td colspan="2">Erreur lors du chargement des détails des produits.</td></tr>');
+        }
+    });
+});
+
+// Gestion de la suppression de commande
+$(document).on('click', '.delete-btn', function(e) {
+    e.stopPropagation(); // Empêcher le clic de la ligne d'être déclenché
+
+    const row = $(this).closest('.commande-row');
+    const commandeId = row.data('id');
+
+    if (confirm('Êtes-vous sûr de vouloir supprimer cette commande ?')) {
+        $.ajax({
+            url: `/admin/auth/group/modification_commande/${commandeId}/supprimer/`, // URL pour supprimer la commande
+            type: 'DELETE',
+            success: function() {
+                row.remove(); // Retirer la ligne du tableau
+                $('#produits-list').empty(); // Effacer les détails des produits
+                alert('Commande supprimée avec succès.');
+            },
+            error: function() {
+                alert('Erreur lors de la suppression de la commande.');
+            }
+        });
+    }
+});
+</script>
+
+<style>
+.selected-row {
+    background-color: #FFF6F6; /* Couleur de fond pour la ligne sélectionnée */
+}
+</style>
+
+{% endblock %}
