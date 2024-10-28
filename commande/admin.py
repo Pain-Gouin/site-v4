@@ -227,8 +227,8 @@ class TableurView(UnfoldModelAdminViewMixin, FormView):
         worksheet.write(f'E{len(liv_mois)+5}', 'Total dépense', header_format)
         worksheet.write(f'F{len(liv_mois)+5}', str("{:.2f}".format(liv_mois[-1][2])).replace('.',',')+"€", header_format)
 
-        worksheet.write(f'E{len(liv_mois)+6}','Total des soldes utilisateurs', header_format)
-        worksheet.write(f'F{len(liv_mois)+6}',str("{:.2f}".format(solde_total)).replace('.',',')+"€", header_format)
+        worksheet.write(f'E{len(liv_mois)+6}','Chiffre d\'affaire', header_format)
+        worksheet.write(f'F{len(liv_mois)+6}',str("{:.2f}".format(liv_mois[-1][1])).replace('.',',')+"€", header_format)
 
         worksheet.write(f'E{len(liv_mois)+8}', 'Nombre de commande', header_format)
         worksheet.write(f'F{len(liv_mois)+8}', str(nbre_commande), header_format)
@@ -329,6 +329,7 @@ def add_livraison_mois(livraison):
             liv_mois.append(i.copy())
 
     total_depense = 0
+    total_ca = 0
     for i in liv_mois:
         produit = Produit.objects.get(nom = i[0])
         prix_achat = produit.prix_achat
@@ -338,6 +339,7 @@ def add_livraison_mois(livraison):
         depense = -1*(int(i[1])*prix_achat)
 
         benefice = chiffre_affaire - depense
+        total_ca += chiffre_affaire
 
         i.append(prix_vente)
         i.append(prix_achat)
@@ -347,7 +349,7 @@ def add_livraison_mois(livraison):
 
         total_depense += depense
 
-    liv_mois.append(["Total", "", total_depense,"","","",""])
+    liv_mois.append(["Total", total_ca, total_depense,"","","",""])
 
     return liv_mois
 
