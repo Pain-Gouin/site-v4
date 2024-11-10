@@ -8,7 +8,8 @@ from django.utils.html import strip_tags
 from django.contrib.auth.views import PasswordResetView
 from django.contrib.messages.views import SuccessMessageMixin
 from django.urls import reverse_lazy
-
+from datetime import datetime, time
+from django.utils import timezone
 
 from . import forms
 
@@ -105,7 +106,17 @@ def update_user_page(request):
 def commande(request):
     errorFondInsuffisant = False
     order = []
-    livraison_query = Livraison.objects.exclude(date__lt = datetime.today().strftime('%Y-%m-%d')).order_by("date")
+
+    current_time = timezone.now()
+    today = current_time.date()
+
+
+    if current_time.time() < time(7, 0):
+        livraison_query = Livraison.objects.filter(date__gte=today).order_by("date")
+    else:
+        livraison_query = Livraison.objects.filter(date__gt=today).order_by("date")
+
+
     produit_query = list(Produit.objects.all())
     categorie_query = CategorieProduit.objects.all()
     successOrder = request.GET.get('successOrder',False)
