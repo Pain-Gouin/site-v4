@@ -31,6 +31,10 @@ Puis, entrons dans l'environnement avec la commande :
 ```console
     source <nom du venv>/bin/activate
 ```
+Ou bien : 
+```console
+    source <nom du venv>/Scripts/activate
+```
 On va désormais pouvoir travailler tranquillement et pouvoir installer toutes les libraries dont le site a besoin pour fonctionner à l'aide de la commande : 
 ```console
     pip install -r requirements.txt
