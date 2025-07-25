@@ -1,0 +1,9 @@
+# Django
+__pycache__
+
+# Environments (depending on chosen one by developer)
+.env
+.venv
+pvenv
+
+.vscode
