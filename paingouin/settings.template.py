@@ -263,4 +263,3 @@ UNFOLD = {
     "THEME": "light",
     "SHOW_HISTORY": False,
 }
-

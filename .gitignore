@@ -6,4 +6,7 @@ __pycache__
 .venv
 pvenv
 
+# Settings
+paingouin/settings.py
+
 .vscode

@@ -23,24 +23,27 @@ Pour apporter des modifications sur le site, voici un petit tutoriel. J'utilise 
 Pour récupérer le contenu du repo, créez un nouveau dossier puis initialisez le dossier git ensuite vous pouvez cloner la branche principale ou la fetch. 
 
 ### Mise en place de l'environnement virtuel
-Pour développer dans de bonnes conditions, il faut mettre en place un environnement virtuel (ou venv), cela permet d'installer toutes les libraries dont nous auront besoin dans un endroit à part afin d'éviter qu'elles interragissent avec d'autres libraries que vous auriez pu installer sur votre machine (et permettre aussi de lister proprement les libraries dont le projet a besoin pour fonctionner). Pour ce faire dans le dossier exécuter la commande : 
+Pour développer dans de bonnes conditions, il faut mettre en place un environnement virtuel (ou venv), cela permet d'installer toutes les libraries dont nous auront besoin dans un endroit à part afin d'éviter qu'elles interragissent avec d'autres libraries que vous auriez pu installer sur votre machine (et permettre aussi de lister proprement les libraries dont le projet a besoin pour fonctionner).  
+Pour ce faire dans le dossier exécuter la commande : 
 ```console
-    python -m venv <nom du venv>
+    python -m venv .venv
 ```
-Puis, entrons dans l'environnement avec la commande : 
+Cela créé un environnement virtuel Python intitulé `.venv`.  
+Puis, entrons dans l'environnement avec la commande :
+- Linux
 ```console
-    source <nom du venv>/bin/activate
+    source .venv/bin/activate
 ```
-Ou bien : 
+- Windows
 ```console
-    source <nom du venv>/Scripts/activate
+    .venv/Scripts/activate.bat
 ```
 On va désormais pouvoir travailler tranquillement et pouvoir installer toutes les libraries dont le site a besoin pour fonctionner à l'aide de la commande : 
 ```console
     pip install -r requirements.txt
 ```
 ### Démarrer le serveur local
-Une fois tout ceci fait, il suffit de mettre à jour le fichier *settings* disponible dans le dossier paingouin pour correspondre à votre base de donnée locale. Vous devez modifier les informations suivantes : 
+Une fois tout ceci fait, il faut configurer le site pour tourner sur sa machine local. Pour ce faire, copiez le fichier `paingouin/settings.template.py` vers `paingouin/settings.py`, et modifiez le pour correspondre à votre base de donnée locale. Vous devez modifier les informations suivantes : 
 
 ```Python
     DATABASES = {
@@ -58,7 +61,7 @@ Une fois tout ceci fait, il suffit de mettre à jour le fichier *settings* dispo
     }
 ```
 
-Pour créer une base de donnée en local vous pouvez utiliser l'outil Docker, Rézoléo peut fournir une formation pour l'utilisation de cet outil en cas de problème. 
+Pour créer une base de donnée en local vous pouvez utiliser l'outil Docker, Rézoléo peut fournir une formation pour l'utilisation de cet outil en cas de problème.  
 Une fois les informations modifiées, exécutez les commandes suivantes : 
 ```console
     python manage.py makemigrations
@@ -99,6 +102,3 @@ Si une livraison se passe mal (ce qui n'arrive jamais hein...) et qu'un produit 
  - Le prévenir que le remboursement a été effectué 
 
 Si un problème survient, ou si il y a des doutes, ne pas hésiter à contacter [Mathis Rimbert](https://www.facebook.com/profile.php?id=61550914982995)
-
-
-
