@@ -9,4 +9,10 @@ pvenv
 # Settings
 paingouin/settings.py
 
+# User upload folder
+media
+
+# Assets folder (generated with the "python manage.py collectstatic" command)
+assets
+
 .vscode
