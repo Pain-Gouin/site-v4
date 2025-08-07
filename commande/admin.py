@@ -30,12 +30,21 @@ from .forms import LivraisonForm, ExportForm
 
 
 # Enregistrer les autres modèles
-admin.site.register(Produit)
-admin.site.register(CategorieProduit)
-admin.site.register(Commande)
-admin.site.register(Livraison)
 
-class UtilisateurAdmin(admin.ModelAdmin):
+@admin.register(Produit)
+class ProduitAdmin(ModelAdmin):
+    pass
+
+@admin.register(CategorieProduit)
+class CategorieProduitAdmin(ModelAdmin):
+    pass
+
+@admin.register(Commande)
+class CommandeAdmin(ModelAdmin):
+    pass
+
+
+class UtilisateurAdmin(ModelAdmin):
     list_display = ('last_name', 'first_name', 'email', 'isLivreur', 'isPermis', 'credit', 'last_login', 'last_order', 'created_at')
     search_fields = ('last_name', 'first_name', 'email')  # Pour faciliter la recherche par nom ou email
     list_filter = ('isLivreur', 'isPermis')  # Pour ajouter des filtres sur les colonnes booléennes
@@ -43,7 +52,7 @@ class UtilisateurAdmin(admin.ModelAdmin):
 admin.site.register(Utilisateur, UtilisateurAdmin)
 
 
-class LivraisonAdmin(admin.ModelAdmin):
+class LivraisonAdmin(ModelAdmin):
     exclude = ["produit"]
     form = LivraisonForm
 
@@ -467,5 +476,4 @@ class CustomAdmin(BaseGroupAdmin, ModelAdmin):
 admin.site.unregister(Group)
 admin.site.register(Group, CustomAdmin)
 
-admin.site.unregister(Livraison)
 admin.site.register(Livraison, LivraisonAdmin)
