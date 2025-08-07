@@ -9,7 +9,6 @@ from .models import Produit, Livraison
 
 import datetime
 import re
-from six import string_types
 
 from django.forms.widgets import Widget, Select
 from django.utils.dates import MONTHS
