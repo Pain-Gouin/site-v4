@@ -1,0 +1,7 @@
+services:
+  server:
+    ports:
+      - 8000:8000 # app server port
+      - 3306:3306 # mySQL server port
+    volumes:
+      - ./media:/app/media

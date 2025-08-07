@@ -8,6 +8,7 @@ pvenv
 
 # Settings
 paingouin/settings.py
+compose.yaml
 
 # User upload folder
 media

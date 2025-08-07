@@ -27,9 +27,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-=5sf8@fhdxzr8(c!%-5xx1!5x6x07$%vc^0rr&$4ljgh&v5!w%'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = bool(os.getenv("DEBUG", 0))
 
-ALLOWED_HOSTS = ['paingouindev.rezoleo.fr', 'www.paingouindev.rezoleo.fr', '127.0.0.1']
+ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS","paingouin.rezoleo.fr, www.paingouin.rezoleo.fr").split(",")
+
+CSRF_TRUSTED_ORIGINS = ['https://paingouin.rezoleo.fr']
+
 
 
 # Application definition
@@ -87,12 +90,12 @@ WSGI_APPLICATION = 'paingouin.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
-       'NAME': 'dbdjango',
-        'HOST': '127.0.0.1',
-        'PORT': '3306',
-        'USER': 'myuser',
-        'PASSWORD': 'monpassword',
+        'ENGINE': 'django.db.backends.{}'.format(os.getenv('DATABASE_ENGINE', 'mysql')),
+        'NAME': os.getenv('DATABASE_NAME', 'paingouin'),
+        'HOST': os.getenv('DATABASE_HOST', 'mysql.rezoleo.fr'),
+        'PORT': os.getenv('DATABASE_PORT', 3306),
+        'USER': os.getenv('DATABASE_USERNAME', 'paingouin'),
+        'PASSWORD': os.getenv('DATABASE_PASSWORD', '***REMOVED***'),
         'OPTIONS':{
         "init_command": "SET foreign_key_checks = 0;",
         }
