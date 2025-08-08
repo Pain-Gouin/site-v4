@@ -4,7 +4,6 @@ services:
       context: .
     ports:
       - 8000:8000 # app port
-      - 3306:3306 # DB port
     volumes:
       - ./media:/app/media
     environment: # all the defaults values are the ones needed by the prod environment
@@ -15,4 +14,4 @@ services:
       DATABASE_USERNAME: myuser
       DATABASE_PASSWORD: monpassword
       DATABASE_HOST: 127.0.0.1
-      DATABASE_PORT: 3306 # doit être le même qu'indiqué plus haut !
+      DATABASE_PORT: 3306

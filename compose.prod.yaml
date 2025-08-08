@@ -3,6 +3,5 @@ services:
     image: ghcr.io/pain-gouin/site-v4:prod
     ports:
       - 8000:8000 # app server port
-      - 3306:3306 # mySQL server port
     volumes:
       - ./media:/app/media
