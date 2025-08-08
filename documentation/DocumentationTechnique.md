@@ -1,6 +1,35 @@
 ﻿# Documentation détaillée du site Pain'Gouin
 
-Dernière mise à jour : 13/08/2024 par Mathis Rimbert
+## Déploiement
+### Test près-déploiement
+Le site est déployé à l'aide d'un conteneur Docker contenant : tout le code source, un serveur Django de production (gunicorn) ainsi qu'un service pour servir les fichiers statiques (whitenoise).
+
+Bien que ce ne soit pas une bonne pratique, les mots de passe pour la base de donnée sont inclus dans le conteneur, afin de simplifier le déploiement.
+
+Avant de déployer une version, il est important de tester le bon fonctionnement de l'image docker. Pour cela, copier le fichier `compose.template.yaml` vers `compose.yaml`, en l'adaptant à son environnement de développement, et en lançant la construction et le déploiement en local de l'image à l'aide de la commande :
+```console
+docker compose up --build
+```
+
+> [!IMPORTANT] 
+> Pour tester l'image telle qu'elle sera déployé, bien désactiver le debug dans le docker compose !
+
+Le site devrait alors être accessible à l'adresse http://127.0.0.1:8000/.
+
+> [!NOTE] 
+> Si de nouvelles librairies sont nécéssaires, il faut bien penser à mettre à jour le fichier `requirements.txt` à l'aide de la commande `pip freeze`.  
+> Le fichier `requirement.minimal.txt` est sensé contenir uniquement les dépendances primaire, et est utile pour la mise à jour des dépendances.
+
+### Déploiement sur l'infrastructure de Rézoléo
+
+**Après avoir testé le bon fonctionnement**, vous pouvez push vos changements sur la branche `prod`. Cela déclenchera une action Github, qui va automatiquement construire et uploader une image sur le GHCR. Un Watchtower sur les serveurs de Rézoléo devrait détecter cette nouvelle image, et automatiquement mettre à jour puis redéployer le conteneur tournant sur leurs serveurs.
+
+> [!IMPORTANT] 
+> En cas de migration de la base de donnée, la commande `python manage.py migrate` s'exécute automatiquement au lancement du conteneur mise à jour.  
+> Il faut bien avoir commit les migrations après les avoir générés à l'aide de la commande `python manage.py makemigrations`, et faire attention à ce qu'elle ne provoque pas de perte de données.  
+> **Il est recommandé de faire un backup de la BD avant tout déploiement !**
+
+Le conteneur utilise le serveur mySQL du rézo. Le docker compose le générant ainsi que les fichiers media se situent sur l'accès SFTP.
 
 ## Identifiants de connexion
 Pain'Gouin est hébergé par l'association Rézoléo, en cas de problèmes d'hébergements, il ne faut pas hésiter à les contacter. 

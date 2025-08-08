@@ -1,7 +1,5 @@
 ﻿# Documentation site Pain'Gouin
 
-Dernière mise à jour : 09/08/2024 par Mathis Rimbert
-
 ## Introduction
 Bienvenue dans cette documentation sur la quatrième version du site de l'association. Cette version a été initialement développée en 2024 par [Mathis Rimbert](https://github.com/mrimbert). Elle répond à plusieurs besoin notamment celui d'obtenir un site plus "moderne" que le précédent ainsi que de passer sur une architecture plus propre et plus compréhensive. 
 
@@ -26,60 +24,63 @@ Pour récupérer le contenu du repo, créez un nouveau dossier puis initialisez 
 Pour développer dans de bonnes conditions, il faut mettre en place un environnement virtuel (ou venv), cela permet d'installer toutes les libraries dont nous auront besoin dans un endroit à part afin d'éviter qu'elles interragissent avec d'autres libraries que vous auriez pu installer sur votre machine (et permettre aussi de lister proprement les libraries dont le projet a besoin pour fonctionner).  
 Pour ce faire dans le dossier exécuter la commande : 
 ```console
-    python -m venv .venv
+python -m venv .venv
 ```
 Cela créé un environnement virtuel Python intitulé `.venv`.  
 Puis, entrons dans l'environnement avec la commande :
 - Linux
 ```console
-    source .venv/bin/activate
+source .venv/bin/activate
 ```
 - Windows
 ```console
-    .venv/Scripts/activate.bat
+.venv/Scripts/activate.bat
 ```
 On va désormais pouvoir travailler tranquillement et pouvoir installer toutes les libraries dont le site a besoin pour fonctionner à l'aide de la commande : 
 ```console
-    pip install -r requirements.txt
+pip install -r requirements.txt
 ```
 ### Démarrer le serveur local
 Une fois tout ceci fait, il faut configurer le site pour tourner sur sa machine local. Pour ce faire, copiez le fichier `paingouin/settings.template.py` vers `paingouin/settings.py`, et modifiez le pour correspondre à votre base de donnée locale. Vous devez modifier les informations suivantes : 
 
 ```Python
-    DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': '<nom de la base>',
-        'HOST': '<ip de la base de donnée>',
-        'PORT': '<port>',
-        'USER': '<utilisateur de la base>',
-        'PASSWORD': '<mot de passe>',
-        'OPTIONS':{
-        "init_command": "SET foreign_key_checks = 0;",
-        }
-    },
+DATABASES = {
+'default': {
+    'ENGINE': 'django.db.backends.mysql',
+    'NAME': '<nom de la base>',
+    'HOST': '<ip de la base de donnée>',
+    'PORT': '<port>',
+    'USER': '<utilisateur de la base>',
+    'PASSWORD': '<mot de passe>',
+    'OPTIONS':{
+    "init_command": "SET foreign_key_checks = 0;",
     }
+},
+}
 ```
 
 Pour créer une base de donnée en local vous pouvez utiliser l'outil Docker, Rézoléo peut fournir une formation pour l'utilisation de cet outil en cas de problème.  
 Une fois les informations modifiées, exécutez les commandes suivantes : 
 ```console
-    python manage.py makemigrations
-    python manage.py migrate
+python manage.py makemigrations
+python manage.py migrate
  ```   
 Vous venez de mettre en place les différentes tables dont le site (et Django) a besoin pour fonctionner. Il ne vous reste plus qu'à démarrer le serveur local avec la commande : 
 ```console
-    python manage.py runserver
+python manage.py runserver
 ```
 Le serveur est désormais lancé et vous n'avez qu'à cliquer sur le lien renvoyé dans la console par Django pour y accéder. 
 
 ### Créer un administrateur local sur le site
 Pour créer un utilisateur ayant les permissions super-admin sur le site exécutez dans la console la commande suivante : 
 ```console
-    python manage.py createsuperuser
+python manage.py createsuperuser
 ```
  Puis suivez les informations renvoyées dans la console pour créer l'utilisateur. 
 
+## Déploiement
+
+Cf la [Documentation Technique](documentation/DocumentationTechnique.md)
 
 ## Axes d'amélioration du site
 
