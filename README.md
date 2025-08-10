@@ -40,6 +40,8 @@ On va désormais pouvoir travailler tranquillement et pouvoir installer toutes l
 ```console
 pip install -r requirements.txt
 ```
+### Mise en place de NodeJS et de TailwindCSS
+Afin d'utiliser TailwindCSS, il faut installer NodeJS (22 au moment d'écrire ces lignes). Pour linux, vous pouvez utiliser ce [site](https://nodesource.com/products/distributions).  
 ### Démarrer le serveur local
 Une fois tout ceci fait, il faut configurer le site pour tourner sur sa machine local. Pour ce faire, copiez le fichier `paingouin/settings.template.py` vers `paingouin/settings.py`, et modifiez le pour correspondre à votre base de donnée locale. Vous devez modifier les informations suivantes : 
 
@@ -65,11 +67,18 @@ Une fois les informations modifiées, exécutez les commandes suivantes :
 python manage.py makemigrations
 python manage.py migrate
  ```   
-Vous venez de mettre en place les différentes tables dont le site (et Django) a besoin pour fonctionner. Il ne vous reste plus qu'à démarrer le serveur local avec la commande : 
+Vous venez de mettre en place les différentes tables dont le site (et Django) a besoin pour fonctionner.  
+Il faut maintenant initialiser TailwindCSS. Pour ce faire, utilisez la commande suivante :
 ```console
-python manage.py runserver
+python manage.py tailwind install
+```
+Il ne vous reste plus qu'à démarrer le serveur local avec la commande : 
+```console
+python manage.py tailwind dev
 ```
 Le serveur est désormais lancé et vous n'avez qu'à cliquer sur le lien renvoyé dans la console par Django pour y accéder. 
+> [!NOTE] 
+> Pour savoir pourquoi cette commande est utilisée au lieu du traditionel `python manage.py runserver`, rendez-vous dans la [Documentation Technique](documentation/DocumentationTechnique.md) à la section traitant de Tailwind.
 
 ### Créer un administrateur local sur le site
 Pour créer un utilisateur ayant les permissions super-admin sur le site exécutez dans la console la commande suivante : 

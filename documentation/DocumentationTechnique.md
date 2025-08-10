@@ -72,3 +72,8 @@ La version 3 de tailwind est utilisée. Elle est intégrée à Django à l'aide 
 Pour développer avec tailwind, il est nécessaire d'utiliser la commande `python manage.py tailwind dev` au lieu de la commande `python manage.py runserver`. Cela permet d'automatiquement mettre à jour le fichier de style lorsqu'une page HTML est éditée, afin d'inclure les potentielles nouvelles fonctionnalités utilisées.  
 En effet, seules les fonctionnalités de tailwind utilisées par le site web sont incluses dans la feuille de style, pour réduire sa taille.  
 Avant "déploiement", il est nécessaire d'utiliser la commande `python manage.py tailwind build`, pour générer une feuille de style optimisée pour la prod, juste avant d'utiliser la commande `python manage.py collectstatic`. Cette étape est effectuée automatiquement lorsque le conteneur docker est utilisé.
+
+## Flowbite
+La version [2.5.2](https://github.com/themesberg/flowbite/tree/v2.5.2) de Flowbite est utilisée (la dernière compatible avec Tailwind V3).  
+Elle a été incluse comme plugin tailwind (via la commande `python manage.py tailwind plugin_install flowbite@2.5.2`), ce qui permet d'inclure le CSS optimisé en même temps que celui de Tailwind.  
+Par ailleurs, le javascript nécessaire au bon fonctionnement des interactions est inclus via un CDN, dans le head des pages.
