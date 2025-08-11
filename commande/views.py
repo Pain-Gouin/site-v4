@@ -13,7 +13,6 @@ from django.utils import timezone
 
 from . import forms
 
-from datetime import datetime
 import json
 
 from .models import Produit, CategorieProduit, Commande, Livraison
@@ -110,11 +109,7 @@ def commande(request):
     current_time = timezone.now()
     today = current_time.date()
 
-
-    if current_time.time() < time(7, 0):
-        livraison_query = Livraison.objects.filter(date__gte=today).order_by("date")
-    else:
-        livraison_query = Livraison.objects.filter(date__gt=today).order_by("date")
+    livraison_query = Livraison.objects.modifiable()
 
 
     produit_query = list(Produit.objects.all())
@@ -269,14 +264,12 @@ def livreur(request):
 
 @login_required
 def historique(request):
-    user_order = Commande.objects.filter(client = request.user.username).order_by("date")
+    user_order = Commande.objects.filter(client=request.user.username).order_by("-date")
     historique = []
 
     for commande in user_order:
-        passe = False
-        if commande.date <= datetime.today().date():
-            passe = True
-        historique.append([commande.date, json.loads(commande.produit), commande.total_commande, passe, commande.id])
+        passe = commande.est_modifiable
+        historique.append({"date":commande.date, "produits":json.loads(commande.produit), "total":commande.total_commande, "passe":passe, "id":commande.id})
 
     context = {"historique":historique}
     return render(request, "commande/historique.html", context)
@@ -294,8 +287,7 @@ def del_order(request, order):
 
         query_order.delete()
 
-        return redirect(settings.LOGIN_REDIRECT_URL)
-    
+        return redirect("historique")
 
 def del_to_livraison(date, commande):
     livraison = Livraison.objects.get(date = date).produit

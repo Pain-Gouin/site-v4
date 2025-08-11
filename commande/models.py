@@ -2,7 +2,8 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser, BaseUserManager
 from django.contrib.auth.models import UserManager
 
-from datetime import datetime
+from datetime import datetime, time
+from django.utils import timezone
 
 import json
 
@@ -45,9 +46,27 @@ class Produit(models.Model):
 def defaultJson():
     return ["None"]
 
+class LivraisonQuerySet(models.QuerySet):
+    def modifiable(self):
+        current_time = timezone.now()
+        today = current_time.date()
+
+        if current_time.time() < time(7, 0):
+            qs = self.filter(date__gte=today).order_by("date")
+        else:
+            qs = self.filter(date__gt=today).order_by("date")
+        
+        return qs
+
 class Livraison(models.Model):
-    date = models.DateField(default=datetime.now)
+    date = models.DateField(default=datetime.now, unique=True)
     produit = models.JSONField(default=defaultJson)
+
+    objects = LivraisonQuerySet.as_manager()
+
+    @property
+    def est_modifiable(self):
+        return Livraison.objects.filter(id=self.id).modifiable().exists()
 
     def __str__(self) -> str:
         return str(self.date)
@@ -58,6 +77,10 @@ class Commande(models.Model):
     produit = models.JSONField(default=defaultJson)
     chambre = models.CharField(max_length=10)
     total_commande = models.FloatField(default=0)
+
+    @property
+    def est_modifiable(self):
+        return Livraison.objects.filter(date=self.date).modifiable().exists()
 
     def __str__(self) -> str:
         return "Commande de " + str(self.client) + " pour le " + str(self.date)

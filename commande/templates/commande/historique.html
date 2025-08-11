@@ -1,114 +1,43 @@
+{% extends "commande/base.html" %}
 {% load static %}
-{% load static tailwind_tags %}
-<head>
-    <link rel="stylesheet" href="{%static 'style.css'%}">
-   <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Lobster&display=swap" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/flowbite@2.5.2/dist/flowbite.min.js"></script>
-
-
-    <title>Pain'Gouin</title>
-
-    <link rel="shortcut icon" href="{%static 'logo/logo.ico'%}" type="image/x-icon">
-    {% tailwind_css %}
-
-</head>
-
-<header>
-    <div class="shadow grid xl:grid-cols-3 bg-white xl:h-44 top-0 left-0 right-0 z-40 content-center items-stretch	">
-        <div class="w-40 justify-self-center">
-            <a href="{%url 'index' %}"><img src="{%static 'logo/logo.webp'%}" alt="logo"></a>
-        </div>
-        <div class="xl:pt-16 justify-self-center pt-4">
-            <div class="align-middle">
-                <p class="text-black text-5xl font-bold tracking-wide font-lobster text-secondary">Pain'Gouin</p>
-            </div>
-        </div>
-        <div class="justify-self-center content-center items-center gap-7">
-          <button id="dropdownInformationButton" data-dropdown-toggle="dropdownInformation" class="font-montserrat hover:text-primary duration-500 rounded-lg px-5 py-2.5 text-center inline-flex items-center xl:text-base text-2xl" type="button">Bienvenue {{user.first_name}},&nbsp <b>ton solde est de {{user.credit|floatformat:-2}}€</b> <svg class="w-2.5 h-2.5 ms-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
-              <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 4 4 4-4"/>
-              </svg>
-          </button>
-
-          <div id="dropdownInformation" class="z-10 hidden bg-white divide-y divide-gray-100 rounded-lg shadow xl:w-44 font-montserrat">
-              <div class="px-4 py-3 xl:text-sm text-xl text-gray-900">
-                <div>{{user.first_name}} {{user.last_name}}</div>
-                <div class="font-medium truncate">{{user.username}}</div>
-              </div>
-              <ul class="py-2 xl:text-sm text-xl text-gray-700" aria-labelledby="dropdownInformationButton">
-                  {%if user.is_staff%}
-                <li>
-                  <a href="admin/login" class="block px-4 py-2 hover:bg-quaternary">Panel administrateur</a>
-                </li>
-                  {%endif%}
-                  {%if user.isLivreur%}
-                  <li>
-                    <a href="{%url 'livreur'%}" class="block px-4 py-2 hover:bg-quaternary">Espace livreur</a>
-                  </li>
-                    {%endif%}
-                    <li>
-                      <a href="{%url 'historique'%}" class="block px-4 py-2 hover:bg-quaternary">Historique des commandes</a>
-                    </li>
-                <li>
-                  <a href="{%url 'update'%}" class="block px-4 py-2 hover:bg-quaternary">Options</a>
-                </li>
-
-              </ul>
-              <div class="py-2">
-                <a href="logout" class="block px-4 py-2 xl:text-sm text-xl  text-gray-700 hover:bg-quaternary">Se déconnecter</a>
-              </div>
-          </div>
-                <div><a href="{%url 'commande'%}"><button class="xl:w-96 w-full bg-inherit border-primary text-primary font-montserrat rounded-lg inline-block box-border border-2 rounded-x1 hover:bg-primary hover:text-white duration-1000 h-12 font-bold align-middle">Passer une commande !</button></a></div>
-            </div>
-    </div>
-</header>
-
-
-<body class="bg-quaternary font-montserrat">
+{% block content %}
+  <div class="font-montserrat">
     <h1 class="text-center text-4xl text-primary py-10">Historique des commandes passées :</h1>
     <div class="relative overflow-x-auto pb-10 pt-5">
-        <table class="w-full text-sm text-left rtl:text-right text-secondary">
-            <thead class="text-xs text-gray-700 uppercase bg-orangemoinsclair">
-              <tr>
-                <th scope="col" class="px-6 py-3">
-                  Date de la commande
-                </th>
-                <th scope="col" class="px-6 py-3">
-                  Contenu de la commande
-                </th>
-                <th scope="col" class="px-6 py-3">
-                    Total
-                </th>
-                <th scope="col" class="px-6 py-3">
-                    
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {%for commande in historique%}
-              <tr class="bg-white border-b">
-                <th scope="row" class="px-6 py-4 font-medium text-secondary whitespace-nowrap">
-                  {{commande.0}}
-                </th>
-                <td class="px-6 py-4">
-                    {%for produit in commande.1%}
-                    {{produit.1}} {{produit.0}} <br>
-                    {%endfor%}
-              </td>
+      <table class="w-full text-sm text-left rtl:text-right text-secondary">
+        <thead class="text-xs text-gray-700 uppercase bg-orangemoinsclair">
+          <tr>
+            <th scope="col" class="px-6 py-3">Date de la commande</th>
+            <th scope="col" class="px-6 py-3">Contenu de la commande</th>
+            <th scope="col" class="px-6 py-3">Total</th>
+            <th scope="col" class="px-6 py-3"></th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for commande in historique %}
+            <tr class="bg-white border-b">
+              <th scope="row"
+                  class="px-6 py-4 font-medium text-secondary whitespace-nowrap">{{ commande.date }}</th>
               <td class="px-6 py-4">
-                {{commande.2|floatformat:-2}}€
-                </td>
-                <td class="px-6 py-4">
-                    {%if commande.3%}
-                  
-                    {%else%}
-                        <a href="del-order/{{commande.4}}" class="hover:text-primary duration-500">Supprimer</a>
-                    {%endif%}
-                </td>
-              </tr>
-              {%endfor%}
-            </tbody>
-        </table>
-      </div>
-</body>
+                {% for produit in commande.produits %}
+                  {{ produit.1 }} {{ produit.0 }}
+                  <br>
+                {% endfor %}
+              </td>
+              <td class="px-6 py-4">{{ commande.total|floatformat:-2 }}€</td>
+              <td>
+                {% if not not commande.passe %}
+                  <a href="del-order/{{ commande.id }}">
+                    <button class="w-10 h-10 xl:block bg-inherit border-primary text-primary font-montserrat rounded-full inline-block box-border border-2 rounded-x1 hover:bg-primary hover:text-white duration-200 font-bold align-middle">
+                      ✕
+                    </button>
+                  </a>
+                {% endif %}
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+{% endblock content %}
