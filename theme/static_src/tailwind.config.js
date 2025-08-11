@@ -69,6 +69,9 @@ module.exports = {
                     DEFAULT: "#f4dcdc"
                 }
             },
+            listStyleType: {
+                circle: 'circle',
+            },
         },
         fontFamily: {
             montserrat: ['Montserrat', 'sans-serif'],

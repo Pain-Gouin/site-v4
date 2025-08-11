@@ -13,6 +13,15 @@ Ce site a été développé à l'aide du framework Django. C'est un framework Py
 
 En ce qui concerne le style, le site utilise Tailwind CSS et l'implémente dans le projet à l'aide de library django-tailwind. Encore une fois, [la documentation officielle](https://tailwindcss.com/docs/installation) de Tailwind CSS est de très bonne qualité. 
 
+## Guide de passations
+Lors d'une passation du bureau, il est nécessaire de mettre à jour certaines informations du site. Toutes les modifications peuvent se faire directement depuis GitHub, avec des connaissances simple en HTML.
+
+Il faut mettre à jour la page des mentions légales, avec le nouveau responsable de la publication, et le nouveau responsable web. Cela se fait [ici](https://github.com/Pain-Gouin/site-v4/blob/master/commande/templates/commande/mentions.html), en éditant le fichier depuis l'interface web.
+
+Il faut ensuite déployer les changements, en poussant les modifications sur la branche de production. Pour se faire, aller [ici](https://github.com/Pain-Gouin/site-v4/compare/prod...master), cliquer sur `Create pull request`, puis confirmer la création du pull request.
+
+Il ne vous reste plus qu'à confirmer le Pull request, ce qui mettra à jour la branche `prod`. Les changements devraient alors automatiquement être mise à jour sur le site en production, après **Insérer ici la durée quand ce sera opérationnel**.
+
 ## Comment développer sur le site ?
 
 Pour apporter des modifications sur le site, voici un petit tutoriel. J'utilise ici la distribution Ubuntu (mais rien ne change sous Windows généralement). Il faut vous assurez de posséder sur votre machine Git et Python. Créer un dossier spécial pour le projet. 
