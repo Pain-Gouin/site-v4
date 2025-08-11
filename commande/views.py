@@ -139,12 +139,11 @@ def commande(request):
 
         total_commande = 0
         
-        for i in range(1,len(produit_query)+1):
-            product = produit_query[i-1].nom
-            quantity = request.POST["quantity" + str(i)]
-            total_commande += int(quantity)*produit_query[i-1].prix
+        for prod in produit_query:
+            quantity = request.POST["quantity" + str(prod.id)]
+            total_commande += int(quantity)*prod.prix
             if int(quantity) > 0:
-                order.append([product, quantity])
+                order.append([prod.nom, quantity])
         order = json.dumps(order)
 
         if total_commande > solde:
