@@ -16,10 +16,13 @@ import os
 from django.urls import reverse_lazy
 from django.utils.translation import gettext_lazy as _
 
+def str_to_bool(s):
+    return str(s).lower() in ['true', '1', 'yes']
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
+ 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
@@ -27,12 +30,11 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-=5sf8@fhdxzr8(c!%-5xx1!5x6x07$%vc^0rr&$4ljgh&v5!w%'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = bool(os.getenv("DEBUG", 0))
+DEBUG = str_to_bool(os.getenv("DEBUG", "0"))
 
 ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS","paingouin.rezoleo.fr, www.paingouin.rezoleo.fr").split(",")
 
 CSRF_TRUSTED_ORIGINS = os.environ.get("DJANGO_CSRF_TRUSTED_ORIGINS","https://paingouin.rezoleo.fr").split(",")
-
 
 
 # Application definition
@@ -48,6 +50,8 @@ INSTALLED_APPS = [
     "whitenoise.runserver_nostatic",
     'django.contrib.staticfiles',
     'tailwind',
+    'django_yubin',
+    'django_mjml_template',
     'theme',
     "commande",
 ]
@@ -68,7 +72,7 @@ ROOT_URLCONF = 'paingouin.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / "templates"],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -93,7 +97,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.{}'.format(os.getenv('DATABASE_ENGINE', 'mysql')),
         'NAME': os.getenv('DATABASE_NAME', 'paingouin'),
         'HOST': os.getenv('DATABASE_HOST', 'mysql.rezoleo.fr'),
-        'PORT': os.getenv('DATABASE_PORT', 3306),
+        'PORT': os.getenv('DATABASE_PORT', '3306'),
         'USER': os.getenv('DATABASE_USERNAME', 'paingouin'),
         'PASSWORD': os.getenv('DATABASE_PASSWORD', '***REMOVED***'),
         'OPTIONS':{
@@ -166,13 +170,14 @@ LOGIN_URL = 'login'
 MEDIA_URL = "/media/"
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media').replace('\\', '/')
 
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_USE_TLS = True
-EMAIL_USE_SSL = False
-EMAIL_HOST = 'ssl0.ovh.net'
-EMAIL_PORT = 587
-EMAIL_HOST_USER = 'contact@ic-art.fr'
-EMAIL_HOST_PASSWORD = 'Demarchage'
+EMAIL_BACKEND = 'django_yubin.backends.QueuedEmailBackend'
+MAILER_USE_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_USE_TLS = str_to_bool(os.getenv("EMAIL_USE_TLS", "0"))
+EMAIL_USE_SSL = str_to_bool(os.getenv("EMAIL_USE_SSL", "0"))
+EMAIL_HOST = os.getenv('EMAIL_HOST', 'smtp.rezoleo.fr')
+EMAIL_PORT = int(os.getenv('EMAIL_PORT', '69'))
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST', 'noreply@paingouin.rezoleo.fr')
+EMAIL_HOST_PASSWORD =  os.getenv('EMAIL_HOST_PASSWORD', '42')
 
 UNFOLD = {
     "SITE_TITLE":"Panel administrateur de Pain'Gouin",
@@ -270,7 +275,23 @@ UNFOLD = {
 }
 
 STORAGES = {
+    "default": {
+        "BACKEND": "django.core.files.storage.FileSystemStorage",
+    },
     "staticfiles": {
         "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage"
     }
 }
+
+CELERY_BROKER_URL = (
+    "amqp://"
+    + os.getenv("RABBITMQ_USER", "paingouin")
+    + ":"
+    + os.getenv("RABBITMQ_PASS", "xGmyRq8J5CSUT0fgD3m9iGgVs")
+    + "@"
+    + os.getenv("RABBITMQ_HOST", "rabbitmq")
+    + ":"
+    + os.getenv("RABBITMQ_PORT", "5672")
+    + "/"
+    + os.getenv("RABBITMQ_VHOST", "paingouinvhost")
+)

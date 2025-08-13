@@ -116,16 +116,7 @@ def commande(request):
     categorie_query = CategorieProduit.objects.all()
     successOrder = request.GET.get('successOrder',False)
 
-    number_of_product = len(produit_query)
-
-    produit = []
-
-    for i in range(number_of_product):
-        a = forms.ProductOrderForm()
-        temp = []
-        temp.append(produit_query[i])
-        temp.append(a)
-        produit.append(temp)
+    produit = produit_query
 
     if request.method == 'POST':
         if request.user.is_authenticated:
@@ -133,11 +124,14 @@ def commande(request):
             solde = request.user.credit
 
         total_commande = 0
-        
+
+        bought_prod = []
         for prod in produit_query:
             quantity = request.POST["quantity" + str(prod.id)]
+            print(produit_query)
             total_commande += int(quantity)*prod.prix
             if int(quantity) > 0:
+                bought_prod.append({"object": prod, "quantity": quantity, "price": int(quantity)*prod.prix})
                 order.append([prod.nom, quantity])
         order = json.dumps(order)
 
@@ -160,10 +154,13 @@ def commande(request):
             convert_to_html_content =  render_to_string(
                 template_name=template_name,
                 context = {
-                    'prenom':request.user.first_name,
+                    'prenom': request.user.first_name,
                     'date': date,
-                    'commande':json.loads(order),
-                    'total':total_commande
+                    'commande': bought_prod,
+                    'total': total_commande,
+                    'chambre': chambre,
+                    "request": request,
+                    "media_url": settings.MEDIA_URL
                 }
             )
             plain_message = strip_tags(convert_to_html_content)

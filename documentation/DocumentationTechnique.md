@@ -77,3 +77,38 @@ Avant "déploiement", il est nécessaire d'utiliser la commande `python manage.p
 La version [2.5.2](https://github.com/themesberg/flowbite/tree/v2.5.2) de Flowbite est utilisée (la dernière compatible avec Tailwind V3).  
 Elle a été incluse comme plugin tailwind (via la commande `python manage.py tailwind plugin_install flowbite@2.5.2`), ce qui permet d'inclure le CSS optimisé en même temps que celui de Tailwind.  
 Par ailleurs, le javascript nécessaire au bon fonctionnement des interactions est inclus via un CDN, dans le head des pages.
+
+
+## Email
+Holala... quelle galère... Rien que les e-mails augmente la complexité du déploiement de beaucoup... (3 conteneurs au lieu d'un !)
+
+Les mails utilisent la librairie [django-yubin](https://github.com/APSL/django-yubin). Elle permet l'envoi de mails de façon asynchrone, ce qui permet d'éviter qu'une page ne soit plus réactive en cas de problème avec le serveur mail, et également d'afficher les mails envoyés dans le panel administrateur.
+
+Son utilisation nécessite l'usage de [celery](https://docs.celeryq.dev/en/stable/index.html), un système permettant l'éxecution de tâches programmées, qui nécessite un serveur de message : Redis ou [RabbitMQ](https://www.rabbitmq.com/) (le choix de RabbitMQ a été fait ici ~~afin de se compliquer encore plus la vie~~ sur conseil de la doc de celery).
+
+Si vous voulez pouvoir faire du développement en local, il vous faut donc installer RabbitMQ, le configurer et lancer le serveur. Ce n'est pas évident et le lancement du serveur n'est pas automatisé. Je conseille donc plutôt d'utiliser le docker compose pour cela, qui inclut directement RabbitMQ, ainsi que [MailPit](https://github.com/axllent/mailpit) qui permet de tester la réception d'e-mails.
+
+Si vous voulez vraiment vous embêter à installer l'environnement de dev en local, voici les commandes qu'il a fallu que je fasse :
+```console
+sudo apt-get install rabbitmq-server
+sudo rabbitmqctl add_user paingouin xGmyRq8J5CSUT0fgD3m9iGgVs
+sudo rabbitmqctl add_vhost paingouinvhost
+sudo rabbitmqctl set_permissions -p paingouinvhost paingouin ".*" ".*" ".*"
+```
+Il faut ensuite s'assurer que le settings.py est bien rempli :
+```python
+CELERY_BROKER_URL = 'amqp://paingouin:xGmyRq8J5CSUT0fgD3m9iGgVs@localhost:5672/paingouinvhost'
+```
+et lancer le serveur RabbitMQ :
+```console
+sudo rabbitmq-server
+```
+Je ne promets pas que cela suffira, ni que ça ne cassera pas.
+
+Dû à une incompatibilité entre Unfold et django-yubin, le dossier [templates](../templates/) permet de forcer une des vues de django-yubin à utiliser l'interface originale administrateur. Ce n'est pas très beau, mais ça fonctionne. Il ne faut pas oublier de mettre à jour ces fichiers si yubin ou Django est un jour mis à jour.
+
+## Template pour les emails
+Le language de templating [MJML](https://mjml.io/) est utilisé pour l'écriture des emails. Il est intégré dans Django à l'aide de l'extension [django-mjml-template](https://github.com/Cruel/django-mjml-template), qui est une combinaison de [mjml-python](https://github.com/mgd020/mjml-python) et [django-mjml](https://github.com/liminspace/django-mjml): il utilise une version Rust de MJML, afin de ne pas avoir à utiliser Node.  
+Si un jour django-mjml est mis à jour pour supporter la port Rust de MJML, il pourrait être judicieux de basculer sur cette extension.
+
+Pour facilement éditer les templates de mail, vous pouvez soit utiliser l'extension VS Code [MJML Official](https://marketplace.visualstudio.com/items?itemName=mjmlio.vscode-mjml), ou utiliser le [live editor](https://mjml.io/try-it-live) sur le site de MJML.

@@ -1,175 +1,192 @@
+{% extends "commande/base.html" %}
 {% load static %}
-{% load static tailwind_tags %}
-{% load widget_tweaks %}
-
-<head>
-    <link rel="stylesheet" href="{%static 'style.css'%}">
-   <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Lobster&display=swap" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/flowbite@2.5.2/dist/flowbite.min.js"></script>
-
-
-    <title>Pain'Gouin</title>
-
-    <link rel="shortcut icon" href="{%static 'logo/logo.ico'%}" type="image/x-icon">
-    {% tailwind_css %}
-
-</head>
-
-{%if user.is_authenticated%}
-        <header>
-            <div class="shadow grid xl:grid-cols-3 bg-white xl:h-44 top-0 left-0 right-0 z-40 content-center items-stretch	">
-                <div class="w-40 justify-self-center">
-                    <a href="{%url 'index' %}"><img src="{%static 'logo/logo.webp'%}" alt="logo"></a>
-                </div>
-                <div class="xl:pt-16 justify-self-center pt-4">
-                    <div class="align-middle">
-                        <p class="text-black text-5xl font-bold tracking-wide font-lobster text-secondary">Pain'Gouin</p>
-                    </div>
-                </div>
-                <div class="justify-self-center content-center items-center gap-7">
-                    <button id="dropdownInformationButton" data-dropdown-toggle="dropdownInformation" class="font-montserrat hover:text-primary duration-500 rounded-lg px-5 py-2.5 text-center inline-flex items-center xl:text-base text-2xl" type="button">Bienvenue {{user.first_name}},&nbsp <b>ton solde est de {{user.credit|floatformat:-2}}€</b> <svg class="w-2.5 h-2.5 ms-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
-                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 4 4 4-4"/>
+{% block content %}
+    <div class="font-montserrat content-center">
+        <h1 class="text-4xl text-secondary text-center py-10">Votre commande :</h1>
+        <form method="post">
+            {% csrf_token %}
+            <div class="flex flex-row  place-content-center">
+                {% if errorFondInsuffisant %}
+                    <div id="alert-1"
+                         class="flex items-center p-4 mb-4 text-yellow-800 border border-yellow-400 rounded-lg bg-yellow-50"
+                         role="alert">
+                        <svg class="flex-shrink-0 w-4 h-4"
+                             aria-hidden="true"
+                             xmlns="http://www.w3.org/2000/svg"
+                             fill="currentColor"
+                             viewBox="0 0 20 20">
+                            <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z" />
                         </svg>
-                    </button>
-          
-                    <div id="dropdownInformation" class="z-10 hidden bg-white divide-y divide-gray-100 rounded-lg shadow xl:w-44 font-montserrat">
-                        <div class="px-4 py-3 xl:text-sm text-xl text-gray-900">
-                          <div>{{user.first_name}} {{user.last_name}}</div>
-                          <div class="font-medium truncate">{{user.username}}</div>
+                        <span class="sr-only">Info</span>
+                        <div class="ms-3 text-sm font-medium">
+                            Fond insuffisant, veuillez <a href="/404" class="font-semibold underline hover:no-underline">recharger votre compte</a> !
                         </div>
-                        <ul class="py-2 xl:text-sm text-xl text-gray-700" aria-labelledby="dropdownInformationButton">
-                            {%if user.is_staff%}
-                          <li>
-                            <a href="admin/login" class="block px-4 py-2 hover:bg-quaternary">Panel administrateur</a>
-                          </li>
-                            {%endif%}
-                            {%if user.isLivreur%}
-                            <li>
-                              <a href="{%url 'livreur'%}" class="block px-4 py-2 hover:bg-quaternary">Espace livreur</a>
-                            </li>
-                              {%endif%}
-                              <li>
-                                <a href="{%url 'historique'%}" class="block px-4 py-2 hover:bg-quaternary">Historique des commandes</a>
-                              </li>
-                          <li>
-                            <a href="{%url 'update'%}" class="block px-4 py-2 hover:bg-quaternary">Options</a>
-                          </li>
-          
-                        </ul>
-                        <div class="py-2">
-                          <a href="logout" class="block px-4 py-2 xl:text-sm text-xl  text-gray-700 hover:bg-quaternary">Se déconnecter</a>
-                        </div>
-                    </div>
-                          <div><a href="{%url 'commande'%}"><button class="xl:w-96 w-full bg-inherit border-primary text-primary font-montserrat rounded-lg inline-block box-border border-2 rounded-x1 hover:bg-primary hover:text-white duration-1000 h-12 font-bold align-middle">Passer une commande !</button></a></div>
-                      </div>
-              </div>
-        </header>
-        {%else%}
-        <header>
-            <div class="shadow grid xl:grid-cols-3 bg-white xl:h-44 top-0 left-0 right-0 z-40 content-center items-stretch	">
-                <div class="w-40 justify-self-center">
-                    <a href="{%url 'index' %}"><img src="{%static 'logo/logo.webp'%}" alt="logo"></a>
-                </div>
-                <div class="xl:pt-16 justify-self-center pt-4">
-                    <div class="align-middle">
-                        <p class="text-black text-5xl font-bold tracking-wide font-lobster text-secondary">Pain'Gouin</p>
-                    </div>
-                </div>
-                <div class="justify-self-center content-center">
-                   <div><a href="login"><button class="w-96 bg-inherit border-primary text-primary font-montserrat rounded-lg inline-block box-border border-2 rounded-x1 hover:bg-primary hover:text-white duration-1000 h-12 font-bold align-middle">Commander votre pain dès maintenant !</button></a></div>
-                </div>
-            </div>
-        </header>
-{%endif%}
-
-<body class="font-montserrat bg-quaternary">
-    <h1 class="text-4xl text-secondary text-center py-10">Votre commande :</h1>
-    <form method="POST">
-    {% csrf_token %}
-    {%if errorFondInsuffisant%}
-    <div id="alert-4" class="flex items-center p-4 mb-4 text-yellow-800 rounded-lg bg-yellow-50" role="alert">
-        <svg class="flex-shrink-0 w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
-      <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z"/>
-    </svg>
-    <span class="sr-only">Info</span>
-    <div class="ms-3 text-sm font-medium">
-      Fond insuffisant, veuillez recharger votre compte !
-    </div>
-</div>
-    {%endif%}
-    {%if successOrder%}
-    <div id="alert-4" class="flex items-center p-4 mb-4 text-green-800 rounded-lg bg-green-50" role="alert">
-        <svg class="flex-shrink-0 w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
-      <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z"/>
-    </svg>
-    <span class="sr-only">Info</span>
-    <div class="ms-3 text-sm font-medium">
-      Commande bien prise en compte, pense à mettre un sac devant ta porte !
-    </div>
-</div>
-    {%endif%}
-    {%for cat in categorie%}
-    <h1 class="text-3xl text-primary text-center py-5 font-bold">{{cat.nom}}</h1>
-    <div class="flex flex-row  place-content-center">
-    <div class="grid xl:grid-cols-3 max-w-screen-xl justify-items-center gap-10 py-10">
-    {%for prod in produit%}
-        {%if prod.0.categorie.nom == cat.nom%}
-            <div class="grid pb-5 justify-items-center">
-                <p class="text-xl text-secondary text-center font-semibold pb-3">{{prod.0.nom}}</p>
-                <div><img src="{{MEDIA_URL}}{{prod.0.image}}" alt="image produit" class="rounded-lg h-96 w-full max-h-96 object-fill max-w-screen-lg xl:pb-0"></div>
-                <p class="text-xl font-bebas text-center pt-2">Prix : {{prod.0.prix|floatformat:-2}}€</p>
-                <label for="quantity-input" class="block mb-2 font-medium text-gray-900 text-center pt-2">Quantité :</label>
-                    <div class="relative flex items-center max-w-[8rem]">
-                        <button type="button" id="decrement-button" data-input-counter-decrement="id_quantity{{prod.0.id}}" class="bg-orangemoinsclair hover:bg-orangeclair border border-secondary rounded-s-lg p-3 h-11 focus:ring-gray-100 focus:ring-2 focus:outline-none">
-                            <svg class="w-3 h-3 text-secondary" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 2">
-                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 1h16"/>
-                            </svg>
-                        </button>
-                        <input type="text" name="quantity{{prod.0.id}}" data-input-counter value="0" data-input-counter-min="0" data-input-counter-max="20" class="bg-gray-50 border-x-0 border-secondary h-11 text-center text-secondary text-sm focus:ring-primary focus:border-primary block w-full py-2.5" required="" id="id_quantity{{prod.0.id}}">
-                        <button type="button" id="increment-button" data-input-counter-increment="id_quantity{{prod.0.id}}" class="bg-orangemoinsclair hover:bg-orangeclair border border-secondary rounded-e-lg p-3 h-11 focus:ring-gray-100 focus:ring-2 focus:outline-none">
-                            <svg class="w-3 h-3 text-secondary" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 18">
-                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 1v16M1 9h16"/>
+                        <button type="button"
+                                class="ms-auto -mx-1.5 -my-1.5 bg-yellow-50 text-yellow-500 rounded-lg focus:ring-2 focus:ring-yellow-400 p-1.5 hover:bg-yellow-200 inline-flex items-center justify-center h-8 w-8 dark:bg-gray-800 dark:text-yellow-400 dark:hover:bg-gray-700"
+                                data-dismiss-target="#alert-1"
+                                aria-label="Close">
+                            <span class="sr-only">Close</span>
+                            <svg class="w-3 h-3"
+                                 aria-hidden="true"
+                                 xmlns="http://www.w3.org/2000/svg"
+                                 fill="none"
+                                 viewBox="0 0 14 14">
+                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
                             </svg>
                         </button>
                     </div>
+                {% elif successOrder %}
+                    <div id="alert-2"
+                         class="flex items-center p-4 mb-4 text-green-800 border border-green-300 rounded-lg bg-green-50 dark:bg-gray-800 dark:text-green-400"
+                         role="alert">
+                        <svg class="shrink-0 w-4 h-4"
+                             aria-hidden="true"
+                             xmlns="http://www.w3.org/2000/svg"
+                             fill="currentColor"
+                             viewBox="0 0 20 20">
+                            <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z" />
+                        </svg>
+                        <span class="sr-only">Info</span>
+                        <div class="ms-3 text-sm font-medium">
+                            Commande bien prise en compte, pense à mettre un sac devant ta porte !  <a href="{% url 'historique' %}"
+     class="font-semibold underline hover:no-underline">Annuler la commande</a>
+                        </div>
+                        <button type="button"
+                                class="ms-auto -mx-1.5 -my-1.5 bg-green-50 text-green-500 rounded-lg focus:ring-2 focus:ring-green-400 p-1.5 hover:bg-green-200 inline-flex items-center justify-center h-8 w-8 dark:bg-gray-800 dark:text-green-400 dark:hover:bg-gray-700"
+                                data-dismiss-target="#alert-2"
+                                aria-label="Close">
+                            <span class="sr-only">Close</span>
+                            <svg class="w-3 h-3"
+                                 aria-hidden="true"
+                                 xmlns="http://www.w3.org/2000/svg"
+                                 fill="none"
+                                 viewBox="0 0 14 14">
+                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
+                            </svg>
+                        </button>
+                    </div>
+                {% endif %}
             </div>
-        {%endif%}
-    {%endfor%}
+            {% for cat in categorie %}
+                <h1 class="text-3xl text-primary text-center py-5 font-bold">{{ cat.nom }}</h1>
+                <div class="flex flex-row  place-content-center">
+                    <div class="grid xl:grid-cols-3 max-w-screen-xl justify-items-center gap-10 py-10">
+                        {% for prod in produit %}
+                            {% if prod.categorie.nom == cat.nom %}
+                                <div class="grid pb-5 justify-items-center">
+                                    <p class="text-xl text-secondary text-center font-semibold pb-3">{{ prod.nom }}</p>
+                                    <div>
+                                        <img src="{{ MEDIA_URL }}{{ prod.image }}"
+                                             alt="image produit"
+                                             class="rounded-lg h-96 w-full max-h-96 object-fill max-w-screen-lg xl:pb-0">
+                                    </div>
+                                    <p class="text-xl font-bebas text-center pt-2">Prix : {{ prod.prix|floatformat:-2 }}€</p>
+                                    <label for="quantity-input"
+                                           class="block mb-2 font-medium text-gray-900 text-center pt-2">
+                                        Quantité :
+                                    </label>
+                                    <div class="relative flex items-center max-w-[8rem]">
+                                        <button type="button"
+                                                id="decrement-button"
+                                                data-input-counter-decrement="id_quantity{{ prod.id }}"
+                                                class="bg-orangemoinsclair hover:bg-orangeclair border border-secondary focus:border-primary rounded-s-lg p-3 h-11 *:text-secondary *:active:text-primary"
+                                                style="outline: none">
+                                            <svg class="w-3 h-3"
+                                                 aria-hidden="true"
+                                                 xmlns="http://www.w3.org/2000/svg"
+                                                 fill="none"
+                                                 viewBox="0 0 18 2">
+                                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 1h16" />
+                                            </svg>
+                                        </button>
+                                        <input type="text"
+                                               name="quantity{{ prod.id }}"
+                                               data-input-counter
+                                               value="0"
+                                               data-input-counter-min="0"
+                                               data-input-counter-max="20"
+                                               class="bg-gray-50 border-x-0 border-secondary h-11 text-center text-secondary text-sm focus:ring-primary focus:border-primary block w-full py-2.5"
+                                               required=""
+                                               id="id_quantity{{ prod.id }}">
+                                        <button type="button"
+                                                id="increment-button"
+                                                data-input-counter-increment="id_quantity{{ prod.id }}"
+                                                class="bg-orangemoinsclair hover:bg-orangeclair border border-secondary rounded-e-lg p-3 h-11 focus:border-primary *:text-secondary *:active:text-primary"
+                                                style="outline: none">
+                                            <svg class="w-3 h-3"
+                                                 aria-hidden="true"
+                                                 xmlns="http://www.w3.org/2000/svg"
+                                                 fill="none"
+                                                 viewBox="0 0 18 18">
+                                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 1v16M1 9h16" />
+                                            </svg>
+                                        </button>
+                                    </div>
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endfor %}
+            <div class="flex flex-row place-content-center items-center gap-3">
+                <label for="chambre" class="block mb-2 text-sm font-medium text-gray-900">Chambre à livrer :</label>
+                <input type="text"
+                       name="chambre"
+                       class=" max-w-32 font-montserrat w-full p-2 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 text-sm focus:ring-secondary focus:border-secondary"
+                       value="{{ user.chambre }}">
+            </div>
+            <div class="flex flex-row place-content-center items-center gap-3 py-3">
+                <label for="date" class="block mb-2 text-sm font-medium text-gray-900">Date de la livraison :</label>
+                <select name="date"
+                        type="text"
+                        class=" max-w-44 font-montserrat w-full p-2 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 text-sm focus:ring-secondary focus:border-secondary">
+                    {% for liv in livraison %}
+                        <option value={{ liv.id }}>{{ liv.date }}
+                        </option>
+                    {% endfor %}
+                </select>
+                <button data-popover-target="popover-right"
+                        data-popover-placement="right"
+                        type="button">
+                    <svg class="w-6 h-6 ms-2 text-primary hover:brightness-75"
+                         aria-hidden="true"
+                         fill="currentColor"
+                         viewBox="0 0 20 20"
+                         xmlns="http://www.w3.org/2000/svg">
+                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd">
+                        </path>
+                    </svg>
+                    <span class="sr-only">Show information</span>
+                </button>
+                <div data-popover
+                     id="popover-right"
+                     role="tooltip"
+                     class="absolute z-10 invisible inline-block text-sm text-gray-500 transition-opacity duration-300 bg-white border border-gray-200 rounded-lg shadow-xs opacity-0 w-72 dark:bg-gray-800 dark:border-gray-600 dark:text-gray-400">
+                    <div class="p-3 space-y-2">
+                        <p>Il est possible de commander pour le jour même jusqu'à 7h du matin.</p>
+                        <p>
+                            Il arrive qu'une date de livraison ait été oubliée. Si vous pensez que c'est le cas, contactez un membre de l'asso.
+                        </p>
+                        <a href="/404"
+                           class="flex items-center font-medium text-blue-600 dark:text-blue-500 dark:hover:text-blue-600 hover:text-blue-700 hover:underline">Contacter un membre de l'asso
+                            <svg class="w-2 h-2 ms-1.5 rtl:rotate-180"
+                                 aria-hidden="true"
+                                 xmlns="http://www.w3.org/2000/svg"
+                                 fill="none"
+                                 viewBox="0 0 6 10">
+                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 9 4-4-4-4" />
+                            </svg>
+                        </a>
+                    </div>
+                    <div data-popper-arrow></div>
+                </div>
+            </div>
+            <div class="flex justify-center flex-row py-10">
+                <button type="submit"
+                        class="w-96 bg-inherit border-primary text-primary font-montserrat rounded-lg inline-block box-border border-2 rounded-x1 hover:bg-primary hover:text-white duration-1000 h-12 font-bold align-middle">
+                    Passer commande
+                </button>
+            </div>
+        </form>
     </div>
-    </div>
-    {%endfor%}
-    <div class="flex flex-row place-content-center items-center gap-3">
-        <label for="chambre" class="block mb-2 text-sm font-medium text-gray-900">Chambre à livrer :</label>
-        <input type="text" name="chambre" class=" max-w-32 font-montserrat w-full p-2 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 text-sm focus:ring-secondary focus:border-secondary" value={{user.chambre}}>
-    </div>
-    <div class="flex flex-row place-content-center items-center gap-3 py-3">
-        <label for="date" class="block mb-2 text-sm font-medium text-gray-900">Date de la livraison :</label>
-        <select name="date" type="text" class=" max-w-44 font-montserrat w-full p-2 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 text-sm focus:ring-secondary focus:border-secondary">
-            {%for liv in livraison%}
-            <option value={{liv.id}}>{{liv.date}}</option>
-            {%endfor%}
-        </select>
-    </div>
-    <div class="flex justify-center flex-row py-10">
-        <button type="submit" class="w-96 bg-inherit border-primary text-primary font-montserrat rounded-lg inline-block box-border border-2 rounded-x1 hover:bg-primary hover:text-white duration-1000 h-12 font-bold align-middle">Passer commande</button>
-    </div>
-</form>
-</body>
-
-{%block footer%}
-<footer class="grid grid-cols-3 text-center font-montserrat">
-    <div>
-        Association Pain'Gouin
-    </div>
-
-    <div>
-        <a href="{%url 'mentions'%}" class="hover:text-primary duration-500">Mentions Légales</a> - <a href="https://www.facebook.com/pain.gouin.372" class="hover:text-primary duration-500">Nous contacter</a>
-    </div>
-
-    <div>
-        Réalisé en 2024 par <a href="https://github.com/mrimbert" class="hover:text-primary duration-500">Mathis Rimbert</a>
-    </div>
-</footer>
-{%endblock%}
+{% endblock content %}

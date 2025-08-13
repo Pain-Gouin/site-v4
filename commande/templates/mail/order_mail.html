@@ -1,42 +1,62 @@
-<!DOCTYPE html>
-<html>
-    <h1>Votre commande Pain'Gouin a bien été prise en compte !</h1>
-    <p>Bonjour {{prenom}},</p>
+{% extends "mail/base_mail.html" %}
+{% load mjml %}
+{% load static %}
+{% mjml %}
+{% block content %}
+<mj-section mj-class="color-quaternary" text-align="center">
+  <mj-column>
+      <mj-text align="center"><strong>Merci pour ta commande {{ prenom }}, pense à mettre un sac devant ta porte !</strong></mj-text>
+    </mj-column>
+</mj-section>
 
-    <p>Ta commande Pain'Gouin pour la livraison du {{date}} a bien été enregistrée.</p>
-
-    Résumé de la commande :
-    <table>
-        <thead>
-            <tr>
-                <th>
-                    Produit
-                </th>
-                <th>
-                    Quantité
-                </th>
-            </tr>
-        </thead>
-        <tbody>
-            {%for comm in commande%}
-            <tr>
-            <th>
-                {{comm.0}}
-            </th>
-            <th>
-                {{comm.1}}
-            </th>
-            </tr>
-            {%endfor%}
-        </tbody>
-    </table> 
-
-    <p>Total de la commande : {{total|floatformat:-2}}€</p>
-
-    <p>En cas de problème lors de la livraison, n'hésite pas à t'adresser à un membre du bureau de l'association.</p>
-
-    <p>Bon petit-déjeuner à toi ! <br>
-        Pain'Gouin
-    </p>
-
-</html>
+<!-- Articles -->
+{% for prod in commande %}
+<mj-section mj-class="color-quaternary" text-align="center">
+  <mj-column width="30%" vertical-align="middle">
+    <mj-image border-radius="8px" width="150px" align="left" src="{{ request.scheme }}://{{ request.get_host }}{{ media_url }}{{ prod.object.image }}" />
+  </mj-column>
+  <mj-group vertical-align="middle" width="70%">
+    <mj-column>
+      <mj-text align="left">
+        <strong>{{ prod.object.nom }}</strong><br />
+        Tranché&nbsp;: n/a<br />
+        Quantité&nbsp;: {{ prod.quantity }}
+      </mj-text>
+    </mj-column>
+    <mj-column>
+      <mj-text font-family="Bebas Neue, sans-serif" align="right">Prix : {{ prod.price|floatformat:-2 }}€</mj-text>
+    </mj-column>
+  </mj-group>
+</mj-section>
+{% endfor %}
+<!-- Divider -->
+<mj-section mj-class="color-quaternary" padding="0">
+  <mj-column>
+    <mj-divider mj-class="divider-simple" />
+  </mj-column>
+</mj-section>
+<!-- Delivery date and Total amount -->
+<mj-section mj-class="color-quaternary" padding="0" >
+  <mj-column width="66%" vertical-align="top" >
+    <mj-text padding-top="0">
+      Date de livraison&nbsp;: {{ date }}<br />
+      Chambre&nbsp;: {{ chambre }}
+    </mj-text>
+  </mj-column>
+  <mj-column width="34%">
+    <mj-text align="right" padding-top="0">
+      Total&nbsp;: {{ total|floatformat:-2 }}€
+    </mj-text>
+  </mj-column>
+</mj-section>
+<!-- Modifier sa commande -->
+<mj-section mj-class="color-quaternary">
+  <mj-column width="60%" vertical-align="middle">
+    <mj-text align="center">Tu peux annuler cette commande ou en faire une nouvelle jusqu'au matin même 7h&nbsp;:</mj-text>
+  </mj-column>
+  <mj-column width="35%" vertical-align="middle">
+    <mj-button mj-class="color-primary" color="#FFFFFF" border-radius="8px" href="{{ request.scheme }}://{{ request.get_host }}{% url 'historique' %}"><strong>Voir mes commandes</strong></mj-button>
+  </mj-column>
+</mj-section>
+{% endblock content %}
+{% endmjml %}

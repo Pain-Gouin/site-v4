@@ -1,0 +1,43 @@
+{% load mjml %}
+{% load static %}
+{% mjml %}
+<mjml lang="fr">
+  <mj-head>
+    <mj-font name="Lobster" href="https://fonts.googleapis.com/css?family=Lobster" />
+    <mj-font name="Montserrat" href="https://fonts.googleapis.com/css?family=Montserrat" />
+    <mj-font name="Bebas Neue" href="https://fonts.googleapis.com/css?family=Bebas+Neue" />
+    <mj-attributes>
+      <mj-class name="color-primary" color="#ffb22e" background-color="#ffb22e" />
+      <mj-class name="color-secondary" color="#2f281e" background-color="#2f281e" />
+      <mj-class name="color-tertiary" color="#eca054" background-color="#eca054" />
+      <mj-class name="color-quaternary" color="#FFF6F6" background-color="#FFF6F6" />
+      <mj-class name="divider-simple" border-width="1px" border-style="solid" border-color="#999999" padding-top="15px" padding="0 25px 10px 25px" />
+      <mj-all font-family="Montserrat, sans-serif" />
+    </mj-attributes>
+  </mj-head>
+  <mj-body>
+    {% block header %}
+    <mj-section background-color="#ffffff" padding="0">
+      <mj-column vertical-align="middle" width="33.33333333333%">
+        <mj-image src="{{ request.scheme }}://{{ request.get_host }}{% static 'logo/logo.webp' %}" />
+      </mj-column>
+      <mj-column vertical-align="middle" width="66.666666666666%">
+        <mj-text font-family="Lobster, sans-serif" font-size="50px" align="center" mj-class="color-secondary"><strong>Pain'Gouin</strong>
+        </mj-text>
+      </mj-column>
+    </mj-section>
+    {% endblock header %}
+
+    {% block content %}
+    {% endblock content %}
+
+    {% block footer %}
+    <mj-section background-color="white" padding-bottom="0">
+      <mj-column>
+        <mj-text color="#9B9B9B" align="center" font-size="11px" padding="0">Si tu ne souhaites plus recevoir ces e-mails, tu peux te désincrire <a style="color: #9B9B9B" href="{{ request.scheme }}://{{ request.get_host }}{% url 'update' %}">ici</a>.</mj-text>
+      </mj-column>
+    </mj-section>
+    {% endblock footer %}
+  </mj-body>
+</mjml>
+{% endmjml %}

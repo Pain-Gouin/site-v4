@@ -45,6 +45,8 @@ INSTALLED_APPS = [
     "whitenoise.runserver_nostatic",
     'django.contrib.staticfiles',
     'tailwind',
+    'django_yubin',
+    'django_mjml_template',
     'theme',
     "commande",
 ]
@@ -65,7 +67,7 @@ ROOT_URLCONF = 'paingouin.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / "templates"],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -163,7 +165,8 @@ LOGIN_URL = 'login'
 MEDIA_URL = "/media/"
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media').replace('\\', '/')
 
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_BACKEND = 'django_yubin.backends.QueuedEmailBackend'
+MAILER_USE_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_USE_TLS = True
 EMAIL_USE_SSL = False
 EMAIL_HOST = 'ssl0.ovh.net'
@@ -267,7 +270,12 @@ UNFOLD = {
 }
 
 STORAGES = {
+    "default": {
+        "BACKEND": "django.core.files.storage.FileSystemStorage",
+    },
     "staticfiles": {
         "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage"
     }
 }
+
+CELERY_BROKER_URL = 'amqp://paingouin:xGmyRq8J5CSUT0fgD3m9iGgVs@localhost:5672/paingouinvhost'

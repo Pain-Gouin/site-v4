@@ -37,3 +37,10 @@ README.md
 README.Docker.md
 documentation/*
 media/
+paingouin/settings.py
+compose.yaml
+media
+assets
+theme/static/css/dist/styles.css
+celerybeat-schedule
+rabbitmq_data
