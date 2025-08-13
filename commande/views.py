@@ -104,6 +104,7 @@ def update_user_page(request):
 @login_required
 def commande(request):
     errorFondInsuffisant = False
+    errorCommandeVide = False
     order = []
 
     current_time = timezone.now()
@@ -137,6 +138,8 @@ def commande(request):
 
         if total_commande > solde:
             errorFondInsuffisant = True
+        elif len(bought_prod) == 0: # Avec la vérification javascript côté client, ce n'est pas sensé être possible
+            errorCommandeVide = True
         else:
             chambre = request.POST["chambre"]
             date = list(Livraison.objects.filter(id = request.POST["date"]))[0].date
@@ -177,7 +180,7 @@ def commande(request):
             return redirect("./commande?successOrder=True")
 
 
-    context = {'produit': produit, 'categorie':categorie_query, 'livraison':livraison_query, "errorFondInsuffisant":errorFondInsuffisant, "successOrder":successOrder}
+    context = {'produit': produit, 'categorie':categorie_query, 'livraison':livraison_query, "errorFondInsuffisant":errorFondInsuffisant, "errorCommandeVide":errorCommandeVide, "successOrder":successOrder}
     return render(request, 'commande/order.html', context)
 
 def add_to_livraison(date, commande):
