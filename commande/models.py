@@ -51,7 +51,7 @@ class LivraisonQuerySet(models.QuerySet):
         current_time = timezone.now()
         today = current_time.date()
 
-        if current_time.time() < time(7, 0):
+        if current_time.time() < time(6, 30):
             qs = self.filter(date__gte=today).order_by("date")
         else:
             qs = self.filter(date__gt=today).order_by("date")
