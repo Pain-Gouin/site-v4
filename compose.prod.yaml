@@ -20,7 +20,7 @@ services:
     container_name: paingouin_prod_celeryworker
     ports: []
     volumes: []
-    entrypoint: celery -A paingouin worker --loglevel=INFO -B
+    entrypoint: celery -A paingouin worker --loglevel=INFO -B --concurrency=2
     depends_on:
       - rabbitmq
 

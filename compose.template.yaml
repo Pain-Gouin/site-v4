@@ -35,7 +35,7 @@ services:
     <<: *django
     ports: []
     volumes: []
-    entrypoint: celery -A paingouin worker --loglevel=INFO -B
+    entrypoint: celery -A paingouin worker --loglevel=INFO -B --concurrency=2
     depends_on:
       - rabbitmq
       - mailpit
