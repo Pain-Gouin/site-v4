@@ -1,13 +1,15 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.decorators import login_required
+from django.contrib import messages
 from django.conf import settings
 from django.core.mail import send_mail
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
+from django.utils.safestring import mark_safe
 from django.contrib.auth.views import PasswordResetView
 from django.contrib.messages.views import SuccessMessageMixin
-from django.urls import reverse_lazy
+from django.urls import reverse_lazy, reverse
 from datetime import datetime, time
 from django.utils import timezone
 
@@ -44,19 +46,20 @@ def login_page(request):
 
 class ResetPasswordView(SuccessMessageMixin, PasswordResetView):
     template_name = 'commande/password_reset.html'
-    email_template_name = 'mail/password_reset_mail.html'
+    html_email_template_name = 'mail/password_reset_mail.html'
     subject_template_name = 'mail/password_reset_subject.txt'
     search_field = ['email']
     from_email = settings.EMAIL_HOST_USER
-    success_message = "We've emailed you instructions for setting your password, " \
-                      "if an account exists with the email you entered. You should receive them shortly." \
-                      " If you don't receive an email, " \
-                      "please make sure you've entered the address you registered with, and check your spam folder."
-    success_url = reverse_lazy("index")
+    success_message = """Si un compte est associé à cette adresse e-mail, un message contenant les instructions pour réinitialiser ton mot de passe vient de t’être envoyé.
+Si tu ne le reçois pas, vérifie que l’adresse saisie est correcte et consulte également tes spams.
+En cas de difficulté persistante, contacte l’association."""
+    success_url = reverse_lazy("password_reset")
+
 
 def logout_user(request):
     logout(request)
     return redirect(index)
+
 
 def signup_page(request):
     form = forms.SignupForm()
@@ -73,6 +76,7 @@ def signup_page(request):
                 template_name=template_name,
                 context = {
                     'prenom':request.user.first_name,
+                    'request':request,
                 }
             )
             plain_message = strip_tags(convert_to_html_content)
@@ -94,17 +98,15 @@ def update_user_page(request):
         form = forms.UpdateForm(data=request.POST, instance=request.user)
         if form.is_valid():
             form.save()
-            return redirect(settings.LOGIN_REDIRECT_URL)
-    else:
-        form = forms.UpdateForm(instance=request.user)
+            messages.success(request, "Profile mise à jour.")
+
+    form = forms.UpdateForm(instance=request.user)
 
     return render(request, "commande/update.html", context={"form":form})
 
 
 @login_required
 def commande(request):
-    errorFondInsuffisant = False
-    errorCommandeVide = False
     order = []
 
     current_time = timezone.now()
@@ -115,7 +117,6 @@ def commande(request):
 
     produit_query = list(Produit.objects.all())
     categorie_query = CategorieProduit.objects.all()
-    successOrder = request.GET.get('successOrder',False)
 
     produit = produit_query
 
@@ -129,7 +130,7 @@ def commande(request):
         bought_prod = []
         for prod in produit_query:
             quantity = request.POST["quantity" + str(prod.id)]
-            print(produit_query)
+
             total_commande += int(quantity)*prod.prix
             if int(quantity) > 0:
                 bought_prod.append({"object": prod, "quantity": quantity, "price": int(quantity)*prod.prix})
@@ -137,9 +138,9 @@ def commande(request):
         order = json.dumps(order)
 
         if total_commande > solde:
-            errorFondInsuffisant = True
+            messages.warning(request, mark_safe('Fond insuffisant, il faut que tu <a href="/404" class="font-semibold underline hover:no-underline">recharges ton compte</a> !'))
         elif len(bought_prod) == 0: # Avec la vérification javascript côté client, ce n'est pas sensé être possible
-            errorCommandeVide = True
+            messages.error(request, "Sélectionne au moins un article !")
         else:
             chambre = request.POST["chambre"]
             date = list(Livraison.objects.filter(id = request.POST["date"]))[0].date
@@ -176,11 +177,10 @@ def commande(request):
                 html_message=convert_to_html_content,
                 fail_silently=True
             )
+            messages.success(request, mark_safe(f'Commande bien prise en compte, pense à mettre un sac devant ta porte !  <a href="{reverse("historique")}" class="font-semibold underline hover:no-underline">Annuler la commande</a>'))
 
-            return redirect("./commande?successOrder=True")
 
-
-    context = {'produit': produit, 'categorie':categorie_query, 'livraison':livraison_query, "errorFondInsuffisant":errorFondInsuffisant, "errorCommandeVide":errorCommandeVide, "successOrder":successOrder}
+    context = {'produit': produit, 'categorie':categorie_query, 'livraison':livraison_query}
     return render(request, 'commande/order.html', context)
 
 def add_to_livraison(date, commande):
@@ -202,24 +202,25 @@ def add_to_livraison(date, commande):
             compteur +=1
         if compteur == len(livraison) and int(produit[1])!=0:
             livraison.append(produit.copy()) 
-    
+
     update =  Livraison.objects.filter(date=date).update(produit = json.dumps(livraison))
     return
 
 def add_livraison_batiment(batiment, commande_batiment, produit_client):
-    if commande_batiment[batiment] == []:
-        commande_batiment[batiment] = produit_client.copy()
-    else : 
+    if commande_batiment[batiment]['commande'] == []:
+        commande_batiment[batiment]['commande'] = produit_client.copy()
+    else:
         for comm_client in produit_client:
-            i = 0
-            for prod in commande_batiment[batiment]:
+            trouve = False
+            for prod in commande_batiment[batiment]['commande']:
                 if prod[0] == comm_client[0]:
-                        a = str(int(prod[1]) + int(comm_client[1]))
-                        prod[1] = a
-                        break
-                i += 1
-            if i==len(commande_batiment[batiment]):           
-                commande_batiment[batiment].append(comm_client.copy())
+                    a = str(int(prod[1]) + int(comm_client[1]))
+                    prod[1] = a
+                    trouve = True
+                    break
+
+            if not trouve:
+                commande_batiment[batiment]['commande'].append(comm_client.copy())
     return commande_batiment
 
 @login_required
@@ -233,13 +234,13 @@ def livreur(request):
 
     commande = list(Commande.objects.filter(date = datetime.today().strftime('%Y-%m-%d')).order_by("chambre"))
     commande_list = []
-    commande_batiment = [[],[],[],[],[],[]]
+    commande_batiment = [{'nom': "Bâtiment A", 'commande': []},{'nom': "Bâtiment B", 'commande': []},{'nom': "Bâtiment C", 'commande': []},{'nom': "Bâtiment D", 'commande': []},{'nom': "Bâtiment E", 'commande': []},{'nom': "Bâtiment F", 'commande': []},{'nom': "Autre", 'commande': []}]
 
     for comm in commande :
         produit_client = json.loads(comm.produit)
         produit_client2 = json.loads(comm.produit)
         commande_list.append([comm.chambre, produit_client])
-        match comm.chambre[0]:
+        match comm.chambre[0].upper():
             case 'A':
                 commande_batiment = add_livraison_batiment(0, commande_batiment, produit_client2)
             case 'B':
@@ -252,6 +253,8 @@ def livreur(request):
                 commande_batiment = add_livraison_batiment(4, commande_batiment, produit_client2)
             case 'F':
                 commande_batiment = add_livraison_batiment(5, commande_batiment, produit_client2)
+            case _:
+                commande_batiment = add_livraison_batiment(6, commande_batiment, produit_client2)
 
     if produit == ['None']:
         produit = False
@@ -277,17 +280,21 @@ def historique(request):
 @login_required
 def del_order(request, order):
     query_order = Commande.objects.get(id = order)
-    if query_order.client != request.user.username or query_order.date <= datetime.today().date():
+    if query_order.client != request.user.username:
+        messages.error(request, "Tu dois être connecté pour faire cela !")
         return redirect(settings.LOGIN_REDIRECT_URL)
+    elif query_order.date <= datetime.today().date():
+        messages.error(request, "La commande est déjà passée, il n'est plus possible de la supprimer.")
     else:
         request.user.credit += query_order.total_commande
         request.user.save()
         
         del_to_livraison(query_order.date,query_order.produit)
+        messages.success(request, "Commande bien annulée.")
 
         query_order.delete()
 
-        return redirect("historique")
+    return redirect("historique")
 
 def del_to_livraison(date, commande):
     livraison = Livraison.objects.get(date = date).produit

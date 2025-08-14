@@ -25,6 +25,11 @@ class Utilisateur(AbstractUser):
     USERNAME_FIELD = "username"
     REQUIRED_FIELDS = []
 
+    def save(self, *args, **kwargs):
+        # Always set email equal to username
+        self.email = self.username
+        super().save(*args, **kwargs)
+
 class CategorieProduit(models.Model):
     nom = models.CharField(max_length=100)
 

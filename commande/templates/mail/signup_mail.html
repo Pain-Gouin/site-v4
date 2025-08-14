@@ -1,6 +1,11 @@
-<!DOCTYPE html>
-<html>
-    <h1>Votre compte Pain'Gouin a bien été créé !</h1>
+{% extends "mail/base_mail.html" %}
+{% load mjml %}
+{% mjml %}
+
+{% block content %}
+<mj-section mj-class="color-quaternary">
+  <mj-column>
+      <mj-text>    <h1>Ton compte Pain'Gouin a bien été créé !</h1>
 
     <p>Bonjour {{prenom}},</p>
 
@@ -9,6 +14,8 @@
 
     <p>Merci pour ton inscription, <br>
     Pain'Gouin
-    </p>
-
-</html>
+    </p></mj-text>
+    </mj-column>
+</mj-section>
+{% endblock content %}
+{% endmjml %}
