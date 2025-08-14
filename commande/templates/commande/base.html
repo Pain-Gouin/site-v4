@@ -17,19 +17,21 @@
     </head>
     <body class="bg-quaternary">
         {% block header %}
-            {% if user.is_authenticated %}
-                <header>
-                    <div class="shadow grid xl:grid-cols-3 bg-white xl:h-44 top-0 left-0 right-0 z-40 content-center items-stretch	">
-                        <div class="w-40 justify-self-center">
+            <header>
+                <div class="shadow grid xl:grid-cols-3 bg-white xl:h-44 top-0 left-0 right-0 z-40 content-center items-stretch	">
+                    <div class="w-40 justify-self-center">
+                        <a href="{% url 'index' %}">
+                            <img src="{% static 'logo/logo.webp' %}" alt="logo">
+                        </a>
+                    </div>
+                    <div class="xl:pt-16 justify-self-center pt-4">
+                        <div class="align-middle">
                             <a href="{% url 'index' %}">
-                                <img src="{% static 'logo/logo.webp' %}" alt="logo">
+                                <p class="text-5xl font-bold tracking-wide font-lobster text-secondary">Pain'Gouin</p>
                             </a>
                         </div>
-                        <div class="xl:pt-16 justify-self-center pt-4">
-                            <div class="align-middle">
-                                <p class="text-5xl font-bold tracking-wide font-lobster text-secondary">Pain'Gouin</p>
-                            </div>
-                        </div>
+                    </div>
+                    {% if user.is_authenticated %}
                         <div class="justify-self-center content-center items-center gap-7">
                             <button id="dropdownInformationButton"
                                     data-dropdown-toggle="dropdownInformation"
@@ -45,10 +47,13 @@
                                 </svg>
                             </button>
                             <div id="dropdownInformation"
-                                 class="z-10 hidden bg-white divide-y divide-gray-100 rounded-lg shadow xl:w-44 font-montserrat">
-                                <div class="px-4 py-3 xl:text-sm text-xl text-gray-900">
-                                    <div>{{ user.first_name }} {{ user.last_name }}</div>
-                                    <div class="font-medium truncate">{{ user.username }}</div>
+                                 class="z-10 hidden bg-white divide-y divide-gray-100 rounded-lg shadow xl:w-66 font-montserrat">
+                                <div class="xl:text-sm text-xl text-gray-900">
+                                    <a href="{% url 'update' %}" class="block px-4 py-2 hover:bg-quaternary">
+                                        <span>{{ user.first_name }} {{ user.last_name }}</span>
+                                        <br />
+                                        <span class="font-medium">{{ user.username }}</span>
+                                    </a>
                                 </div>
                                 <ul class="py-2 xl:text-sm text-xl text-gray-700"
                                     aria-labelledby="dropdownInformationButton">
@@ -68,9 +73,6 @@
                                         <a href="{% url 'historique' %}"
                                            class="block px-4 py-2 hover:bg-quaternary">Historique des commandes</a>
                                     </li>
-                                    <li>
-                                        <a href="{% url 'update' %}" class="block px-4 py-2 hover:bg-quaternary">Options</a>
-                                    </li>
                                 </ul>
                                 <div class="py-2">
                                     <a href="{% url 'logout' %}"
@@ -85,21 +87,7 @@
                                 </a>
                             </div>
                         </div>
-                    </div>
-                </header>
-            {% else %}
-                <header>
-                    <div class="shadow grid xl:grid-cols-3 bg-white xl:h-44 top-0 left-0 right-0 z-40 content-center items-stretch	">
-                        <div class="w-40 justify-self-center">
-                            <a href="{% url 'index' %}">
-                                <img src="{% static 'logo/logo.webp' %}" alt="logo">
-                            </a>
-                        </div>
-                        <div class="xl:pt-16 justify-self-center pt-4">
-                            <div class="align-middle">
-                                <p class="text-5xl font-bold tracking-wide font-lobster text-secondary">Pain'Gouin</p>
-                            </div>
-                        </div>
+                    {% else %}
                         <div class="justify-self-center content-center">
                             <div>
                                 <a href="{% url 'login' %}">
@@ -109,22 +97,35 @@
                                 </a>
                             </div>
                         </div>
-                    </div>
-                </header>
-            {% endif %}
+                    {% endif %}
+                </div>
+            </header>
         {% endblock header %}
         {% block content %}
         {% endblock content %}
         {% block footer %}
-            <footer class="grid grid-cols-3 text-center font-montserrat">
-                <div>Association Pain'Gouin</div>
-                <div>
-                    <a href="{% url 'mentions' %}" class="hover:text-primary duration-500">Mentions Légales</a> - <a href="https://www.facebook.com/pain.gouin.372"
-    class="hover:text-primary duration-500">Nous contacter</a>
-                </div>
-                <div>
-                    Réalisé en 2024 par <a href="https://github.com/mrimbert"
-    class="hover:text-primary duration-500">Mathis Rimbert</a>
+            <footer class="bg-white rounded-lg shadow dark:bg-gray-900 m-4 font-montserrat">
+                <div class="w-full max-w-screen-xl mx-auto p-4">
+                    <div class="sm:flex sm:items-center sm:justify-between">
+                        <a href="{% url 'index' %}"
+                           class="flex items-center mb-4 sm:mb-0 space-x-3 rtl:space-x-reverse">
+                            <img src="{% static 'logo/logo.webp' %}" class="h-16" alt="Flowbite Logo" />
+                            <span class="self-center text-2xl font-lobster whitespace-nowrap text-secondary dark:text-white">Pain'Gouin</span>
+                        </a>
+                        <ul class="flex flex-wrap items-center mb-6 text-sm font-medium text-secondary sm:mb-0 dark:text-gray-400">
+                            <li>
+                                <a href="{% url 'index' %}" class="hover:underline me-4 md:me-6">À propos</a>
+                            </li>
+                            <li>
+                                <a href="{% url 'mentions' %}" class="hover:underline me-4 md:me-6">Mentions légales</a>
+                            </li>
+                            <li>
+                                <a href="#" class="hover:underline">Nous contacter</a>
+                            </li>
+                        </ul>
+                    </div>
+                    <hr class="my-6 border-secondary sm:mx-auto dark:border-gray-700 lg:my-8">
+                    <span class="block text-sm text-secondary sm:text-center dark:text-gray-400">Association étudiante loi 1901 de <a href="https://centralelille.fr/" class="hover:underline">Centrale Lille Institut</a></span>
                 </div>
             </footer>
         {% endblock footer %}
