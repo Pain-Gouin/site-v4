@@ -31,7 +31,7 @@ DEBUG = bool(os.getenv("DEBUG", 0))
 
 ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS","paingouin.rezoleo.fr, www.paingouin.rezoleo.fr").split(",")
 
-CSRF_TRUSTED_ORIGINS = ['https://paingouin.rezoleo.fr']
+CSRF_TRUSTED_ORIGINS = os.environ.get("DJANGO_CSRF_TRUSTED_ORIGINS","https://paingouin.rezoleo.fr").split(",")
 
 
 
