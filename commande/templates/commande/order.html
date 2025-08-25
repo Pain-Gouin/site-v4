@@ -77,11 +77,16 @@
                 <label for="date" class="block mb-2 text-sm font-medium text-gray-900">Date de la livraison :</label>
                 <select name="date"
                         type="text"
-                        class=" max-w-44 font-montserrat w-full p-2 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 text-sm focus:ring-secondary focus:border-secondary">
-                    {% for liv in livraison %}
-                        <option value={{ liv.id }}>{{ liv.date }}
-                        </option>
-                    {% endfor %}
+                        {% if not livraison %}disabled{% endif %}
+                        class="font-montserrat p-2 {% if livraison %}text-gray-900{% else %}text-red-600 font-bold{% endif %} border border-gray-300 rounded-lg bg-gray-50 text-sm focus:ring-secondary focus:border-secondary">
+                    {% if livraison %}
+                        {% for liv in livraison %}
+                            <option value={{ liv.id }}>{{ liv.date }}
+                            </option>
+                        {% endfor %}
+                    {% else %}
+                        <option value="None">Pas de dates disponibles</option>
+                    {% endif %}
                 </select>
                 <button data-popover-target="popover-right"
                         data-popover-placement="right"
@@ -121,7 +126,8 @@
             </div>
             <div class="flex justify-center flex-row py-10">
                 <button type="submit"
-                        class="w-96 bg-inherit border-primary text-primary font-montserrat rounded-lg inline-block box-border border-2 rounded-x1 hover:bg-primary hover:text-white duration-1000 h-12 font-bold align-middle">
+                        {% if not livraison %}disabled{% endif %}
+                        class="w-96 bg-inherit border-primary text-primary font-montserrat rounded-lg inline-block box-border border-2 rounded-x1 hover:bg-primary hover:text-white duration-1000 h-12 font-bold align-middle disabled:border-gray-200 disabled:bg-gray-50 disabled:text-gray-500">
                     Passer commande
                 </button>
             </div>
