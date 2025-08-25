@@ -1,7 +1,7 @@
 ﻿# Documentation site Pain'Gouin
 
 ## Introduction
-Bienvenue dans cette documentation sur la quatrième version du site de l'association. Cette version a été initialement développée en 2024 par [Mathis Rimbert](https://github.com/mrimbert). Elle répond à plusieurs besoin notamment celui d'obtenir un site plus "moderne" que le précédent ainsi que de passer sur une architecture plus propre et plus compréhensive. 
+Bienvenue dans cette documentation sur la quatrième version du site de l'association. Cette version a été initialement développée en 2024 par [Mathis Rimbert](https://github.com/mrimbert). Elle répond à plusieurs besoins notamment celui d'obtenir un site plus "moderne" que le précédent ainsi que de passer sur une architecture plus propre et plus compréhensive. 
 
 Cette documentation se divise en deux fichiers, le premier (celui-ci) traitera des affaires courantes du responsable web, des perspectives pour développer le site, de l'architecture général du site, ainsi que quelques tutoriels pour bien développer sur le site de Pain'Gouin. La deuxième partie traitera de l'architecture du repo. 
 
@@ -14,7 +14,7 @@ Ce site a été développé à l'aide du framework Django. C'est un framework Py
 En ce qui concerne le style, le site utilise Tailwind CSS et l'implémente dans le projet à l'aide de library django-tailwind. Encore une fois, [la documentation officielle](https://tailwindcss.com/docs/installation) de Tailwind CSS est de très bonne qualité. 
 
 ## Guide de passations
-Lors d'une passation du bureau, il est nécessaire de mettre à jour certaines informations du site. Toutes les modifications peuvent se faire directement depuis GitHub, avec des connaissances simple en HTML.
+Lors d'une passation du bureau, il est nécessaire de mettre à jour certaines informations du site. Toutes les modifications peuvent se faire directement depuis GitHub, avec des connaissances simples en HTML.
 
 Il faut mettre à jour la page des mentions légales, avec le nouveau responsable de la publication, et le nouveau responsable web. Cela se fait [ici](https://github.com/Pain-Gouin/site-v4/blob/master/commande/templates/commande/mentions.html), en éditant le fichier depuis l'interface web.
 
@@ -24,18 +24,18 @@ Il ne vous reste plus qu'à confirmer le Pull request, ce qui mettra à jour la 
 
 ## Comment développer sur le site ?
 
-Pour apporter des modifications sur le site, voici un petit tutoriel. J'utilise ici la distribution Ubuntu (mais rien ne change sous Windows généralement). Il faut vous assurez de posséder sur votre machine Git et Python. Créer un dossier spécial pour le projet. 
+Pour apporter des modifications sur le site, voici un petit tutoriel. J'utilise ici la distribution Ubuntu (mais rien ne change sous Windows généralement). Il faut vous assurer de posséder sur votre machine Git et Python. Créer un dossier spécial pour le projet. 
 
 ### Récupération du repo GitHub
-Pour récupérer le contenu du repo, créez un nouveau dossier puis initialisez le dossier git ensuite vous pouvez cloner la branche principale ou la fetch. 
+Pour récupérer le contenu du repo, il suffit de le cloner.
 
 ### Mise en place de l'environnement virtuel
-Pour développer dans de bonnes conditions, il faut mettre en place un environnement virtuel (ou venv), cela permet d'installer toutes les libraries dont nous auront besoin dans un endroit à part afin d'éviter qu'elles interragissent avec d'autres libraries que vous auriez pu installer sur votre machine (et permettre aussi de lister proprement les libraries dont le projet a besoin pour fonctionner).  
+Pour développer dans de bonnes conditions, il faut mettre en place un environnement virtuel (ou venv), cela permet d'installer toutes les librairies dont nous aurons besoin dans un endroit à part afin d'éviter qu'elles interagissent avec d'autres librairies que vous auriez pu installer sur votre machine (et permettre aussi de lister proprement les librairies dont le projet a besoin pour fonctionner).  
 Pour ce faire dans le dossier exécuter la commande : 
 ```console
 python -m venv .venv
 ```
-Cela créé un environnement virtuel Python intitulé `.venv`.  
+Cela crée un environnement virtuel Python intitulé `.venv`.  
 Puis, entrons dans l'environnement avec la commande :
 - Linux
 ```console
@@ -45,14 +45,14 @@ source .venv/bin/activate
 ```console
 .venv/Scripts/activate.bat
 ```
-On va désormais pouvoir travailler tranquillement et pouvoir installer toutes les libraries dont le site a besoin pour fonctionner à l'aide de la commande : 
+On va désormais pouvoir travailler tranquillement et pouvoir installer toutes les librairies dont le site a besoin pour fonctionner à l'aide de la commande : 
 ```console
 pip install -r requirements.txt
 ```
 ### Mise en place de NodeJS et de TailwindCSS
-Afin d'utiliser TailwindCSS, il faut installer NodeJS (22 au moment d'écrire ces lignes). Pour linux, vous pouvez utiliser ce [site](https://nodesource.com/products/distributions).  
+Afin d'utiliser TailwindCSS, il faut installer NodeJS (22 au moment d'écrire ces lignes). Pour Linux, vous pouvez utiliser ce [site](https://nodesource.com/products/distributions).  
 ### Démarrer le serveur local
-Une fois tout ceci fait, il faut configurer le site pour tourner sur sa machine local. Pour ce faire, copiez le fichier `paingouin/settings.template.py` vers `paingouin/settings.py`, et modifiez le pour correspondre à votre base de donnée locale. Vous devez modifier les informations suivantes : 
+Une fois tout ceci fait, il faut configurer le site pour tourner sur sa machine local. Pour ce faire, copiez le fichier `paingouin/settings.template.py` vers `paingouin/settings.py`, et modifiez-le pour correspondre à votre base de donnée locale. Vous devez modifier les informations suivantes : 
 
 ```Python
 DATABASES = {
@@ -102,7 +102,7 @@ Cf la [Documentation Technique](documentation/DocumentationTechnique.md)
 
 ## Axes d'amélioration du site
 
-Le site n'est actuellement pas parfait (il est même bien loin de l'être), le code n'est pas forcément organisé de manière très propre (et je m'excuse pour ça) et il manque de commentaires. L'un des axes d'amélioration est donc de rendre le site le plus clair possible pour permettre à n'importe qui de modifier le site sans souci. Il est donc essentiel de documenter du mieux possible toutes les fonctionnalités ajoutées et de mettre à jour la documentation le plus souvent possible dès lors qu'une modification importante à été apportée au site (cf. date de mise à jour du document).
+Le site n'est actuellement pas parfait (il est même bien loin de l'être), le code n'est pas forcément organisé de manière très propre (et je m'excuse pour ça) et il manque de commentaires. L'un des axes d'amélioration est donc de rendre le site le plus clair possible pour permettre à n'importe qui de modifier le site sans souci. Il est donc essentiel de documenter du mieux possible toutes les fonctionnalités ajoutées et de mettre à jour la documentation le plus souvent possible dès lors qu'une modification importante a été apportée au site (cf. date de mise à jour du document).
 
 Entre autres, voici une liste de choses à faire sur le site (pour le rendre encore meilleur) : 
 
@@ -120,4 +120,4 @@ Si une livraison se passe mal (ce qui n'arrive jamais hein...) et qu'un produit 
  - Le rembourser à la main du prix du produit retiré de sa commande
  - Le prévenir que le remboursement a été effectué 
 
-Si un problème survient, ou si il y a des doutes, ne pas hésiter à contacter [Mathis Rimbert](https://www.facebook.com/profile.php?id=61550914982995)
+Si un problème survient, ou s'il y a des doutes, ne pas hésiter à contacter [Mathis Rimbert](https://www.facebook.com/profile.php?id=61550914982995)

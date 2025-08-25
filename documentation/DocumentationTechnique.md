@@ -4,7 +4,7 @@
 ### Test près-déploiement
 Le site est déployé à l'aide d'un conteneur Docker contenant : tout le code source, un serveur Django de production (gunicorn) ainsi qu'un service pour servir les fichiers statiques (whitenoise).
 
-Bien que ce ne soit pas une bonne pratique, les mots de passe pour la base de donnée sont inclus dans le conteneur, afin de simplifier le déploiement.
+Tous les secrets doivent être passés au conteneur à l'aide de variables d'environnements.
 
 Avant de déployer une version, il est important de tester le bon fonctionnement de l'image docker. Pour cela, copier le fichier `compose.template.yaml` vers `compose.yaml`, en l'adaptant à son environnement de développement, et en lançant la construction et le déploiement en local de l'image à l'aide de la commande :
 ```console
@@ -12,13 +12,13 @@ docker compose up --build
 ```
 
 > [!IMPORTANT] 
-> Pour tester l'image telle qu'elle sera déployé, bien désactiver le debug dans le docker compose !
+> Pour tester l'image telle qu'elle sera déployée, bien désactiver le debug dans le docker compose !
 
 Le site devrait alors être accessible à l'adresse http://127.0.0.1:8000/.
 
 > [!NOTE] 
-> Si de nouvelles librairies sont nécéssaires, il faut bien penser à mettre à jour le fichier `requirements.txt` à l'aide de la commande `pip freeze`.  
-> Le fichier `requirement.minimal.txt` est sensé contenir uniquement les dépendances primaire, et est utile pour la mise à jour des dépendances.
+> Si de nouvelles librairies sont nécessaires, il faut bien penser à mettre à jour le fichier `requirements.txt` à l'aide de la commande `pip freeze`.  
+> Le fichier `requirement.minimal.txt` est censé contenir uniquement les dépendances primaires, et est utile pour la mise à jour des dépendances.
 
 ### Déploiement sur l'infrastructure de Rézoléo
 
@@ -29,7 +29,7 @@ Le site devrait alors être accessible à l'adresse http://127.0.0.1:8000/.
 > Il faut bien avoir commit les migrations après les avoir générés à l'aide de la commande `python manage.py makemigrations`, et faire attention à ce qu'elle ne provoque pas de perte de données.  
 > **Il est recommandé de faire un backup de la BD avant tout déploiement !**
 
-Le conteneur utilise le serveur mySQL du rézo. Le docker compose le générant ainsi que les fichiers media se situent sur l'accès SFTP.
+Le stack utilise le serveur mySQL du rézo. Le docker compose le générant ainsi que les fichiers media se situent sur l'accès SFTP.
 
 ## Identifiants de connexion
 Pain'Gouin est hébergé par l'association Rézoléo, en cas de problèmes d'hébergements, il ne faut pas hésiter à les contacter. 
@@ -41,13 +41,13 @@ Les identifiants de connexion au serveur SFTP des deux images sont :
  - URL : sftp.rezoleo.fr
  - Port : 8888 (si connexion extérieur à la résidence sinon 22)
  - Utilisateur : paingouin
- - Mot de passe : ***REMOVED***
+ - Mot de passe : ***Voir sheet sur le drive de paingouin***
 
 Les identifiants de connexion à l'interface PHPMyAdmin des deux images sont : 
 
  - URL : phpmyadmin.rezoleo.fr
  - Utilisateur : paingouin
- - Mot de passe : ***REMOVED***
+ - Mot de passe : ***Voir sheet sur le drive de paingouin***
 
 Les identifiants de connexion à MySQL sont donc les mêmes avec pour hôte : mysql.rezoleo.fr
 Les identifiants associés aux différents mails pouvant être utilisés par le site sont disponibles sur le Drive de l'association. 
@@ -62,7 +62,7 @@ Les identifiants associés aux différents mails pouvant être utilisés par le 
      ┗ 📜README.md              // fichier README...
 
 ## Structure de la base de donnée
-La base de donnée de l'application commande est représentée de la manière suivante (image ci-dessous), pour voir comment les modèles sont interprétés par Django, vous pouvez vous référez au fichier commande/models.py qui répertorie les modèles utilisés par le site. 
+La base de donnée de l'application commande est représentée de la manière suivante (image ci-dessous), pour voir comment les modèles sont interprétés par Django, vous pouvez vous référer au fichier commande/models.py qui répertorie les modèles utilisés par le site. 
 ![SchémaDB](SchemaDB.png)
 Ce schéma n'est pas une représentation réelle de toute la base de donnée, Django a ses propres tables et la table utilisateur dérive d'une table de base de Django. Si vous êtes curieux, vous pouvez directement voir la base de donnée via le panel PHPMyAdmin. 
 
@@ -84,7 +84,7 @@ Holala... quelle galère... Rien que les e-mails augmente la complexité du dép
 
 Les mails utilisent la librairie [django-yubin](https://github.com/APSL/django-yubin). Elle permet l'envoi de mails de façon asynchrone, ce qui permet d'éviter qu'une page ne soit plus réactive en cas de problème avec le serveur mail, et également d'afficher les mails envoyés dans le panel administrateur.
 
-Son utilisation nécessite l'usage de [celery](https://docs.celeryq.dev/en/stable/index.html), un système permettant l'éxecution de tâches programmées, qui nécessite un serveur de message : Redis ou [RabbitMQ](https://www.rabbitmq.com/) (le choix de RabbitMQ a été fait ici ~~afin de se compliquer encore plus la vie~~ sur conseil de la doc de celery).
+Son utilisation nécessite l'usage de [celery](https://docs.celeryq.dev/en/stable/index.html), un système permettant l'exécution de tâches programmées, qui nécessite un serveur de message : Redis ou [RabbitMQ](https://www.rabbitmq.com/) (le choix de RabbitMQ a été fait ici ~~afin de se compliquer encore plus la vie~~ sur conseil de la doc de celery).
 
 Si vous voulez pouvoir faire du développement en local, il vous faut donc installer RabbitMQ, le configurer et lancer le serveur. Ce n'est pas évident et le lancement du serveur n'est pas automatisé. Je conseille donc plutôt d'utiliser le docker compose pour cela, qui inclut directement RabbitMQ, ainsi que [MailPit](https://github.com/axllent/mailpit) qui permet de tester la réception d'e-mails.
 

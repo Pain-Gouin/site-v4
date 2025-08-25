@@ -62,7 +62,7 @@ ENV PYTHONUNBUFFERED=1
 USER appuser
 
 # Set the correct settings file
-RUN mv paingouin/settings.prod.py paingouin/settings.py
+RUN mv paingouin/settings.docker.py paingouin/settings.py
 
 # Install and build tailwind
 RUN python manage.py tailwind install --no-package-lock --no-input
