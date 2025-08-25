@@ -19,7 +19,7 @@
     {% block header %}
     <mj-section background-color="#ffffff" padding="0">
       <mj-column vertical-align="middle" width="33.33333333333%">
-        <mj-image src="{% if request %}{{ request.scheme }}://{{ request.get_host }}{% else %}{{ protocol }}://{{ domain }}{% endif %}{% static 'logo/logo.webp' %}" />
+        <mj-image href="{% if request %}{{ request.scheme }}://{{ request.get_host }}{% else %}{{ protocol }}://{{ domain }}{% endif %}{% url 'index' %}" src="{% if request %}{{ request.scheme }}://{{ request.get_host }}{% else %}{{ protocol }}://{{ domain }}{% endif %}{% static 'logo/logo.webp' %}" />
       </mj-column>
       <mj-column vertical-align="middle" width="66.666666666666%">
         <mj-text font-family="Lobster, sans-serif" font-size="50px" align="center" mj-class="color-secondary"><strong>Pain'Gouin</strong>
