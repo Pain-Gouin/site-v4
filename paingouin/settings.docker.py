@@ -176,7 +176,7 @@ EMAIL_USE_TLS = str_to_bool(os.getenv("EMAIL_USE_TLS", "0"))
 EMAIL_USE_SSL = str_to_bool(os.getenv("EMAIL_USE_SSL", "0"))
 EMAIL_HOST = os.getenv('EMAIL_HOST', 'smtp.rezoleo.fr')
 EMAIL_PORT = int(os.getenv('EMAIL_PORT', '69'))
-EMAIL_HOST_USER = os.getenv('EMAIL_HOST', 'noreply@paingouin.rezoleo.fr')
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER', 'noreply@paingouin.rezoleo.fr')
 EMAIL_HOST_PASSWORD =  os.getenv('EMAIL_HOST_PASSWORD', '42')
 
 UNFOLD = {
