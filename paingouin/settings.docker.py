@@ -184,19 +184,33 @@ UNFOLD = {
     "SITE_TITLE":"Panel administrateur de Pain'Gouin",
     "SITE_HEADER":"Panel administrateur de Pain'Gouin",
     "SITE_LOGO": {
-        "light": lambda request: static("logo/logo.svg"),  # light mode
-        "dark": lambda request: static("logo/logo.svg"),  # dark mode
+        "light": lambda request: static("logo/logo.webp"),  # light mode
+        "dark": lambda request: static("logo/logo.webp"),  # dark mode
     },
     "SITE_ICON": {
-        "light": lambda request: static("logo/logo.svg"),  # light mode
-        "dark": lambda request: static("logo/logo.svg"),  # dark mode
+        "light": lambda request: static("logo/logo.webp"),  # light mode
+        "dark": lambda request: static("logo/logo.webp"),  # dark mode
     },
     "SITE_FAVICONS": [
         {
             "rel": "icon",
-            "sizes": "32x32",
+            "sizes": "96x96",
+            "type": "image/png",
+            "href": lambda request: static("favicon/favicon-96x96.png"),
+        },
+        {
+            "rel": "icon",
             "type": "image/svg+xml",
-            "href": lambda request: static("logo/logo.ico"),
+            "href": lambda request: static("favicon/favicon.svg"),
+        },
+        {
+            "rel": "apple-touch-icon",
+            "sizes": "180x180",
+            "href": lambda request: static("favicon/apple-touch-icon.png"),
+        },
+        {
+            "rel": "manifest",
+            "href": lambda request: static("favicon/site.webmanifest"),
         },
     ],
     "SIDEBAR": {
@@ -271,7 +285,7 @@ UNFOLD = {
             },
         ],
     },
-    "THEME": "light",
+    "THEME": "dark",
     "SHOW_HISTORY": False,
 }
 
