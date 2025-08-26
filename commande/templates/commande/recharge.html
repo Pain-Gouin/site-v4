@@ -1,0 +1,166 @@
+{% extends "commande/base.html" %}
+{% load static %}
+{% block content %}
+    <div class="font-montserrat content-center pt-4">
+        <p class="text-xl font-montserrat py-5 text-center">
+            Pour pouvoir passer des commandes sur le site, ton compte dois être alimenté.
+        </p>
+        <p class="text-xl font-montserrat py-5 text-center">
+            Il existe deux moyens d'alimenter ton compte :
+        </p>
+    </div>
+    <div class="m-4 text-secondary">
+        <ul class="flex flex-wrap justify-center -mb-px mx-auto text-sm font-medium text-center items-center h-14"
+            id="default-styled-tab"
+            data-tabs-toggle="#default-styled-tab-content"
+            data-tabs-active-classes="text-white bg-secondary"
+            data-tabs-inactive-classes="text-secondary bg-white hover:bg-zinc-200"
+            role="tablist">
+            <li class="h-full" role="presentation">
+                <button class="h-full inline-flex font-montserrat items-center justify-center px-4 py-3 rounded-l-full duration-200  border-2 border-r-0 border-secondary"
+                        id="lyf-styled-tab"
+                        data-tabs-target="#styled-lyf"
+                        type="button"
+                        role="tab"
+                        aria-controls="Lyf"
+                        aria-selected="True">
+                    Rechargement par
+                    <img class="h-7"
+                         src="{% static 'externe/Lyf - corail.svg' %}"
+                         alt="Lyf logo" />
+                </button>
+            </li>
+            <li class="h-full" role="presentation">
+                <button class="h-full inline-flex font-montserrat items-center justify-center px-4 py-3 rounded-r-full duration-200  border-2 border-l-0 border-secondary"
+                        id="cb-styled-tab"
+                        data-tabs-target="#styled-cb"
+                        type="button"
+                        role="tab"
+                        aria-controls="cb"
+                        aria-selected="false">Rechargement en ligne</button>
+            </li>
+        </ul>
+    </div>
+    <div id="default-styled-tab-content">
+        <div class="mx-auto max-w-6xl shadow p-8 rounded-lg bg-white"
+             id="styled-lyf"
+             role="tabpanel"
+             aria-labelledby="lyf-tab">
+            <div class="grid xl:grid-cols-2  place-items-center pb-10">
+                <div class="max-w-xl order-1 xl:order-1">
+                    <h3 class="text-3xl font-bebas pb-10 text-primary">1°) Installe et configure l'application Lyf</h3>
+                    <p class="text-lg font-montserrat pb-5">On utilise cette application pour faire des transferts à taux faibles.</p>
+                </div>
+                <div class="order-2 xl:order-2">
+                    <div class="flex items-center">
+                        <img class="h-44 inline-block m-4"
+                             src="{% static 'externe/Lyf.icone.corail.png' %}"
+                             alt="logo application lyf">
+                        <a class="m-4 inline-block"
+                           href="https://play.google.com/store/apps/details?id=com.fivory.prod">
+                            <img class="h-12"
+                                 src="{% static 'externe/GetItOnGooglePlay_Badge_Web_color_French.svg' %}"
+                                 alt="Play Store badge">
+                        </a>
+                        <a class="m-4 inline-block"
+                           href="https://apps.apple.com/fr/app/id824967438">
+                            <img class="h-12"
+                                 src="{% static 'externe/Download_on_the_App_Store_Badge_FR_RGB_blk_100517.svg' %}"
+                                 alt="App Store badge">
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="grid xl:grid-cols-2  place-items-center pb-10">
+                <div class="order-2 xl:order-1 shuffle font-montserrat">
+                    Liens de contact :
+                    <a target="_blank" href="https://m.me/maxence.theard.5"
+                       class="m-1 flex items-center gap-4 p-2 rounded-3xl hover:bg-blue-100 border-2 border-blue-500">
+                        <img class="h-10"
+                             src="{% static 'externe/messenger.svg' %}"
+                             alt="logo messenger">
+                        <div class="font-medium dark:text-white">
+                            <div>Maxence Théard</div>
+                            <div class="text-sm text-gray-500 dark:text-gray-400">Président</div>
+                        </div>
+                    </a>
+                    <a target="_blank" href="https://m.me/iannluca.dethomassin"
+                       class="m-1 flex items-center gap-4 p-2 rounded-3xl hover:bg-blue-100 border-2 border-blue-500">
+                        <img class="h-10"
+                             src="{% static 'externe/messenger.svg' %}"
+                             alt="logo messenger">
+                        <div class="font-medium dark:text-white">
+                            <div>Iann Rings De Thomassin</div>
+                            <div class="text-sm text-gray-500 dark:text-gray-400">Secrétaire</div>
+                        </div>
+                    </a>
+                    <a target="_blank" href="https://m.me/61565483788852"
+                       class="m-1 flex items-center gap-4 p-2 rounded-3xl hover:bg-blue-100 border-2 border-blue-500">
+                        <img class="h-10"
+                             src="{% static 'externe/messenger.svg' %}"
+                             alt="logo messenger">
+                        <div class="font-medium dark:text-white">
+                            <div>Hugo Lucks Pariis</div>
+                            <div class="text-sm text-gray-500 dark:text-gray-400">Trésorier</div>
+                        </div>
+                    </a>
+                </div>
+                <script>
+const container = document.querySelector(".shuffle");
+const divs = Array.from(container.children);
+
+// Shuffle
+for (let i = divs.length - 1; i > 0; i--) {
+  const j = Math.floor(Math.random() * (i + 1));
+  [divs[i], divs[j]] = [divs[j], divs[i]];
+}
+
+divs.forEach(div => container.appendChild(div));
+                </script>
+                <div class="max-w-xl order-1 xl:order-2">
+                    <h3 class="text-3xl font-bebas pb-10 text-primary">2°) Contacte un membre du bureau de l'association</h3>
+                    <p class="text-lg font-montserrat pb-5">
+                        Indique-lui ton numéro de téléphone, ainsi que le montant du rechargement que tu souhaites effectuer.
+                    </p>
+                    <p class="text-lg font-montserrat pb-5">
+                        <b>Il vous faut alors vous coordonner</b> (à distance)
+                        <br>
+                        Il va initier un transfert Lyf : tu dois immédiatement confirmer celui-ci via l'application sur ton téléphone.
+                    </p>
+                </div>
+            </div>
+            <div class="grid xl:grid-cols-2  place-items-center pb-10">
+                <div class="max-w-xl order-1 xl:order-1">
+                    <h3 class="text-3xl font-bebas pb-10 text-primary">3°) Confirmation du transfert et ajout des fonds</h3>
+                    <p class="text-lg font-montserrat pb-5">
+                        Le membre contacté va te confirmer la réussite du virement, et ajouter les fonds à ton compte.
+                    </p>
+                    <p class="text-lg font-montserrat pb-5">
+                        Il ne te reste plus qu'à <a class="underline hover:text-primary duration-500"
+    href="{% url 'commande' %}">passer commande</a> !
+                    </p>
+                </div>
+                <div class="order-2 xl:order-2">
+                    <div class="flex items-center">
+                        <img src="{% static 'illustration/PainGouinGrailleKontan.png' %}"
+                             alt="Sac PainGouin"
+                             class="mx-auto max-h-96">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="mx-auto max-w-6xl shadow p-8 rounded-lg bg-white"
+             id="styled-cb"
+             role="tabpanel"
+             aria-labelledby="cb-tab">
+            <p class="text-base text-center font-montserrat">
+                Il n'est pas encore possible de recharger son compte directement sur le site... Mais cela est prévu !
+                <br>
+                Si tu attends cela avec impatience, tu peux envoyer un message à Valentin GRÉGOIRE pour le motiver à s'en occuper &#128521;
+            </p>
+            <img src="{% static 'illustration/PainGouinGrailleKontan.png' %}"
+                 alt="Sac PainGouin"
+                 class="mx-auto h-44">
+        </div>
+    </div>
+{% endblock content %}

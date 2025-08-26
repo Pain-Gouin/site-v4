@@ -12,6 +12,7 @@ urlpatterns = [
     path("signup", views.signup_page, name="signup"),
     path("update", views.update_user_page, name="update"),
     path("commande", views.commande, name="commande"),
+    path("recharge", views.recharge, name="recharge"),
     path("livreur", views.livreur, name="livreur"),
     path("historique", views.historique, name="historique"),
     path('password-reset/', ResetPasswordView.as_view(), name='password_reset'),

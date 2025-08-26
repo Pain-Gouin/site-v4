@@ -26,6 +26,9 @@ def index(request):
 def mentions(request):
     return render(request, "commande/mentions.html")
 
+def recharge(request):
+    return render(request, "commande/recharge.html")
+
 def login_page(request):
     invalidCredential=False
     form = forms.LoginForm()
@@ -138,7 +141,7 @@ def commande(request):
         order = json.dumps(order)
 
         if total_commande > solde:
-            messages.warning(request, mark_safe('Fond insuffisant, il faut que tu <a href="/404" class="font-semibold underline hover:no-underline">recharges ton compte</a> !'))
+            messages.error(request, mark_safe(f'Fonds insuffisant, il faut que tu <a href="{reverse("recharge")}" class="font-semibold underline hover:no-underline">recharges ton compte</a> !'))
         elif len(bought_prod) == 0: # Avec la vérification javascript côté client, ce n'est pas sensé être possible
             messages.error(request, "Sélectionne au moins un article !")
         else:
@@ -177,10 +180,12 @@ def commande(request):
                 html_message=convert_to_html_content,
                 fail_silently=True
             )
-            messages.success(request, mark_safe(f'Commande bien prise en compte, pense à mettre un sac devant ta porte !  <a href="{reverse("historique")}" class="font-semibold underline hover:no-underline">Annuler la commande</a>'))
+            messages.success(request, mark_safe(f'Commande bien prise en compte, <b>pense à mettre un sac devant ta porte !</b>  <a href="{reverse("historique")}" class="font-semibold underline hover:no-underline">Annuler la commande</a>'))
+            if solde <= 5:
+                messages.warning(request, mark_safe(f'Ton solde commence à être bas, n\'oublie pas de <a href="{reverse("recharge")}" class="font-semibold underline hover:no-underline">recharger ton compte</a>.'))
 
 
-    context = {'produit': produit, 'categorie':categorie_query, 'livraison':livraison_query}
+    context = {'produit': produit, 'categorie':categorie_query, 'livraison':livraison_query, 'solde_vide':request.user.credit==0}
     return render(request, 'commande/order.html', context)
 
 def add_to_livraison(date, commande):

@@ -1,6 +1,26 @@
 {% extends "commande/base.html" %}
 {% load static %}
 {% block content %}
+    {% if solde_vide %}
+        <div class="flex flex-row  place-content-center pt-8">
+            <div id="alert-1"
+                 class="flex items-center p-4 mb-4 text-yellow-800 border border-yellow-400 rounded-lg bg-yellow-50"
+                 role="alert">
+                <svg class="flex-shrink-0 w-4 h-4"
+                     aria-hidden="true"
+                     xmlns="http://www.w3.org/2000/svg"
+                     fill="currentColor"
+                     viewBox="0 0 20 20">
+                    <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z" />
+                </svg>
+                <span class="sr-only">Info</span>
+                <div class="ms-3 font-medium">
+                    Avant de pouvoir passer commande, tu dois d'abord <a href="{% url 'recharge' %}"
+    class="font-semibold underline hover:no-underline">alimenter ton compte.</a>
+                </div>
+            </div>
+        </div>
+    {% endif %}
     <div class="font-montserrat content-center">
         <h1 class="text-4xl text-secondary text-center py-10">Votre commande :</h1>
         <form method="post">
@@ -110,7 +130,7 @@
                         <p>
                             Il arrive qu'une date de livraison ait été oubliée. Si vous pensez que c'est le cas, contactez un membre de l'asso.
                         </p>
-                        <a href="/404"
+                        <a href="{% url 'recharge' %}"
                            class="flex items-center font-medium text-blue-600 dark:text-blue-500 dark:hover:text-blue-600 hover:text-blue-700 hover:underline">Contacter un membre de l'asso
                             <svg class="w-2 h-2 ms-1.5 rtl:rotate-180"
                                  aria-hidden="true"

@@ -6,8 +6,8 @@
              alt="banner"
              class="w-full max-h-[650px] object-cover blur-[2px]">
         <div class="flex absolute top-1/3 items-center justify-center w-full">
-            <p class="text-5xl font-bebas drop-shadow-[0_1.7px_1.7px_rgba(0,0,0,0.8)] text-tertiary">
-                Du pain frais à la Rez tous les jours (ou presque...)
+            <p class="text-5xl font-bebas drop-shadow-[0_0_10px_#000] text-tertiary">
+                Du pain frais à la Rez tous les matins (ou presque...)
             </p>
         </div>
         <div class="flex absolute top-1/2 items-center justify-center w-full">
@@ -32,8 +32,8 @@
                 Tu peux commander jusqu'à <b class="text-secondary">6h30 le jour même</b> — idéal pour les petites faims de fin de soirée.
             </p>
             <p class="text-xl font-montserrat">
-                <b class="text-secondary">Pour recharger ton compte,</b> tu peux <a href="https://www.facebook.com/pain.gouin.372"
-    class="text-primary hover:text-tertiary transition duration-500">contacter un membre de l'association</a>.
+                <b class="text-secondary">Pour recharger ton compte,</b> <a href="{% url 'recharge' %}"
+    class="underline hover:text-primary transition duration-500">ça se passe ici</a>.
             </p>
         </div>
     </div>
