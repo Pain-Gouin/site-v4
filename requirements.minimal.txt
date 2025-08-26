@@ -6,6 +6,7 @@ django-unfold==0.64.2
 django-widget-tweaks==1.5.0
 django-yubin==2.0.6
 gunicorn==23.0.0
+html2text==2025.4.15
 mysqlclient==2.2.7
 whitenoise==6.9.0
 xlsxwriter==3.2.5

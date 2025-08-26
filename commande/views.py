@@ -5,13 +5,13 @@ from django.contrib import messages
 from django.conf import settings
 from django.core.mail import send_mail
 from django.template.loader import render_to_string
-from django.utils.html import strip_tags
 from django.utils.safestring import mark_safe
 from django.contrib.auth.views import PasswordResetView
 from django.contrib.messages.views import SuccessMessageMixin
 from django.urls import reverse_lazy, reverse
 from datetime import datetime, time
 from django.utils import timezone
+from .utils import html_to_text
 
 from . import forms
 
@@ -79,7 +79,7 @@ def signup_page(request):
                     'request':request,
                 }
             )
-            plain_message = strip_tags(convert_to_html_content)
+            plain_message = html_to_text(convert_to_html_content)
 
             send_mail(
                 subject="Inscription confirmée",
@@ -167,7 +167,7 @@ def commande(request):
                     "media_url": settings.MEDIA_URL
                 }
             )
-            plain_message = strip_tags(convert_to_html_content)
+            plain_message = html_to_text(convert_to_html_content)
 
             send_mail(
                 subject="Confirmation de commande",

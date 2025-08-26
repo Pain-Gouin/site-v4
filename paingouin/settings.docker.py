@@ -15,6 +15,7 @@ import os
 
 from django.urls import reverse_lazy
 from django.utils.translation import gettext_lazy as _
+from email.utils import formataddr
 
 def str_to_bool(s):
     return str(s).lower() in ['true', '1', 'yes']
@@ -176,7 +177,7 @@ EMAIL_USE_TLS = str_to_bool(os.getenv("EMAIL_USE_TLS", "0"))
 EMAIL_USE_SSL = str_to_bool(os.getenv("EMAIL_USE_SSL", "0"))
 EMAIL_HOST = os.getenv('EMAIL_HOST', 'smtp.rezoleo.fr')
 EMAIL_PORT = int(os.getenv('EMAIL_PORT', '69'))
-EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER', 'noreply@paingouin.rezoleo.fr')
+EMAIL_HOST_USER = formataddr(("L'équipe Pain'Gouin", os.getenv('EMAIL_HOST_USER', 'noreply@paingouin.rezoleo.fr')))
 EMAIL_HOST_PASSWORD =  os.getenv('EMAIL_HOST_PASSWORD', '42')
 
 UNFOLD = {

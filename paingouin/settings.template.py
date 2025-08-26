@@ -15,6 +15,7 @@ import os
 
 from django.urls import reverse_lazy
 from django.utils.translation import gettext_lazy as _
+from email.utils import formataddr
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -171,7 +172,7 @@ EMAIL_USE_TLS = True
 EMAIL_USE_SSL = False
 EMAIL_HOST = 'ssl0.ovh.net'
 EMAIL_PORT = 587
-EMAIL_HOST_USER = 'contact@ic-art.fr'
+EMAIL_HOST_USER = formataddr(("L'équipe Pain'Gouin", 'contact@ic-art.fr'))
 EMAIL_HOST_PASSWORD = 'Demarchage'
 
 UNFOLD = {
