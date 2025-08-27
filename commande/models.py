@@ -13,6 +13,7 @@ class Utilisateur(AbstractUser):
     username = models.EmailField(unique=True, null=True)
     isLivreur = models.BooleanField(default = False)
     isPermis = models.BooleanField(default= False)
+    getOrderMail = models.BooleanField(default=True)
     chambre = models.CharField(max_length=10)
     tel = models.CharField(max_length=20)
     last_login = models.DateTimeField(default=datetime.now)

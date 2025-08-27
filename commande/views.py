@@ -124,10 +124,11 @@ def commande(request):
 
     produit = produit_query
 
+    if request.user.is_authenticated:
+        user = request.user.get_username()
+        solde = request.user.credit
+    
     if request.method == 'POST':
-        if request.user.is_authenticated:
-            user = request.user.get_username()
-            solde = request.user.credit
 
         total_commande = 0
 
@@ -157,34 +158,36 @@ def commande(request):
 
             add_to_livraison(date,order)
 
-            receiver_email = request.user.username
-            template_name = "mail/order_mail.html"
-            convert_to_html_content =  render_to_string(
-                template_name=template_name,
-                context = {
-                    'prenom': request.user.first_name,
-                    'date': date,
-                    'commande': bought_prod,
-                    'total': total_commande,
-                    'chambre': chambre,
-                    "request": request,
-                    "media_url": settings.MEDIA_URL
-                }
-            )
-            plain_message = html_to_text(convert_to_html_content)
+            if request.user.getOrderMail:
+                receiver_email = request.user.username
+                template_name = "mail/order_mail.html"
+                convert_to_html_content =  render_to_string(
+                    template_name=template_name,
+                    context = {
+                        'prenom': request.user.first_name,
+                        'date': date,
+                        'commande': bought_prod,
+                        'total': total_commande,
+                        'chambre': chambre,
+                        "request": request,
+                        "media_url": settings.MEDIA_URL
+                    }
+                )
+                plain_message = html_to_text(convert_to_html_content)
 
-            send_mail(
-                subject="Confirmation de commande",
-                message=plain_message,
-                from_email=settings.EMAIL_HOST_USER,
-                recipient_list=[receiver_email,],
-                html_message=convert_to_html_content,
-                fail_silently=True
-            )
+                send_mail(
+                    subject="Confirmation de commande",
+                    message=plain_message,
+                    from_email=settings.EMAIL_HOST_USER,
+                    recipient_list=[receiver_email,],
+                    html_message=convert_to_html_content,
+                    fail_silently=True
+                )
+            
             messages.success(request, mark_safe(f'Commande bien prise en compte, <b>pense à mettre un sac devant ta porte !</b>  <a href="{reverse("historique")}" class="font-semibold underline hover:no-underline">Annuler la commande</a>'))
-            if solde <= 5:
-                messages.warning(request, mark_safe(f'Ton solde commence à être bas, n\'oublie pas de <a href="{reverse("recharge")}" class="font-semibold underline hover:no-underline">recharger ton compte</a>.'))
-
+    
+    if solde <= 5:
+        messages.warning(request, mark_safe(f'Ton solde commence à être bas, n\'oublie pas de <a href="{reverse("recharge")}" class="font-semibold underline hover:no-underline">recharger ton compte</a>.'))
 
     context = {'produit': produit, 'categorie':categorie_query, 'livraison':livraison_query, 'solde_vide':request.user.credit==0}
     return render(request, 'commande/order.html', context)

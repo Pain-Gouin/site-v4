@@ -1,7 +1,6 @@
 {% extends "commande/base.html" %}
 {% load static %}
 {% load widget_tweaks %}
-
 {% block content %}
   <h1 class="text-3xl text-center font-bebas py-10 text-secondary">Modification des informations de votre compte</h1>
   <form class="max-w-lg mx-auto pt-5 pb-10" method="post">
@@ -27,39 +26,46 @@
       {% render_field form.username class="bg-gray-50 border font-montserrat border-gray-300 text-secondary text-sm rounded-lg focus:ring-secondary focus:border-secondary block w-full p-2.5" %}
     </div>
     <div class="mb-5">
-      <div class="mb-5">
-        <label for="password2"
-               class="block mb-2 text-sm font-medium text-gray-900 font-montserrat">Prénom :</label>
-        {% render_field form.first_name class="bg-gray-50 border font-montserrat border-gray-300 text-secondary text-sm rounded-lg focus:ring-secondary focus:border-secondary block w-full p-2.5" %}
-      </div>
-      <div class="mb-5">
-        <label for="password2"
-               class="block mb-2 text-sm font-medium text-gray-900 font-montserrat">Nom :</label>
-        {% render_field form.last_name class="bg-gray-50 border font-montserrat border-gray-300 text-secondary text-sm rounded-lg focus:ring-secondary focus:border-secondary block w-full p-2.5" %}
-      </div>
-      <div class="mb-5">
-        <label for="password2"
-               class="block mb-2 text-sm font-medium text-gray-900 font-montserrat">Chambre :</label>
-        {% render_field form.chambre class="bg-gray-50 border font-montserrat border-gray-300 text-secondary text-sm rounded-lg focus:ring-secondary focus:border-secondary block w-full p-2.5" %}
-      </div>
-      <div class="mb-5">
-        <label for="password2"
-               class="block mb-2 text-sm font-medium text-gray-900 font-montserrat">Téléphone :</label>
-        {% render_field form.tel class="bg-gray-50 border font-montserrat border-gray-300 text-secondary text-sm rounded-lg focus:ring-secondary focus:border-secondary block w-full p-2.5" %}
-      </div>
-      <div class="mb-5">
-        <label for="password2"
-               class="block mb-2 text-sm font-medium text-gray-900 font-montserrat">
-          Cocher si vous avez le permis de conduire :
-        </label>
-        {% render_field form.isPermis class="bg-white border border-gray-300 font-montserrat text-secondary text-sm rounded-lg focus:ring-secondary focus:border-secondary block p-2.5" %}
-      </div>
-      <div class="flex justify-center flex-row">
-        <button type="submit"
-                class="w-96 bg-inherit border-primary text-primary font-montserrat rounded-lg inline-block box-border border-2 rounded-x1 hover:bg-primary hover:text-white duration-1000 h-12 font-bold align-middle">
-          Enregistrer les informations
-        </button>
-      </div>
+      <label for="id_first_name"
+             class="block mb-2 text-sm font-medium text-gray-900 font-montserrat">Prénom :</label>
+      {% render_field form.first_name class="bg-gray-50 border font-montserrat border-gray-300 text-secondary text-sm rounded-lg focus:ring-secondary focus:border-secondary block w-full p-2.5" %}
+    </div>
+    <div class="mb-5">
+      <label for="id_last_name"
+             class="block mb-2 text-sm font-medium text-gray-900 font-montserrat">Nom :</label>
+      {% render_field form.last_name class="bg-gray-50 border font-montserrat border-gray-300 text-secondary text-sm rounded-lg focus:ring-secondary focus:border-secondary block w-full p-2.5" %}
+    </div>
+    <div class="mb-5">
+      <label for="id_chambre"
+             class="block mb-2 text-sm font-medium text-gray-900 font-montserrat">Chambre :</label>
+      {% render_field form.chambre class="bg-gray-50 border font-montserrat border-gray-300 text-secondary text-sm rounded-lg focus:ring-secondary focus:border-secondary block w-full p-2.5" %}
+    </div>
+    <div class="mb-5">
+      <label for="id_tel"
+             class="block mb-2 text-sm font-medium text-gray-900 font-montserrat">Téléphone :</label>
+      {% render_field form.tel class="bg-gray-50 border font-montserrat border-gray-300 text-secondary text-sm rounded-lg focus:ring-secondary focus:border-secondary block w-full p-2.5" %}
+    </div>
+    <div class="mb-5">
+      <label class="inline-flex items-center cursor-pointer">
+        {% render_field form.isPermis class="sr-only peer" %}
+        <span class="me-3 text-sm font-medium text-gray-900 font-montserrat dark:text-gray-300">As-tu le permis ?</span>
+        <div class="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-secondary dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-primary">
+        </div>
+      </label>
+    </div>
+    <div class="mb-5">
+      <label class="inline-flex items-center cursor-pointer">
+        {% render_field form.getOrderMail class="sr-only peer" %}
+        <span class="me-3 text-sm font-medium text-gray-900 font-montserrat dark:text-gray-300">Recevoir un mail de confirmation de commande ?</span>
+        <div class="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-secondary dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-primary">
+        </div>
+      </label>
+    </div>
+    <div class="flex justify-center flex-row">
+      <button type="submit"
+              class="w-96 bg-inherit border-primary text-primary font-montserrat rounded-lg inline-block box-border border-2 rounded-x1 hover:bg-primary hover:text-white duration-1000 h-12 font-bold align-middle">
+        Enregistrer les informations
+      </button>
     </div>
   </form>
 {% endblock content %}

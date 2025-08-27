@@ -27,7 +27,7 @@ class SignupForm(UserCreationForm):
 class UpdateForm(UserChangeForm):
     class Meta(UserChangeForm.Meta):
         model = get_user_model()
-        fields = ('username', 'first_name', 'last_name', 'chambre', 'tel','isPermis')
+        fields = ('username', 'first_name', 'last_name', 'chambre', 'tel', 'isPermis', 'getOrderMail')
 
 
 class ProductOrderForm(forms.Form):
