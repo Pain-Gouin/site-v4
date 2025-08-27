@@ -9,6 +9,7 @@ from django.utils.safestring import mark_safe
 from django.contrib.auth.views import PasswordResetView
 from django.contrib.messages.views import SuccessMessageMixin
 from django.urls import reverse_lazy, reverse
+from django.http import HttpResponseServerError
 from datetime import datetime, time
 from django.utils import timezone
 from .utils import html_to_text
@@ -235,15 +236,20 @@ def add_livraison_batiment(batiment, commande_batiment, produit_client):
 @login_required
 def livreur(request):
     produit = ['None']
+    date = datetime.today().strftime('%Y-%m-%d')
     try:
-        livraison_query = Livraison.objects.get(date = datetime.today().strftime('%Y-%m-%d'))
-        produit = livraison_query.produit
-    except:
-        livraison_query = None
+        livraison_query = Livraison.objects.get(date=date)
+    except Livraison.DoesNotExist: # la date de livraison n'existe pas
+        return render(request, "commande/livreur.html", {'livraison':None})
+    except Exception:
+        # Not supposed to happen, another exception happened
+        return HttpResponseServerError()
+    
+    produit = livraison_query.produit
 
-    commande = list(Commande.objects.filter(date = datetime.today().strftime('%Y-%m-%d')).order_by("chambre"))
+    commande = list(Commande.objects.filter(date = date).order_by("chambre"))
     commande_list = []
-    commande_batiment = [{'nom': "Bâtiment A", 'commande': []},{'nom': "Bâtiment B", 'commande': []},{'nom': "Bâtiment C", 'commande': []},{'nom': "Bâtiment D", 'commande': []},{'nom': "Bâtiment E", 'commande': []},{'nom': "Bâtiment F", 'commande': []},{'nom': "Autre", 'commande': []}]
+    commande_batiment = [{'nom': "Bâtiment A", 'commande': []},{'nom': "Bâtiment B", 'commande': []},{'nom': "Bâtiment C", 'commande': []},{'nom': "Bâtiment D", 'commande': []},{'nom': "Bâtiment E", 'commande': []},{'nom': "Bâtiment F", 'commande': []},{'nom': "Autre (indeterminé)", 'commande': []}]
 
     for comm in commande :
         produit_client = json.loads(comm.produit)
