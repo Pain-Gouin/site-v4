@@ -26,6 +26,7 @@ def index(request):
 def mentions(request):
     return render(request, "commande/mentions.html")
 
+@login_required
 def recharge(request):
     return render(request, "commande/recharge.html")
 
@@ -42,7 +43,7 @@ def login_page(request):
             request.user.last_login = datetime.now
             if user is not None :
                 login(request,user)
-                return redirect(index)
+                return redirect(request.GET.get('next', index))
             else:
                 invalidCredential = True
     return render(request, 'commande/login.html', context={'form': form, "invalidCredential":invalidCredential})

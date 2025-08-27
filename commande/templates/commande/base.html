@@ -45,7 +45,7 @@
                         <div class="justify-self-center content-center items-center gap-7">
                             <button id="dropdownInformationButton"
                                     data-dropdown-toggle="dropdownInformation"
-                                    class="font-montserrat hover:text-primary duration-500 rounded-lg px-5 py-2.5 text-center inline-flex items-center xl:text-base text-2xl"
+                                    class="font-montserrat hover:text-primary duration-100 rounded-lg px-5 py-2.5 text-center inline-flex items-center xl:text-base text-2xl"
                                     type="button">
                                 Bienvenue {{ user.first_name }},&nbsp;<b>ton solde est de {{ user.credit|floatformat:-2 }}€</b>
                                 <svg class="w-2.5 h-2.5 ms-3"
@@ -95,7 +95,7 @@
                             </div>
                             <div>
                                 <a href="{% url 'commande' %}">
-                                    <button class="w-96 xl:block hidden bg-inherit border-primary text-primary font-montserrat rounded-lg box-border border-2 rounded-x1 hover:bg-primary hover:text-white duration-1000 h-12 font-bold align-middle">
+                                    <button class="w-96 xl:block hidden bg-inherit border-primary text-primary font-montserrat rounded-lg box-border border-2 rounded-x1 hover:bg-primary hover:text-white duration-100 h-12 font-bold align-middle">
                                         Passer une commande !
                                     </button>
                                 </a>
@@ -105,7 +105,7 @@
                         <div class="justify-self-center content-center">
                             <div>
                                 <a href="{% url 'login' %}">
-                                    <button class="w-96 bg-inherit border-primary text-primary font-montserrat rounded-lg inline-block box-border border-2 rounded-x1 hover:bg-primary hover:text-white duration-1000 h-12 font-bold align-middle">
+                                    <button class="w-96 bg-inherit border-primary text-primary font-montserrat rounded-lg inline-block box-border border-2 rounded-x1 hover:bg-primary hover:text-white duration-100 h-12 font-bold align-middle">
                                         Connecte-toi pour commander !
                                     </button>
                                 </a>

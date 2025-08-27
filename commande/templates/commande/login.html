@@ -2,8 +2,25 @@
 {% load static %}
 {% load widget_tweaks %}
 {% block content %}
+    {% if request.GET.next %}
+        <div class="flex flex-row  place-content-center pt-8">
+            <div id="alert-1"
+                 class="flex items-center p-4 text-green-800 border border-green-400 rounded-lg bg-green-50"
+                 role="alert">
+                <svg class="flex-shrink-0 w-4 h-4"
+                     aria-hidden="true"
+                     xmlns="http://www.w3.org/2000/svg"
+                     fill="currentColor"
+                     viewBox="0 0 20 20">
+                    <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z" />
+                </svg>
+                <span class="sr-only">Info</span>
+                <div class="ms-3 font-medium">Authentifie toi avant d'accéder à {{ request.GET.next }}</div>
+            </div>
+        </div>
+    {% endif %}
     <h1 class="text-3xl text-center font-bebas py-10 text-secondary">Connexion à votre compte Pain'Gouin</h1>
-    <form class="max-w-lg mx-auto pt-5 pb-10" method="post">
+    <form class="max-w-lg mx-auto pb-10" method="post">
         {% if invalidCredential %}
             <div id="alert-1"
                  class="flex items-center p-4 mb-4 text-yellow-800 border border-yellow-400 rounded-lg bg-yellow-50"
@@ -39,27 +56,27 @@
             {% render_field form.username class="bg-gray-50 border font-montserrat border-gray-300 text-secondary text-sm rounded-lg focus:ring-secondary focus:border-secondary block w-full p-2.5" %}
         </div>
         <div class="mb-5">
-            <div class="mb-5">
+            <div class="mb-7">
                 <label for="id_password"
                        class="block mb-2 text-sm font-medium text-gray-900 font-montserrat">Mot de passe :</label>
                 {% render_field form.password class="bg-gray-50 border font-montserrat border-gray-300 text-secondary text-sm rounded-lg focus:ring-secondary focus:border-secondary block w-full p-2.5" %}
                 <a href="{% url 'password_reset' %}"
-                   class="font-montserrat underline hover:text-primary duration-500 text-sm">Mot de passe oublié ?</a>
+                   class="font-montserrat underline hover:text-primary duration-100 text-sm">Mot de passe oublié ?</a>
             </div>
             <div class="flex justify-center flex-row">
                 <button type="submit"
-                        class="w-96 bg-inherit border-primary text-primary font-montserrat rounded-lg inline-block box-border border-2 rounded-x1 hover:bg-primary hover:text-white duration-1000 h-12 font-bold align-middle">
+                        class="w-96 bg-inherit border-primary text-primary font-montserrat rounded-lg inline-block box-border border-2 rounded-x1 hover:bg-primary hover:text-white duration-100 h-12 font-bold align-middle">
                     Se connecter
                 </button>
             </div>
+            <div class="flex justify-center flex-row py-10">
+                <a href="{% url 'signup' %}">
+                    <button type="button"
+                            class="w-96 bg-inherit border-primary text-primary font-montserrat rounded-lg inline-block box-border border-2 rounded-x1 hover:bg-primary hover:text-white duration-100 h-12 font-bold align-middle">
+                        Pas encore de compte ? S'inscrire
+                    </button>
+                </a>
+            </div>
         </div>
     </form>
-    <div class="flex justify-center flex-row py-10">
-        <a href="{% url 'signup' %}">
-            <button type="button"
-                    class="w-96 bg-inherit border-primary text-primary font-montserrat rounded-lg inline-block box-border border-2 rounded-x1 hover:bg-primary hover:text-white duration-1000 h-12 font-bold align-middle">
-                Pas encore de compte ? S'inscrire
-            </button>
-        </a>
-    </div>
 {% endblock content %}
