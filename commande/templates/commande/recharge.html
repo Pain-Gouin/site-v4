@@ -5,9 +5,7 @@
         <p class="text-xl font-montserrat py-5 text-center">
             Pour pouvoir passer des commandes sur le site, ton compte dois être alimenté.
         </p>
-        <p class="text-xl font-montserrat py-5 text-center">
-            Il existe deux moyens d'alimenter ton compte :
-        </p>
+        <p class="text-xl font-montserrat py-5 text-center">Il existe deux moyens d'alimenter ton compte :</p>
     </div>
     <div class="m-4 text-secondary">
         <ul class="flex flex-wrap justify-center -mb-px mx-auto text-sm font-medium text-center items-center h-14"
@@ -72,51 +70,10 @@
                 </div>
             </div>
             <div class="grid xl:grid-cols-2  place-items-center pb-10">
-                <div class="order-2 xl:order-1 shuffle font-montserrat">
+                <div class="order-2 xl:order-1 font-montserrat">
                     Liens de contact :
-                    <a target="_blank" href="https://m.me/maxence.theard.5"
-                       class="m-1 flex items-center gap-4 p-2 rounded-3xl hover:bg-blue-100 border-2 border-blue-500">
-                        <img class="h-10"
-                             src="{% static 'externe/messenger.svg' %}"
-                             alt="logo messenger">
-                        <div class="font-medium dark:text-white">
-                            <div>Maxence Théard</div>
-                            <div class="text-sm text-gray-500 dark:text-gray-400">Président</div>
-                        </div>
-                    </a>
-                    <a target="_blank" href="https://m.me/iannluca.dethomassin"
-                       class="m-1 flex items-center gap-4 p-2 rounded-3xl hover:bg-blue-100 border-2 border-blue-500">
-                        <img class="h-10"
-                             src="{% static 'externe/messenger.svg' %}"
-                             alt="logo messenger">
-                        <div class="font-medium dark:text-white">
-                            <div>Iann Rings De Thomassin</div>
-                            <div class="text-sm text-gray-500 dark:text-gray-400">Secrétaire</div>
-                        </div>
-                    </a>
-                    <a target="_blank" href="https://m.me/61565483788852"
-                       class="m-1 flex items-center gap-4 p-2 rounded-3xl hover:bg-blue-100 border-2 border-blue-500">
-                        <img class="h-10"
-                             src="{% static 'externe/messenger.svg' %}"
-                             alt="logo messenger">
-                        <div class="font-medium dark:text-white">
-                            <div>Hugo Lucks Pariis</div>
-                            <div class="text-sm text-gray-500 dark:text-gray-400">Trésorier</div>
-                        </div>
-                    </a>
+                    {% include "commande/contact_cards.html" %}
                 </div>
-                <script>
-const container = document.querySelector(".shuffle");
-const divs = Array.from(container.children);
-
-// Shuffle
-for (let i = divs.length - 1; i > 0; i--) {
-  const j = Math.floor(Math.random() * (i + 1));
-  [divs[i], divs[j]] = [divs[j], divs[i]];
-}
-
-divs.forEach(div => container.appendChild(div));
-                </script>
                 <div class="max-w-xl order-1 xl:order-2">
                     <h3 class="text-3xl font-bebas pb-10 text-primary">2°) Contacte un membre du bureau de l'association</h3>
                     <p class="text-lg font-montserrat pb-5">

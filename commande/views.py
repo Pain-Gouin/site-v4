@@ -27,6 +27,9 @@ def index(request):
 def mentions(request):
     return render(request, "commande/mentions.html")
 
+def contact(request):
+    return render(request, "commande/contact.html")
+
 @login_required
 def recharge(request):
     return render(request, "commande/recharge.html")
