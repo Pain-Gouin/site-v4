@@ -63,9 +63,17 @@
     </div>
     <div class="flex justify-center flex-row">
       <button type="submit"
-              class="w-96 bg-inherit border-primary text-primary font-montserrat rounded-lg inline-block box-border border-2 rounded-x1 hover:bg-primary hover:text-white duration-1000 h-12 font-bold align-middle">
+              class="w-96 bg-inherit border-primary text-primary font-montserrat rounded-lg inline-block box-border border-2 rounded-x1 hover:bg-primary hover:text-white duration-100 h-12 font-bold align-middle">
         Enregistrer les informations
       </button>
+    </div>
+    <div class="flex justify-center flex-row mt-4">
+      <a href="{% url 'password_change' %}">
+        <button type="button"
+                class="w-96 border-primary text-primary font-montserrat rounded-lg inline-block box-border border-2 rounded-x1 hover:bg-primary hover:text-white duration-100 h-12 font-bold align-middle">
+          Changer le mot de passe
+        </button>
+      </a>
     </div>
   </form>
 {% endblock content %}

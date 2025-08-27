@@ -3,6 +3,7 @@ from django.urls import path
 from . import views
 from .views import ResetPasswordView
 from django.contrib.auth import views as auth_views
+from django.urls import reverse_lazy
 
 urlpatterns = [
     path("", views.index, name="index"),
@@ -17,7 +18,8 @@ urlpatterns = [
     path("livreur", views.livreur, name="livreur"),
     path("historique", views.historique, name="historique"),
     path('password-reset/', ResetPasswordView.as_view(), name='password_reset'),
-    path('password-reset-confirm/<uidb64>/<token>/',auth_views.PasswordResetConfirmView.as_view(template_name='commande/password_reset_confirm.html'),name='password_reset_confirm'),
-    path('password-reset-complete/',auth_views.PasswordResetCompleteView.as_view(template_name='commande/password_reset_complete.html'),name='password_reset_complete'),
+    path('password-reset-confirm/<uidb64>/<token>/',auth_views.PasswordResetConfirmView.as_view(template_name='commande/password_reset_confirm.html', success_url=reverse_lazy("password_change_complete")),name='password_reset_confirm'),
+    path('password-change-complete/',auth_views.PasswordResetCompleteView.as_view(template_name='commande/password_change_complete.html'),name='password_change_complete'),
+    path('password-change/',auth_views.PasswordChangeView.as_view(template_name='commande/password_change.html', success_url=reverse_lazy("password_change_complete")),name='password_change'),
     path('del-order/<order>/', views.del_order, name="del_order")
 ]
