@@ -76,7 +76,7 @@ Avant "déploiement", il est nécessaire d'utiliser la commande `python manage.p
 ## Flowbite
 Flowbite est utilisé.  
 Il a été inclus comme plugin tailwind (via la commande `python manage.py tailwind plugin_install flowbite`), ce qui permet d'inclure le CSS optimisé en même temps que celui de Tailwind.  
-Par ailleurs, le javascript nécessaire au bon fonctionnement des interactions est inclus via un CDN, dans le head des pages.
+Par ailleurs, le javascript nécessaire au bon fonctionnement des interactions est inclus via un fichier static, se situant dans `theme/static/js/dist/flowbite.min.js`. Si flowbite est mis à jour, il faut également mettre à jour ce fichier, qui provient de `theme/static_src/node_modules/flowbite/dist/flowbite.min.js`, avec simplement la seconde ligne supprimé.
 
 
 ## Email
