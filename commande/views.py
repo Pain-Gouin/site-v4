@@ -12,7 +12,7 @@ from django.urls import reverse_lazy, reverse
 from django.http import HttpResponseServerError
 from datetime import datetime, time
 from django.utils import timezone
-from .utils import html_to_text
+from .utils import html_to_text, login_required_with_message
 
 from . import forms
 
@@ -30,7 +30,7 @@ def mentions(request):
 def contact(request):
     return render(request, "commande/contact.html")
 
-@login_required
+@login_required_with_message("Authentifie toi avant d’accéder au rechargement")
 def recharge(request):
     return render(request, "commande/recharge.html")
 
@@ -47,10 +47,23 @@ def login_page(request):
             request.user.last_login = datetime.now
             if user is not None :
                 login(request,user)
+                request.session.pop('login_message', None)
+                request.session.pop('login_next', None)
                 return redirect(request.GET.get('next', index))
             else:
                 invalidCredential = True
-    return render(request, 'commande/login.html', context={'form': form, "invalidCredential":invalidCredential})
+    
+    msg = None
+    if 'login_message' in request.session:
+        if request.session.get('login_next') is None: # Il faut set car c'est la première fois.
+            request.session['login_next'] = request.GET.get('next')
+        if request.GET.get('next') is None or request.GET.get('next') != request.session.get('login_next'): # Le msg n'est plus valide
+            request.session.pop('login_message', None)
+            request.session.pop('login_next', None)
+        else:
+            msg = request.session['login_message']
+        
+    return render(request, 'commande/login.html', context={'form': form, "invalidCredential":invalidCredential, 'msg':msg})
 
 class ResetPasswordView(SuccessMessageMixin, PasswordResetView):
     template_name = 'commande/password_reset.html'
@@ -113,7 +126,7 @@ def update_user_page(request):
     return render(request, "commande/update.html", context={"form":form})
 
 
-@login_required
+@login_required_with_message("Authentifie toi avant de pouvoir commander")
 def commande(request):
     order = []
 
