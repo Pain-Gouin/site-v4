@@ -10,8 +10,7 @@ from django.contrib.auth.views import PasswordResetView
 from django.contrib.messages.views import SuccessMessageMixin
 from django.urls import reverse_lazy, reverse
 from django.http import HttpResponseServerError
-from datetime import datetime, time
-from django.utils import timezone
+from datetime import datetime
 from .utils import html_to_text, login_required_with_message
 
 from . import forms
@@ -130,9 +129,6 @@ def update_user_page(request):
 def commande(request):
     order = []
 
-    current_time = timezone.now()
-    today = current_time.date()
-
     livraison_query = Livraison.objects.modifiable()
 
 
@@ -202,7 +198,8 @@ def commande(request):
                 )
             
             messages.success(request, mark_safe(f'Commande bien prise en compte, <b>pense à mettre un sac devant ta porte !</b>  <a href="{reverse("historique")}" class="font-semibold underline hover:no-underline">Annuler la commande</a>'))
-    
+            return redirect('commande')
+
     if solde <= 5:
         messages.warning(request, mark_safe(f'Ton solde commence à être bas, n\'oublie pas de <a href="{reverse("recharge")}" class="font-semibold underline hover:no-underline">recharger ton compte</a>.'))
 
