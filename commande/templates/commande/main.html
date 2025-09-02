@@ -6,13 +6,13 @@
              alt="banner"
              class="w-full max-h-[650px] object-cover blur-[2px]">
         <div class="flex absolute top-1/3 items-center justify-center w-full">
-            <p class="text-5xl font-bebas drop-shadow-[0_0_10px_#000] text-tertiary">
+            <p class="text-5xl font-bebas drop-shadow-[0_0_10px_#000] text-tertiary text-center">
                 Du pain frais à la Rez tous les matins (ou presque...)
             </p>
         </div>
         <div class="flex absolute top-1/2 items-center justify-center w-full">
             <a href="{% url 'commande' %}">
-                <button class=" mx-auto w-[500px] bg-primary border-primary drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)] text-white font-montserrat rounded-lg inline-block box-border border-2 rounded-x1 hover:bg-inherit hover:text-primary duration-1000 h-14 font-bold align-middle">
+                <button class="mx-auto max-w-[500px] w-[66vw] bg-primary border-primary drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)] text-white font-montserrat rounded-lg inline-block box-border border-2 rounded-x1 hover:bg-inherit hover:text-primary duration-1000 h-14 font-bold align-middle">
                     Passer commande
                 </button>
             </a>
@@ -24,7 +24,7 @@
             <img src="{% static 'illustration/PainGouinOrdi.png' %}"
                  alt="Commande PainGouin">
         </div>
-        <div class="max-w-xl">
+        <div class="xl:max-w-xl ">
             <h3 class="text-4xl font-bebas pb-10 text-primary">Il faut tout d'abord commander !</h3>
             <p class="text-xl font-montserrat pb-5">
                 Nous livrons <b class="text-secondary">tous les jours</b>, sauf le dimanche et les jours fériés. Passe ta commande depuis ton téléphone ou ton ordinateur et indique simplement le jour de livraison souhaité.
