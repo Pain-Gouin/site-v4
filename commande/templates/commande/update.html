@@ -2,8 +2,10 @@
 {% load static %}
 {% load widget_tweaks %}
 {% block content %}
-  <h1 class="text-3xl text-center font-bebas py-10 text-secondary">Modification des informations de votre compte</h1>
-  <form class="max-w-lg mx-auto pt-5 pb-10" method="post">
+  <h1 class="text-3xl text-center font-bebas py-10 text-secondary px-2">
+    Modification des informations de votre compte
+  </h1>
+  <form class="max-w-lg mx-auto pt-5 pb-10 px-2" method="post">
     {% if form.errors %}
       <div id="alert-4"
            class="flex items-center p-4 mb-4 text-yellow-800 rounded-lg bg-yellow-50"
@@ -22,33 +24,33 @@
     {% csrf_token %}
     <div class="mb-5">
       <label for="username"
-             class="block mb-2 text-sm font-medium text-gray-900 font-montserrat">Mail :</label>
+             class="block mb-2 text-sm font-medium text-gray-900 font-montserrat">Mail&nbsp;:</label>
       {% render_field form.username class="bg-gray-50 border font-montserrat border-gray-300 text-secondary text-sm rounded-lg focus:ring-secondary focus:border-secondary block w-full p-2.5" %}
     </div>
     <div class="mb-5">
       <label for="id_first_name"
-             class="block mb-2 text-sm font-medium text-gray-900 font-montserrat">Prénom :</label>
+             class="block mb-2 text-sm font-medium text-gray-900 font-montserrat">Prénom&nbsp;:</label>
       {% render_field form.first_name class="bg-gray-50 border font-montserrat border-gray-300 text-secondary text-sm rounded-lg focus:ring-secondary focus:border-secondary block w-full p-2.5" %}
     </div>
     <div class="mb-5">
       <label for="id_last_name"
-             class="block mb-2 text-sm font-medium text-gray-900 font-montserrat">Nom :</label>
+             class="block mb-2 text-sm font-medium text-gray-900 font-montserrat">Nom&nbsp;:</label>
       {% render_field form.last_name class="bg-gray-50 border font-montserrat border-gray-300 text-secondary text-sm rounded-lg focus:ring-secondary focus:border-secondary block w-full p-2.5" %}
     </div>
     <div class="mb-5">
       <label for="id_chambre"
-             class="block mb-2 text-sm font-medium text-gray-900 font-montserrat">Chambre :</label>
+             class="block mb-2 text-sm font-medium text-gray-900 font-montserrat">Chambre&nbsp;:</label>
       {% render_field form.chambre class="bg-gray-50 border font-montserrat border-gray-300 text-secondary text-sm rounded-lg focus:ring-secondary focus:border-secondary block w-full p-2.5" %}
     </div>
     <div class="mb-5">
       <label for="id_tel"
-             class="block mb-2 text-sm font-medium text-gray-900 font-montserrat">Téléphone :</label>
+             class="block mb-2 text-sm font-medium text-gray-900 font-montserrat">Téléphone&nbsp;:</label>
       {% render_field form.tel class="bg-gray-50 border font-montserrat border-gray-300 text-secondary text-sm rounded-lg focus:ring-secondary focus:border-secondary block w-full p-2.5" %}
     </div>
     <div class="mb-5">
       <label class="inline-flex items-center cursor-pointer">
         {% render_field form.isPermis class="sr-only peer" %}
-        <span class="me-3 text-sm font-medium text-gray-900 font-montserrat dark:text-gray-300">As-tu le permis ?</span>
+        <span class="me-3 text-sm font-medium text-gray-900 font-montserrat dark:text-gray-300">As-tu le permis&nbsp;?</span>
         <div class="relative w-11 h-6 bg-gray-200 peer-focus:outline-hidden peer-focus:ring-2 peer-focus:ring-secondary dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:rtl:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-primary">
         </div>
       </label>
@@ -56,7 +58,7 @@
     <div class="mb-5">
       <label class="inline-flex items-center cursor-pointer">
         {% render_field form.getOrderMail class="sr-only peer" %}
-        <span class="me-3 text-sm font-medium text-gray-900 font-montserrat dark:text-gray-300">Recevoir un mail de confirmation de commande ?</span>
+        <span class="me-3 text-sm font-medium text-gray-900 font-montserrat dark:text-gray-300">Mail de confirmation de commande&nbsp;:</span>
         <div class="relative w-11 h-6 bg-gray-200 peer-focus:outline-hidden peer-focus:ring-2 peer-focus:ring-secondary dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:rtl:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-primary">
         </div>
       </label>
@@ -67,10 +69,10 @@
         Enregistrer les informations
       </button>
     </div>
-    <div class="flex justify-center flex-row mt-4">
-      <a href="{% url 'password_change' %}">
+    <div class="flex justify-center flex-row py-10">
+      <a href="{% url 'password_change' %}" class="w-96">
         <button type="button"
-                class="w-96 border-primary text-primary font-montserrat rounded-lg inline-block box-border border-2 rounded-x1 hover:bg-primary hover:text-white duration-100 h-12 font-bold align-middle">
+                class="h-12 w-full bg-inherit border-primary text-primary font-montserrat rounded-lg inline-block box-border border-2 rounded-x1 hover:bg-primary hover:text-white duration-100 font-bold align-middle">
           Changer le mot de passe
         </button>
       </a>
