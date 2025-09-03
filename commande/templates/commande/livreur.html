@@ -1,16 +1,16 @@
 {% extends "commande/base.html" %}
 {% load static %}
 {% block content %}
-  <div class="mx-auto max-w-6xl m-4"
+  <div class="mx-auto max-w-6xl m-4 px-2"
        id="accordion-collapse"
        data-accordion="collapse">
     <h2 id="accordion-collapse-heading-1">
       <button type="button"
-              class="flex shadow-sm items-center justify-between w-full p-5 font-medium rtl:text-right bg-white text-gray-500 border border-b-0 border-gray-200 rounded-t-xl focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-800 dark:border-gray-700 dark:text-gray-400 gap-3"
+              class="flex shadow items-center justify-between w-full p-5 font-medium rtl:text-right bg-white text-gray-500 border border-b-0 border-gray-200 rounded-t-xl focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-800 dark:border-gray-700 dark:text-gray-400 gap-3"
               data-accordion-target="#accordion-collapse-body-1"
               aria-expanded="false"
               aria-controls="accordion-collapse-body-1">
-        <span class="mx-auto text-center font-montserrat">Guide du livreur</span>
+        <span class="mx-auto text-center font-montserrat text-md md:text-lg">Guide du livreur</span>
         <svg data-accordion-icon
              class="w-3 h-3 rotate-180 shrink-0"
              aria-hidden="true"
@@ -24,18 +24,18 @@
     <div id="accordion-collapse-body-1"
          class="hidden"
          aria-labelledby="accordion-collapse-heading-1">
-      <div class="p-5 border rounded-b-xl shadow-sm bg-white border-gray-200 dark:border-gray-700 dark:bg-gray-900">
+      <div class="py-5 px-3 sm:px-5 border rounded-b-xl shadow-sm bg-white border-gray-200 dark:border-gray-700 dark:bg-gray-900 text-justify lg:text-left">
         <p class="text-lg font-montserrat pb-5 text-center font-semibold mb-4">
-          Tu as été désigné pour effectuer une livraison ? Félicitation !
+          Tu as été désigné pour effectuer une livraison&nbsp;? Félicitation&nbsp;!
           <br>
           Ne t'inquiète pas, on t'explique tout. 😉
         </p>
-        <div class="grid xl:grid-cols-2  place-items-center pb-10">
+        <div class="grid lg:grid-cols-2  place-items-center pb-10">
           <div class="max-w-xl order-1 xl:order-1">
-            <h3 class="text-3xl font-bebas pb-10 text-primary">1°) Coordonne toi avec ton binôme</h3>
+            <h3 class="text-2xl sm:text-3xl font-bebas pb-4 text-primary">1°) Coordonne toi avec ton binôme</h3>
           </div>
-          <div class="order-2 xl:order-2">
-            <p class="text-lg font-montserrat pb-5">
+          <div class="order-2 xl:order-2 text-md sm:text-lg font-montserrat">
+            <p class="pb-5">
               Prends contact avec ton binôme et choisissez votre mode de transport.
               <br>
               <br>
@@ -44,24 +44,24 @@
               <br>
               - Le vélo peut être plus rapide que la voiture, et est nettement plus écologique. Rien de mieux qu'un peu d'exercice matinal&nbsp;! C'est d'autant plus confortable si vous avez vos propres vélos.
             </p>
-            <p class="text-lg font-montserrat pb-5">
+            <p class="pb-5">
               Choisissez bien votre heure de levé : l'objectif est d'avoir tout livré avant que les gens ne partent en cours, soit <b>avant 7h30</b>.
             </p>
-            <p class="text-lg font-montserrat pb-5">
+            <p class="pb-5">
               La boulangerie ouvre à 6h30 (tu peux vérifier <a target="_blank"
     href="https://maps.app.goo.gl/6yipBHCXESL41VWf7"
     class="underline hover:text-primary">ici</a>). Le temps que prend une livraison dépend de ton expérience, du nombre de commandes et des conditions météorologiques (faudra-t-il dégivrer la voiture ?). Cela peut prendre entre 15 et 30 minutes. Pour une première fois, tu peux prévoir de te lever à 6h30.
             </p>
           </div>
         </div>
-        <div class="grid xl:grid-cols-2  place-items-center pb-10">
+        <div class="grid lg:grid-cols-2 place-items-center pb-10">
           <div class="max-w-xl order-1 xl:order-2">
-            <h3 class="text-3xl font-bebas pb-10 text-primary">2°) Levez-vous, et rendez-vous à la boulangerie</h3>
+            <h3 class="text-2xl sm:text-3xl font-bebas pb-4 text-primary">2°) Levez-vous, et rendez-vous à la boulangerie</h3>
           </div>
-          <div class="order-2 xl:order-1">
-            <p class="text-lg font-montserrat pb-5">Le matin de la livraison, récupère ton mode de transport :</p>
+          <div class="order-2 xl:order-1 text-md sm:text-lg font-montserrat">
+            <p class="pb-5">Le matin de la livraison, récupère ton mode de transport :</p>
             <div>
-              <ul class="max-w-md space-y-1 list-disc list-inside text-lg font-montserrat">
+              <ul class="space-y-1 list-disc list-inside">
                 <li>
                   Si vous avez choisi la voiture, récupère les clés de celle-ci dans une de vos boîtes aux lettres, et récupère là sur le parking côté bâtiment E
                 </li>
@@ -70,21 +70,21 @@
                 </li>
               </ul>
             </div>
-            <p class="text-lg font-montserrat py-5">
+            <p class="py-5">
               La boulangerie n'est qu'à 1km, c'est <a target="_blank"
     href="https://maps.app.goo.gl/6yipBHCXESL41VWf7"
     class="underline hover:text-primary">L'Aziza à Triolo</a>.
             </p>
           </div>
         </div>
-        <div class="grid xl:grid-cols-2  place-items-center pb-10">
-          <div class="max-w-xl order-1 xl:order-2">
-            <h3 class="text-3xl font-bebas pb-10 text-primary">3°) Récupérez la commande</h3>
-            <p class="text-lg font-montserrat pb-5">
+        <div class="grid lg:grid-cols-2  place-items-center pb-10">
+          <div class="lg:max-w-xl order-1 lg:order-2">
+            <h3 class="text-2xl sm:text-3xl font-bebas pb-10 text-primary text-center lg:text-left">3°) Récupérez la commande</h3>
+            <p class="text-md sm:text-lg font-montserrat pb-5">
               Ce que vous devez récupérer est indiqué sur cette page. La boulangerie devrait te reconnaitre avec ton sac. Tu n'as pas besoin de payer, tout est réglé à la fin du mois.
             </p>
           </div>
-          <div class="order-2 xl:order-1">
+          <div class="order-2 lg:order-1">
             <div class="flex items-center">
               <img src="{% static 'illustration/PainGouinBoulangerie.png' %}"
                    alt="Sac PainGouin"
@@ -92,11 +92,13 @@
             </div>
           </div>
         </div>
-        <div class="grid xl:grid-cols-2  place-items-center pb-10">
-          <div class="max-w-xl order-1 xl:order-1">
-            <h3 class="text-3xl font-bebas pb-10 text-primary">4°) Rentrez à la résidence et livrez</h3>
-            <p class="text-lg font-montserrat pb-5">Là où vous devez livrer est indiqué sur cette page.</p>
-            <p class="text-lg font-montserrat pb-5">
+        <div class="grid lg:grid-cols-2  place-items-center pb-10">
+          <div class="lg:max-w-xl order-1 xl:order-1 text-md sm:text-lg font-montserrat">
+            <h3 class="text-2xl sm:text-3xl font-bebas pb-10 text-primary text-center lg:text-left">
+              4°) Rentrez à la résidence et livrez
+            </h3>
+            <p class="pb-5">Là où vous devez livrer est indiqué sur cette page.</p>
+            <p class="pb-5">
               Il te suffit de placer les commandes dans les sacs devant les portes. S'il n'y a pas de sac, évite de poser sur le sol la nourriture...
             </p>
           </div>
@@ -108,18 +110,18 @@
             </div>
           </div>
         </div>
-        <div class="grid xl:grid-cols-2  place-items-center pb-10">
-          <div class="max-w-xl order-1 xl:order-2">
-            <h3 class="text-3xl font-bebas pb-10 text-primary">5°) Fin de la livraison !</h3>
-            <p class="text-lg font-montserrat pb-5">
+        <div class="grid lg:grid-cols-2  place-items-center pb-10">
+          <div class="lg:max-w-xl order-1 lg:order-2 text-base sm:text-lg font-montserrat">
+            <h3 class="text-2xl sm:text-3xl font-bebas pb-10 text-primary text-center lg:text-left">5°) Fin de la livraison&nbsp;!</h3>
+            <p class="pb-5">
               Il ne te reste plus qu'à ranger le sac et la voiture/les vélos. <b>Mettez les clés de la voiture dans la boîte aux lettres du prochain livreur.</b>
             </p>
-            <p class="text-lg font-montserrat pb-5">
+            <p class="pb-5">
               Tu peux envoyer un message sur <a href="{% url 'contact' %}" class="underline hover:text-primary">le groupe de l'association</a> pour indiquer le bon déroulé de la livraison (ou si tu as rencontré des problèmes).
             </p>
-            <p class="text-lg font-montserrat pb-5">Merci pour ton travail !</p>
+            <p class="pb-5">Merci pour ton travail&nbsp;!</p>
           </div>
-          <div class="order-2 xl:order-1">
+          <div class="order-2 lg:order-1">
             <div class="flex items-center">
               <img src="{% static 'illustration/PainGouinGrailleKontan.png' %}"
                    alt="Sac PainGouin"
@@ -131,11 +133,11 @@
     </div>
   </div>
   {% if livraison %}
-    <h1 class="text-4xl text-secondary text-center py-5">Commande du {{ livraison.date }}</h1>
+    <h1 class="text-2xl md:text-4xl text-secondary text-center py-5">Commande du {{ livraison.date }}</h1>
     {% if produit %}
-      <div class="flex flex-row justify-around pb-10">
-        <div class="basis-1/4">
-          <h2 class="text-3xl text-primary text-center py-2 font-bold ">Commande globale :</h2>
+      <div class="grid md:grid-cols-2 grid-cols-1 justify-around pb-10">
+        <div class="px-2">
+          <h2 class="text-xl md:text-3xl text-primary text-center py-2 font-bold ">Commande globale :</h2>
           <div class="relative overflow-x-auto pb-10 pt-5">
             <table class="w-full text-sm text-left rtl:text-right text-secondary">
               <thead class="text-xs text-gray-700 uppercase bg-orangemoinsclair">
@@ -156,8 +158,8 @@
             </table>
           </div>
         </div>
-        <div class="basis-1/4">
-          <h2 class="text-3xl text-primary text-center py-2 font-bold ">Livraisons par bâtiments :</h2>
+        <div class="px-2">
+          <h2 class="text-xl md:text-3xl text-primary text-center py-2 font-bold ">Livraisons par bâtiments :</h2>
           <div class="relative overflow-x-auto pb-10 pt-5">
             <table class="w-full text-sm text-left rtl:text-right text-secondary">
               <thead class="text-xs text-gray-700 uppercase bg-orangemoinsclair">
@@ -170,8 +172,7 @@
                 {% for batiment in commande_batiment %}
                   {% if batiment.commande %}
                     <tr class="bg-white border-b">
-                      <th scope="row"
-                          class="px-6 py-4 font-medium text-secondary whitespace-nowrap">{{ batiment.nom }}</th>
+                      <th scope="row" class="px-6 py-4 font-medium text-secondary">{{ batiment.nom }}</th>
                       <td class="px-6 py-4">
                         {% for prod in batiment.commande %}
                           {{ prod.1 }} {{ prod.0 }}
@@ -185,38 +186,40 @@
             </table>
           </div>
         </div>
-      </div>
-      <h2 class="text-3xl text-primary text-center py-2 font-bold ">Liste des livraisons :</h2>
-      <div class="flex flex-row justify-center">
-        <div class="relative overflow-x-auto pb-10 pt-5 basis-1/2">
-          <table class="w-full text-sm text-left rtl:text-right text-secondary">
-            <thead class="text-xs text-gray-700 uppercase bg-orangemoinsclair">
-              <tr>
-                <th scope="col" class="px-6 py-3">Chambre à livrer</th>
-                <th scope="col" class="px-6 py-3">Commande</th>
-              </tr>
-            </thead>
-            <tbody>
-              {% for comm in commande %}
-                <tr class="bg-white border-b">
-                  <th scope="row"
-                      class="px-6 py-4 font-medium text-secondary whitespace-nowrap">{{ comm.0 }}</th>
-                  <td class="px-6 py-4">
-                    {% for prod in comm.1 %}
-                      {{ prod.1 }} {{ prod.0 }}
-                      <br>
-                    {% endfor %}
-                  </td>
-                </tr>
-              {% endfor %}
-            </tbody>
-          </table>
+        <div class="px-2 md:col-span-2">
+          <h2 class="text-xl md:text-3xl text-primary text-center py-2 font-bold ">Liste des livraisons :</h2>
+          <div class="flex flex-row justify-center">
+            <div class="relative overflow-x-auto pb-10 pt-5 basis-full md:basis-1/2">
+              <table class="w-full text-sm text-left rtl:text-right text-secondary">
+                <thead class="text-xs text-gray-700 uppercase bg-orangemoinsclair">
+                  <tr>
+                    <th scope="col" class="px-6 py-3">Chambre à livrer</th>
+                    <th scope="col" class="px-6 py-3">Commande</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for comm in commande %}
+                    <tr class="bg-white border-b">
+                      <th scope="row"
+                          class="px-6 py-4 font-medium text-secondary whitespace-nowrap">{{ comm.0 }}</th>
+                      <td class="px-6 py-4">
+                        {% for prod in comm.1 %}
+                          {{ prod.1 }} {{ prod.0 }}
+                          <br>
+                        {% endfor %}
+                      </td>
+                    </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </div>
         </div>
       </div>
     {% else %}
-      <h2 class="text-3xl text-primary text-center py-5 font-bold">Personne n'a encore commandé !</h2>
+      <h2 class="text-2xl md:text-4xl text-primary text-center py-5 px-3 font-bold">Personne n'a encore commandé&nbsp;!</h2>
     {% endif %}
   {% else %}
-    <h1 class="text-4xl text-secondary text-center py-10">Pas de livraison aujourd'hui !</h1>
+    <h1 class="text-2xl md:text-4xl text-secondary text-center py-10 px-3">Pas de livraison aujourd'hui&nbsp;!</h1>
   {% endif %}
 {% endblock content %}
