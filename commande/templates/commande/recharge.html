@@ -1,18 +1,18 @@
 {% extends "commande/base.html" %}
 {% load static %}
 {% block content %}
-    <div class="font-montserrat content-center pt-4">
-        <p class="text-xl font-montserrat py-5 text-center">
+    <div class="font-montserrat content-center pt-4 px-4">
+        <p class="text-lg sm:text-xl font-montserrat py-5 text-center font-semibold">
             Pour pouvoir passer des commandes sur le site, ton compte dois être alimenté.
         </p>
-        <p class="text-base font-montserrat py-5 text-center">
+        <p class="text-sm sm:text-base font-montserrat pb-5 text-center font-light">
             Si tu ne souhaites plus, un jour, utiliser les services de l'association, tu as la possibilité de récupérer le solde restant sur ton compte en <a href="{% url 'contact' %}"
-    class="underline hover:text-primary transition duration-100">contactant le trésorier</a>.
+    class="underline hover:text-primary transition duration-100">contactant&nbsp;le&nbsp;trésorier</a>.
         </p>
-        <p class="text-xl font-montserrat py-5 text-center">Il existe deux moyens d'alimenter ton compte :</p>
+        <p class="text-lg sm:text-xl font-montserrat pt-5 text-center">Il existe deux moyens d'alimenter ton compte :</p>
     </div>
-    <div class="m-4 text-secondary">
-        <ul class="flex flex-wrap justify-center -mb-px mx-auto text-sm font-medium text-center items-center h-14"
+    <div class="m-2 text-secondary">
+        <ul class="flex justify-center -mb-px mx-auto text-sm font-medium text-center items-center h-14"
             id="default-styled-tab"
             data-tabs-toggle="#default-styled-tab-content"
             data-tabs-active-classes="text-white bg-secondary"
@@ -26,10 +26,12 @@
                         role="tab"
                         aria-controls="Lyf"
                         aria-selected="True">
-                    Rechargement par
-                    <img class="h-7"
-                         src="{% static 'externe/Lyf - corail.svg' %}"
-                         alt="Lyf logo" />
+                    <p class="text-center">
+                        Rechargement par
+                        <img class="h-7 inline-block"
+                             src="{% static 'externe/Lyf - corail.svg' %}"
+                             alt="Lyf logo" />
+                    </p>
                 </button>
             </li>
             <li class="h-full" role="presentation">
@@ -43,65 +45,72 @@
             </li>
         </ul>
     </div>
-    <div id="default-styled-tab-content">
-        <div class="mx-auto max-w-6xl shadow-sm p-8 rounded-lg bg-white"
+    <div id="default-styled-tab-content"
+         class="flex items-center justify-center">
+        <div class="mx-2 max-w-6xl shadow-sm p-8 rounded-lg bg-white"
              id="styled-lyf"
              role="tabpanel"
              aria-labelledby="lyf-tab">
-            <div class="grid xl:grid-cols-2  place-items-center pb-10">
-                <div class="max-w-xl order-1 xl:order-1">
-                    <h3 class="text-3xl font-bebas pb-10 text-primary">1°) Installe et configure l'application Lyf</h3>
-                    <p class="text-lg font-montserrat pb-5">On utilise cette application pour faire des transferts à taux faibles.</p>
+            <div class="grid lg:grid-cols-2  place-items-center pb-10">
+                <div class="max-w-xl order-1 lg:order-1">
+                    <h3 class="text-2xl sm:text-3xl font-bebas pb-3 lg:pb-10 text-primary">1°) Installe et configure l'application Lyf</h3>
+                    <p class="text-md sm:text-lg font-montserrat pb-5">
+                        On utilise cette application pour faire des transferts à taux faibles.
+                    </p>
                 </div>
-                <div class="order-2 xl:order-2">
-                    <div class="flex items-center">
-                        <img class="h-44 inline-block m-4"
+                <div class="order-2 lg:order-2 max-w-[500px]">
+                    <div class="grid lg:grid-cols-3 grid-cols-2 grid-rows-2 items-center">
+                        <img class="inline-block p-4 row-span-2"
                              src="{% static 'externe/Lyf.icone.corail.png' %}"
                              alt="logo application lyf">
                         <a class="m-4 inline-block"
                            href="https://play.google.com/store/apps/details?id=com.fivory.prod">
-                            <img class="h-12"
+                            <img class="w-full"
                                  src="{% static 'externe/GetItOnGooglePlay_Badge_Web_color_French.svg' %}"
                                  alt="Play Store badge">
                         </a>
                         <a class="m-4 inline-block"
                            href="https://apps.apple.com/fr/app/id824967438">
-                            <img class="h-12"
+                            <img class="w-full"
                                  src="{% static 'externe/Download_on_the_App_Store_Badge_FR_RGB_blk_100517.svg' %}"
                                  alt="App Store badge">
                         </a>
                     </div>
                 </div>
             </div>
-            <div class="grid xl:grid-cols-2  place-items-center pb-10">
-                <div class="order-2 xl:order-1 font-montserrat">
+            <div class="grid lg:grid-cols-2  place-items-center pb-10">
+                <div class="order-2 lg:order-1 font-montserrat">
                     Liens de contact :
                     {% include "commande/contact_cards.html" %}
                 </div>
-                <div class="max-w-xl order-1 xl:order-2">
-                    <h3 class="text-3xl font-bebas pb-10 text-primary">2°) Contacte un membre du bureau de l'association</h3>
-                    <p class="text-lg font-montserrat pb-5">
+                <div class="max-w-xl order-1 lg:order-2">
+                    <h3 class="text-2xl sm:text-3xl font-bebas pb-3 lg:pb-10 text-primary">
+                        2°) Contacte un membre du bureau de l'association
+                    </h3>
+                    <p class="text-md sm:text-lg font-montserrat pb-5">
                         Indique-lui ton numéro de téléphone, ainsi que le montant du rechargement que tu souhaites effectuer.
                     </p>
-                    <p class="text-lg font-montserrat pb-5">
+                    <p class="text-md sm:text-lg font-montserrat pb-5">
                         <b>Il vous faut alors vous coordonner</b> (à distance)
                         <br>
                         Il va initier un transfert Lyf : tu dois immédiatement confirmer celui-ci via l'application sur ton téléphone.
                     </p>
                 </div>
             </div>
-            <div class="grid xl:grid-cols-2  place-items-center pb-10">
-                <div class="max-w-xl order-1 xl:order-1">
-                    <h3 class="text-3xl font-bebas pb-10 text-primary">3°) Confirmation du transfert et ajout des fonds</h3>
-                    <p class="text-lg font-montserrat pb-5">
+            <div class="grid lg:grid-cols-2  place-items-center pb-10">
+                <div class="max-w-xl order-1 lg:order-1">
+                    <h3 class="text-2xl sm:text-3xl font-bebas pb-3 lg:pb-10 text-primary">
+                        3°) Confirmation du transfert et ajout des fonds
+                    </h3>
+                    <p class="text-md sm:text-lg font-montserrat pb-5">
                         Le membre contacté va te confirmer la réussite du virement, et ajouter les fonds à ton compte.
                     </p>
-                    <p class="text-lg font-montserrat pb-5">
+                    <p class="text-md sm:text-lg font-montserrat pb-5">
                         Il ne te reste plus qu'à <a class="underline hover:text-primary duration-500"
-    href="{% url 'commande' %}">passer commande</a> !
+    href="{% url 'commande' %}">passer commande</a>&nbsp;!
                     </p>
                 </div>
-                <div class="order-2 xl:order-2">
+                <div class="order-2 lg:order-2">
                     <div class="flex items-center">
                         <img src="{% static 'illustration/PainGouinGrailleKontan.png' %}"
                              alt="Sac PainGouin"
@@ -115,13 +124,13 @@
              role="tabpanel"
              aria-labelledby="cb-tab">
             <p class="text-base text-center font-montserrat">
-                Il n'est pas encore possible de recharger son compte directement sur le site... Mais cela est prévu !
+                Il n'est pas encore possible de recharger son compte directement sur le site... Mais cela est prévu&nbsp;!
                 <br>
-                Si tu attends cela avec impatience, tu peux envoyer un message à Valentin GRÉGOIRE pour le motiver à s'en occuper &#128521;
+                Si tu attends cela avec impatience, tu peux envoyer un message à Valentin GRÉGOIRE pour le motiver à s'en occuper&nbsp;😉
             </p>
             <img src="{% static 'illustration/PainGouinGrailleKontan.png' %}"
                  alt="Sac PainGouin"
-                 class="mx-auto h-44">
+                 class="mx-auto max-h-44">
         </div>
     </div>
 {% endblock content %}
