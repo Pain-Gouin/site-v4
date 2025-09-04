@@ -131,28 +131,29 @@ def commande(request):
 
     livraison_query = Livraison.objects.modifiable()
 
+    categorie_query = CategorieProduit.objects.prefetch_related('produit_set').all()
 
-    produit_query = list(Produit.objects.all())
-    categorie_query = CategorieProduit.objects.all()
-
-    produit = produit_query
+    category_dict = {}
+    for cat in categorie_query:
+        category_dict[cat] = list(cat.produit_set.all())
 
     if request.user.is_authenticated:
         user = request.user.get_username()
         solde = request.user.credit
     
-    if request.method == 'POST':
+    if request.user.is_authenticated and request.method == 'POST':
 
         total_commande = 0
 
         bought_prod = []
-        for prod in produit_query:
-            quantity = request.POST["quantity" + str(prod.id)]
+        for product_list in category_dict.values():
+            for prod in product_list:
+                quantity = request.POST["quantity" + str(prod.id)]
 
-            total_commande += int(quantity)*prod.prix
-            if int(quantity) > 0:
-                bought_prod.append({"object": prod, "quantity": quantity, "price": int(quantity)*prod.prix})
-                order.append([prod.nom, quantity])
+                total_commande += int(quantity)*prod.prix
+                if int(quantity) > 0:
+                    bought_prod.append({"object": prod, "quantity": quantity, "price": int(quantity)*prod.prix})
+                    order.append([prod.nom, quantity])
         order = json.dumps(order)
 
         if total_commande > solde:
@@ -200,10 +201,12 @@ def commande(request):
             messages.success(request, mark_safe(f'Commande bien prise en compte, <b>pense à mettre un sac devant ta porte !</b>  <a href="{reverse("historique")}" class="font-semibold underline hover:no-underline">Annuler la commande</a>'))
             return redirect('commande')
 
-    if solde <= 5:
+    if solde == 0:
+        messages.warning(request, mark_safe(f'Avant de pouvoir passer commande, tu dois d\'abord <a href="{reverse('recharge')}" class="font-semibold underline hover:no-underline">alimenter ton compte</a>.'))
+    elif solde <= 5:
         messages.warning(request, mark_safe(f'Ton solde commence à être bas, n\'oublie pas de <a href="{reverse("recharge")}" class="font-semibold underline hover:no-underline">recharger ton compte</a>.'))
 
-    context = {'produit': produit, 'categorie':categorie_query, 'livraison':livraison_query, 'solde_vide':request.user.credit==0}
+    context = {'category_dict': category_dict, 'livraison':livraison_query, 'solde_vide':request.user.credit==0}
     return render(request, 'commande/order.html', context)
 
 def add_to_livraison(date, commande):
