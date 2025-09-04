@@ -15,19 +15,19 @@ from django.utils.dates import MONTHS
 from django.utils.safestring import mark_safe
 
 class LoginForm(forms.Form):
-    username = forms.CharField(max_length=63, label='Email')
+    email = forms.EmailField(max_length=63, label='Email')
     password = forms.CharField(max_length=63, widget=forms.PasswordInput, label='Mot de passe')
 
 class SignupForm(UserCreationForm):
     class Meta(UserCreationForm.Meta):
         model = get_user_model()
-        fields = ('username', 'first_name', 'last_name', 'chambre', 'tel','isPermis')
+        fields = ('email', 'first_name', 'last_name', 'chambre', 'tel','isPermis')
         
 
 class UpdateForm(UserChangeForm):
     class Meta(UserChangeForm.Meta):
         model = get_user_model()
-        fields = ('username', 'first_name', 'last_name', 'chambre', 'tel', 'isPermis', 'getOrderMail')
+        fields = ('email', 'first_name', 'last_name', 'chambre', 'tel', 'isPermis', 'getOrderMail')
 
 
 class ProductOrderForm(forms.Form):

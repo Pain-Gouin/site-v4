@@ -40,7 +40,7 @@ def login_page(request):
         form = forms.LoginForm(request.POST)
         if form.is_valid():
             user = authenticate(
-                username = form.cleaned_data["username"],
+                username = form.cleaned_data["email"],
                 password = form.cleaned_data["password"],
             )
             request.user.last_login = datetime.now
@@ -88,8 +88,8 @@ def signup_page(request):
         if form.is_valid():
             user = form.save()
             login(request, user)
-            request.user.email = request.user.username
-            receiver_email = request.user.username
+            request.user.email = request.user.email
+            receiver_email = request.user.email
             request.user.save()
             template_name = "mail/signup_mail.html"
             convert_to_html_content =  render_to_string(
@@ -119,7 +119,12 @@ def update_user_page(request):
         if form.is_valid():
             form.save()
             messages.success(request, "Profile mise à jour.")
-
+        else:
+            for key, value in form.errors.items():
+                messages.error(request, value)
+            
+        return redirect('update')
+    
     form = forms.UpdateForm(instance=request.user)
 
     return render(request, "commande/update.html", context={"form":form})
@@ -168,7 +173,7 @@ def commande(request):
             add_to_livraison(date,order)
 
             if request.user.getOrderMail:
-                receiver_email = request.user.username
+                receiver_email = request.user.email
                 template_name = "mail/order_mail.html"
                 convert_to_html_content =  render_to_string(
                     template_name=template_name,
@@ -293,7 +298,7 @@ def livreur(request):
 
 @login_required
 def historique(request):
-    user_order = Commande.objects.filter(client=request.user.username).order_by("-date")
+    user_order = Commande.objects.filter(client=request.user.get_username()).order_by("-date")
     historique = []
 
     for commande in user_order:
@@ -306,7 +311,7 @@ def historique(request):
 @login_required
 def del_order(request, order):
     query_order = Commande.objects.get(id = order)
-    if query_order.client != request.user.username:
+    if query_order.client != request.user.get_username():
         messages.error(request, "Tu dois être connecté pour faire cela !")
         return redirect(settings.LOGIN_REDIRECT_URL)
     elif query_order.date <= datetime.today().date():

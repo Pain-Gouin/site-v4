@@ -421,7 +421,7 @@ def delete_commandes(request, commande_id):
             total = commande.total_commande
             produit_commande = json.loads(commande.produit)
 
-            utilisateur = Utilisateur.objects.get(username = commande.client)
+            utilisateur = Utilisateur.objects.get(**{Utilisateur.USERNAME_FIELD: commande.client})
 
 
             livraison = Livraison.objects.get(date = date_livraison)

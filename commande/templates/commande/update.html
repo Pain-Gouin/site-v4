@@ -23,9 +23,9 @@
     {% endif %}
     {% csrf_token %}
     <div class="mb-5">
-      <label for="username"
+      <label for="email"
              class="block mb-2 text-sm font-medium text-gray-900 font-montserrat">Mail&nbsp;:</label>
-      {% render_field form.username class="bg-gray-50 border font-montserrat border-gray-300 text-secondary text-sm rounded-lg focus:ring-secondary focus:border-secondary block w-full p-2.5" %}
+      {% render_field form.email class="bg-gray-50 border font-montserrat border-gray-300 text-secondary text-sm rounded-lg focus:ring-secondary focus:border-secondary block w-full p-2.5" %}
     </div>
     <div class="mb-5">
       <label for="id_first_name"

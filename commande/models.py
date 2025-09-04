@@ -1,6 +1,7 @@
 from django.db import models
-from django.contrib.auth.models import AbstractUser, BaseUserManager
+from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseUserManager
 from django.contrib.auth.models import UserManager
+from django.utils.translation import gettext_lazy as _
 
 from datetime import datetime, time
 from django.utils import timezone
@@ -9,8 +10,28 @@ import json
 
 # Create your models here.
 
-class Utilisateur(AbstractUser):
-    username = models.EmailField(unique=True, null=True)
+class Utilisateur(AbstractBaseUser, PermissionsMixin):
+    email = models.EmailField(_("email address"), unique=True, null=True)
+
+    # Taken from AbstractBaseUser
+    first_name = models.CharField(_("first name"), max_length=150, blank=True)
+    last_name = models.CharField(_("last name"), max_length=150, blank=True)
+    is_staff = models.BooleanField(
+        _("staff status"),
+        default=False,
+        help_text=_("Designates whether the user can log into this admin site."),
+    )
+    is_active = models.BooleanField(
+        _("active"),
+        default=True,
+        help_text=_(
+            "Designates whether this user should be treated as active. "
+            "Unselect this instead of deleting accounts."
+        ),
+    )
+    date_joined = models.DateTimeField(_("date joined"), default=timezone.now)
+    # End of taken from AbstractUser
+
     isLivreur = models.BooleanField(default = False)
     isPermis = models.BooleanField(default= False)
     getOrderMail = models.BooleanField(default=True)
@@ -21,15 +42,10 @@ class Utilisateur(AbstractUser):
     created_at = models.DateTimeField(default=datetime.now)
     credit = models.DecimalField(max_digits=8, decimal_places=2, default=0)
 
-    email = models.EmailField()
-    
-    USERNAME_FIELD = "username"
+    USERNAME_FIELD = "email"
     REQUIRED_FIELDS = []
 
-    def save(self, *args, **kwargs):
-        # Always set email equal to username
-        self.email = self.username
-        super().save(*args, **kwargs)
+    objects = UserManager()
 
 class CategorieProduit(models.Model):
     nom = models.CharField(max_length=100)
