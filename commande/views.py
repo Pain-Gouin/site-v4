@@ -136,10 +136,6 @@ def commande(request):
     category_dict = {}
     for cat in categorie_query:
         category_dict[cat] = list(cat.produit_set.all())
-
-    if request.user.is_authenticated:
-        user = request.user.get_username()
-        solde = request.user.credit
     
     if request.user.is_authenticated and request.method == 'POST':
 
@@ -156,18 +152,17 @@ def commande(request):
                     order.append([prod.nom, quantity])
         order = json.dumps(order)
 
-        if total_commande > solde:
+        if total_commande > request.user.credit:
             messages.error(request, mark_safe(f'Fonds insuffisant, il faut que tu <a href="{reverse("recharge")}" class="font-semibold underline hover:no-underline">recharges ton compte</a> !'))
         elif len(bought_prod) == 0: # Avec la vérification javascript côté client, ce n'est pas sensé être possible
             messages.error(request, "Sélectionne au moins un article !")
         else:
             chambre = request.POST["chambre"]
             date = list(Livraison.objects.filter(id = request.POST["date"]))[0].date
-            solde -= total_commande
-            request.user.credit = solde
+            request.user.credit -= total_commande
             request.user.save()
 
-            comm = Commande(client = user, date = date, produit = order, chambre = chambre, total_commande = total_commande)
+            comm = Commande(client = request.user.get_username(), date = date, produit = order, chambre = chambre, total_commande = total_commande)
             comm.save()
 
             add_to_livraison(date,order)
@@ -201,9 +196,9 @@ def commande(request):
             messages.success(request, mark_safe(f'Commande bien prise en compte, <b>pense à mettre un sac devant ta porte !</b>  <a href="{reverse("historique")}" class="font-semibold underline hover:no-underline">Annuler la commande</a>'))
             return redirect('commande')
 
-    if solde == 0:
+    if request.user.credit == 0:
         messages.warning(request, mark_safe(f'Avant de pouvoir passer commande, tu dois d\'abord <a href="{reverse('recharge')}" class="font-semibold underline hover:no-underline">alimenter ton compte</a>.'))
-    elif solde <= 5:
+    elif request.user.credit <= 5:
         messages.warning(request, mark_safe(f'Ton solde commence à être bas, n\'oublie pas de <a href="{reverse("recharge")}" class="font-semibold underline hover:no-underline">recharger ton compte</a>.'))
 
     context = {'category_dict': category_dict, 'livraison':livraison_query, 'solde_vide':request.user.credit==0}

@@ -28,7 +28,7 @@
                     <br>
                   {% endfor %}
                 </td>
-                <td class="px-1 py-4">{{ commande.total|floatformat:-2 }}€</td>
+                <td class="px-1 py-4">{{ commande.total }}€</td>
                 <td class="w-10">
                   {% if commande.passe %}
                     <a href="{% url 'del_order' commande.id %}">

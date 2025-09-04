@@ -19,7 +19,7 @@ class Utilisateur(AbstractUser):
     last_login = models.DateTimeField(default=datetime.now)
     last_order = models.DateTimeField(default=datetime.now)
     created_at = models.DateTimeField(default=datetime.now)
-    credit = models.FloatField(default=0)
+    credit = models.DecimalField(max_digits=8, decimal_places=2, default=0)
 
     email = models.EmailField()
     
@@ -40,8 +40,8 @@ class CategorieProduit(models.Model):
 class Produit(models.Model):
     nom = models.CharField(max_length=100)
     image = models.FileField(upload_to="images")
-    prix = models.FloatField(default=0)
-    prix_achat = models.FloatField(default=0)
+    prix = models.DecimalField(max_digits=8, decimal_places=2, default=0)
+    prix_achat = models.DecimalField(max_digits=8, decimal_places=2, default=0)
     isQuota = models.BooleanField(default=False, verbose_name="Présence de quota pour le produit")
     quota = models.IntegerField(default=0)
     categorie = models.ForeignKey(CategorieProduit, on_delete=models.CASCADE)
@@ -82,7 +82,7 @@ class Commande(models.Model):
     date = models.DateField()
     produit = models.JSONField(default=defaultJson)
     chambre = models.CharField(max_length=10)
-    total_commande = models.FloatField(default=0)
+    total_commande = models.DecimalField(max_digits=8, decimal_places=2, default=0)
 
     @property
     def est_modifiable(self):

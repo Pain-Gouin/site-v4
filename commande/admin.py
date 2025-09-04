@@ -19,7 +19,7 @@ from django.urls import reverse
 from django.views import View
 from django.db.models import F
 from datetime import datetime
-
+from decimal import Decimal
 
 
 from django.db.models import Q
@@ -102,7 +102,7 @@ def update_credit(request):
         new_credit = request.POST.get('new_credit')
         try:
             user = Utilisateur.objects.get(first_name=first_name, last_name=last_name)
-            user.credit = float(new_credit)
+            user.credit = Decimal(new_credit)
             user.save()
             return JsonResponse({'message': 'Crédit mis à jour avec succès.'})
         except Utilisateur.DoesNotExist:
@@ -117,7 +117,7 @@ def add_credit(request):
         add_credit = request.POST.get('add_credit')
         try:
             user = Utilisateur.objects.get(first_name=first_name, last_name=last_name)
-            user.credit += float(add_credit)
+            user.credit += Decimal(add_credit)
             user.save()
             return JsonResponse({'message': 'Crédit ajouté avec succès.', 'new_solde': user.credit})
         except Utilisateur.DoesNotExist:
