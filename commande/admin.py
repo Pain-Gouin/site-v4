@@ -1,9 +1,9 @@
-from django.contrib import admin
+from django.contrib import admin, messages
 from django.views.generic import TemplateView, FormView
 from unfold.admin import ModelAdmin
 from unfold.views import UnfoldModelAdminViewMixin
 from django.contrib.auth.admin import GroupAdmin as BaseGroupAdmin
-from django.urls import path
+from django.urls import path, reverse_lazy
 from django.contrib.auth.models import Group
 from .models import Utilisateur, Produit, CategorieProduit, Commande, Livraison
 from django.http import JsonResponse
@@ -20,12 +20,18 @@ from django.views import View
 from django.db.models import F
 from datetime import datetime
 from decimal import Decimal
-
+from .utils import html_to_text
+from django.core.mail import send_mail
+from django.template.loader import render_to_string
+from django.conf import settings
+from django.utils.encoding import force_bytes
+from django.utils.http import urlsafe_base64_encode
+from django.contrib.auth.tokens import PasswordResetTokenGenerator
 
 from django.db.models import Q
 
 
-from .forms import LivraisonForm, ExportForm
+from .forms import LivraisonForm, ExportForm, PrecreateUserForm
 
 
 
@@ -450,6 +456,47 @@ def delete_commandes(request, commande_id):
         return JsonResponse({'error': str(e)}, status=500)
     
 
+class PrecreateUserView(UnfoldModelAdminViewMixin, FormView):
+    title = "Précréation de compte utilisateur"
+    form_class = PrecreateUserForm
+    permission_required = ("auth.view_group",)
+    template_name = "admin/precreate_user.html"
+    success_url = reverse_lazy("admin:precreation_utilisateurs")
+
+    def form_valid(self, form):
+
+        # Create user in DB
+        user = form.save(commit=False)
+        user.date_joined = None # To indicate that the user asn't yet joined
+        user.save()
+
+        # Send pre-creation email
+        template_name = "mail/precreation_mail.html"
+        user_pk_bytes = force_bytes(Utilisateur._meta.pk.value_to_string(user))
+        token = PasswordResetTokenGenerator().make_token(user)
+        convert_to_html_content =  render_to_string(
+            template_name=template_name,
+            context = {
+                'request': self.request,
+                'uid': urlsafe_base64_encode(user_pk_bytes),
+                'token': token,
+            }
+        )
+        send_mail(
+            subject="Créer ton compte Pain'Gouin",
+            message=html_to_text(convert_to_html_content),
+            from_email=settings.EMAIL_HOST_USER,
+            recipient_list=[user.email,],
+            html_message=convert_to_html_content,
+            fail_silently=True
+        )
+
+        messages.success(self.request, "Utilisateur bien pré-créé")
+        return super().form_valid(form)
+    
+    def form_invalid(self, form):
+        messages.error(self.request, "Erreur, utilisateur non créé.")
+        return super().form_invalid(form)
 
 
 
@@ -468,7 +515,7 @@ class CustomAdmin(BaseGroupAdmin, ModelAdmin):
             path("modification_commande/date/", get_commandes_by_date, name='get_commandes_by_date'),
             path('modification_commande/<int:commande_id>/details/', get_commandes_details, name='detailler_commande'),
             path('modification_commande/<int:commande_id>/supprimer/', delete_commandes, name='detailler_commande'),
-
+            path('precreation_utilisateurs/', PrecreateUserView.as_view(model_admin=self), name='precreation_utilisateurs'),
 
         ]
         return custom_urls + super().get_urls()

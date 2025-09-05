@@ -11,11 +11,11 @@ import json
 # Create your models here.
 
 class Utilisateur(AbstractBaseUser, PermissionsMixin):
-    email = models.EmailField(_("email address"), unique=True, null=True)
+    email = models.EmailField(_("email address"), unique=True, null=False, blank=False)
 
     # Taken from AbstractBaseUser
-    first_name = models.CharField(_("first name"), max_length=150, blank=True)
-    last_name = models.CharField(_("last name"), max_length=150, blank=True)
+    first_name = models.CharField(_("first name"), max_length=150, blank=False, null=True)
+    last_name = models.CharField(_("last name"), max_length=150, blank=False, null=True)
     is_staff = models.BooleanField(
         _("staff status"),
         default=False,
@@ -29,15 +29,14 @@ class Utilisateur(AbstractBaseUser, PermissionsMixin):
             "Unselect this instead of deleting accounts."
         ),
     )
-    date_joined = models.DateTimeField(_("date joined"), default=timezone.now)
+    date_joined = models.DateTimeField(_("date joined"), default=timezone.now, null=True)
     # End of taken from AbstractUser
 
-    isLivreur = models.BooleanField(default = False)
-    isPermis = models.BooleanField(default= False)
+    isLivreur = models.BooleanField(default=False)
+    isPermis = models.BooleanField(default=False)
     getOrderMail = models.BooleanField(default=True)
-    chambre = models.CharField(max_length=10)
-    tel = models.CharField(max_length=20)
-    last_login = models.DateTimeField(default=datetime.now)
+    chambre = models.CharField(max_length=10, blank=False, null=True)
+    tel = models.CharField(max_length=20, blank=False, null=True)
     last_order = models.DateTimeField(default=datetime.now)
     created_at = models.DateTimeField(default=datetime.now)
     credit = models.DecimalField(max_digits=8, decimal_places=2, default=0)

@@ -10,6 +10,9 @@ from django.contrib.auth.views import PasswordResetView
 from django.contrib.messages.views import SuccessMessageMixin
 from django.urls import reverse_lazy, reverse
 from django.http import HttpResponseServerError
+from django.utils.http import urlsafe_base64_decode
+from django.core.exceptions import ValidationError
+from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from datetime import datetime
 from .utils import html_to_text, login_required_with_message
 
@@ -17,7 +20,7 @@ from . import forms
 
 import json
 
-from .models import Produit, CategorieProduit, Commande, Livraison
+from .models import Produit, CategorieProduit, Commande, Livraison, Utilisateur
 
 # Create your views here.
 def index(request):
@@ -80,15 +83,41 @@ def logout_user(request):
     logout(request)
     return redirect(index)
 
+def finish_signup_page(request, uidb64, token):
+    # Decode de l'uid
+    try:
+        # urlsafe_base64_decode() decodes to bytestring
+        uid = urlsafe_base64_decode(uidb64).decode()
+        pk = Utilisateur._meta.pk.to_python(uid)
+        user = Utilisateur._default_manager.get(pk=pk)
+    except (
+        TypeError,
+        ValueError,
+        OverflowError,
+        ValidationError,
+    ):
+        user = None
+    
+    if user is None:
+        messages.error(request, "uid utilisateur non valide")
+        return redirect('signup')
+
+    # Vérification du token
+    if not PasswordResetTokenGenerator().check_token(user, token):
+        messages.error(request, "lien non valide")
+        return redirect('signup')
+    
+    messages.success(request, "Lien valide !")
+    return redirect('signup')
 
 def signup_page(request):
     form = forms.SignupForm()
+
     if request.method == 'POST':
         form = forms.SignupForm(request.POST)
         if form.is_valid():
             user = form.save()
             login(request, user)
-            request.user.email = request.user.email
             receiver_email = request.user.email
             request.user.save()
             template_name = "mail/signup_mail.html"
@@ -203,7 +232,7 @@ def commande(request):
 
     if request.user.credit == 0:
         messages.warning(request, mark_safe(f'Avant de pouvoir passer commande, tu dois d\'abord <a href="{reverse('recharge')}" class="font-semibold underline hover:no-underline">alimenter ton compte</a>.'))
-    elif request.user.credit <= 5:
+    elif request.user.credit <= 2:
         messages.warning(request, mark_safe(f'Ton solde commence à être bas, n\'oublie pas de <a href="{reverse("recharge")}" class="font-semibold underline hover:no-underline">recharger ton compte</a>.'))
 
     context = {'category_dict': category_dict, 'livraison':livraison_query, 'solde_vide':request.user.credit==0}
