@@ -20,18 +20,19 @@ from django.views import View
 from django.db.models import F
 from datetime import datetime
 from decimal import Decimal
-from .utils import html_to_text
+from .utils import html_to_text, send_mass_html_mail
 from django.core.mail import send_mail
 from django.template.loader import render_to_string
 from django.conf import settings
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
+from django.forms import modelformset_factory
 
 from django.db.models import Q
 
 
-from .forms import LivraisonForm, ExportForm, PrecreateUserForm
+from .forms import LivraisonForm, ExportForm, PrecreateUserForm, PrecreateUsersFormHelper
 
 
 
@@ -454,42 +455,55 @@ def delete_commandes(request, commande_id):
             return JsonResponse({'error': 'Livraison non trouvée.'}, status=404)
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
+
+
+def PrecreateUserFunction(user, request):
+    return PrecreateUsersFunction([user], request)
+
+def PrecreateUsersFunction(users, request):
+    # Create users in DB
+    for user in users:
+        user.date_joined = None # To indicate that the user hasn't yet joined
+        user.is_active = False
+        user.save()
+
+    # Send pre-creation emails
+    emails = []
+    template_name = "mail/precreation_mail.html"
+    for user in users:
+        user_pk_bytes = force_bytes(Utilisateur._meta.pk.value_to_string(user))
+        token = PasswordResetTokenGenerator().make_token(user)
+        convert_to_html_content =  render_to_string(
+            template_name=template_name,
+            context = {
+                'request': request,
+                'uid': urlsafe_base64_encode(user_pk_bytes),
+                'token': token,
+                'user': user,
+            }
+        )
+        emails.append((
+            "Création de ton compte Pain'Gouin",
+            html_to_text(convert_to_html_content),
+            convert_to_html_content,
+            settings.EMAIL_HOST_USER,
+            [user.email,],
+        ))
     
+    send_mass_html_mail(emails, fail_silently=True)
 
 class PrecreateUserView(UnfoldModelAdminViewMixin, FormView):
     title = "Précréation de compte utilisateur"
     form_class = PrecreateUserForm
     permission_required = ("auth.view_group",)
     template_name = "admin/precreate_user.html"
-    success_url = reverse_lazy("admin:precreation_utilisateurs")
+    success_url = reverse_lazy("admin:precreation_utilisateur")
 
     def form_valid(self, form):
 
         # Create user in DB
         user = form.save(commit=False)
-        user.date_joined = None # To indicate that the user asn't yet joined
-        user.save()
-
-        # Send pre-creation email
-        template_name = "mail/precreation_mail.html"
-        user_pk_bytes = force_bytes(Utilisateur._meta.pk.value_to_string(user))
-        token = PasswordResetTokenGenerator().make_token(user)
-        convert_to_html_content =  render_to_string(
-            template_name=template_name,
-            context = {
-                'request': self.request,
-                'uid': urlsafe_base64_encode(user_pk_bytes),
-                'token': token,
-            }
-        )
-        send_mail(
-            subject="Créer ton compte Pain'Gouin",
-            message=html_to_text(convert_to_html_content),
-            from_email=settings.EMAIL_HOST_USER,
-            recipient_list=[user.email,],
-            html_message=convert_to_html_content,
-            fail_silently=True
-        )
+        PrecreateUserFunction(user, self.request)
 
         messages.success(self.request, "Utilisateur bien pré-créé")
         return super().form_valid(form)
@@ -497,6 +511,81 @@ class PrecreateUserView(UnfoldModelAdminViewMixin, FormView):
     def form_invalid(self, form):
         messages.error(self.request, "Erreur, utilisateur non créé.")
         return super().form_invalid(form)
+
+
+class PrecreateUsersView(UnfoldModelAdminViewMixin, FormView):
+    title = "Précréation de compte utilisateur"
+    permission_required = ("auth.view_group",)
+    template_name = "admin/precreate_users.html"
+    success_url = reverse_lazy("admin:precreation_utilisateurs")
+
+    def get_form_class(self, extra=3):
+        return modelformset_factory(
+            Utilisateur,
+            form=PrecreateUserForm,
+            extra=extra,            # number of empty forms to display
+            can_delete=False
+        )
+
+    def get_form(self, form_class=None):
+        form_class = self.get_form_class()
+        return form_class(queryset=Utilisateur.objects.none(), **self.get_form_kwargs())
+
+    def form_valid(self, formset):
+
+        valid_users = []
+        invalid_forms_indices = []
+
+
+        for i, form in enumerate(formset):
+            if form.is_valid() and form.has_changed():
+                valid_users.append(form.save(commit=False))
+            elif form.has_changed():
+                # keep invalid or empty forms for re-rendering
+                invalid_forms_indices.append(i)
+
+        PrecreateUsersFunction(valid_users, self.request)
+
+        if valid_users:
+            messages.success(self.request, f"{len(valid_users)} utilisateur(s) bien pré-créés")
+        
+        if invalid_forms_indices:
+            messages.error(self.request, f"{len(invalid_forms_indices)} formulaire(s) contiennent des erreurs et doivent être corrigés.")
+
+            # Rebuild formset with only invalid forms
+            Formset = self.get_form_class(extra=len(invalid_forms_indices))
+            # Pass in data from the original request to preserve errors
+            new_formset = Formset(
+                data=self.request.POST,
+                queryset=Utilisateur.objects.none(),
+            )
+            # Delete all non invalid forms
+            for i, form in reversed(list(enumerate(new_formset.forms))):
+                if i not in invalid_forms_indices:
+                    del new_formset.forms[i]
+            
+            return self.render_to_response(self.get_context_data(form=new_formset))
+
+        return super().form_valid(formset)
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        context.update(
+            {
+                "precreateuser_formset_helper": PrecreateUsersFormHelper(),
+            }
+        )
+        return context
+    
+    def post(self, request, *args, **kwargs):
+        """
+        Handle POST requests: instantiate a form instance with the passed
+        POST variables.
+        """
+        # I need the form to be passed even if not valid
+        form = self.get_form()
+        return self.form_valid(form)
 
 
 
@@ -515,7 +604,8 @@ class CustomAdmin(BaseGroupAdmin, ModelAdmin):
             path("modification_commande/date/", get_commandes_by_date, name='get_commandes_by_date'),
             path('modification_commande/<int:commande_id>/details/', get_commandes_details, name='detailler_commande'),
             path('modification_commande/<int:commande_id>/supprimer/', delete_commandes, name='detailler_commande'),
-            path('precreation_utilisateurs/', PrecreateUserView.as_view(model_admin=self), name='precreation_utilisateurs'),
+            path('precreation_utilisateur/', PrecreateUserView.as_view(model_admin=self), name='precreation_utilisateur'),
+            path('precreation_utilisateurs/', PrecreateUsersView.as_view(model_admin=self), name='precreation_utilisateurs'),
 
         ]
         return custom_urls + super().get_urls()

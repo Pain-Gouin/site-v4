@@ -2,34 +2,61 @@
 {% load static %}
 {% load widget_tweaks %}
 {% block content %}
-  <h1 class="text-3xl text-center font-bebas py-10 text-secondary px-2">
-    Modification des informations de votre compte
-  </h1>
+<style>
+  .required:after {
+    color: #e32;
+    content: ' *';
+    display:inline;
+  }
+</style>
+  <h1 class="text-3xl text-center font-bebas py-10 text-secondary px-2">Finir la création de ton compte</h1>
   <form class="max-w-lg mx-auto pt-5 pb-10 px-2" method="post">
     {% csrf_token %}
     <div class="mb-5">
       <label for="id_email"
-             class="block mb-2 text-sm font-medium text-gray-900 font-montserrat">Mail&nbsp;:</label>
+             class="required block mb-2 text-sm font-medium text-gray-900 font-montserrat">Mail&nbsp;:</label>
       {% render_field form.email class="bg-gray-50 border font-montserrat border-gray-300 text-secondary text-sm rounded-lg focus:ring-secondary focus:border-secondary block w-full p-2.5" %}
     </div>
+    <fieldset class="module aligned wide">
+      <div class="form-row">
+        <div class="mb-5">
+          <label class="required block mb-2 text-base font-medium text-gray-900 font-montserrat"
+                 for="id_new_password1">Mot de passe&nbsp;:</label>
+          {% render_field form.new_password1 class="bg-gray-50 border font-montserrat border-gray-300 text-secondary text-sm rounded-lg focus:ring-secondary focus:border-secondary block w-full p-2.5" %}
+          {% if form.new_password1.help_text %}
+            <span class="text-sm font-medium text-black font-montserrat mb-6"
+                  {% if form.new_password1.id_for_label %}id="{{ form.new_password1.id_for_label }}_helptext"{% endif %}>
+              {{ form.new_password1.help_text|safe }}
+            </span>
+          {% endif %}
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="mb-5">
+          <label class="required block mb-2 text-base font-medium text-gray-900 font-montserrat"
+                 for="id_new_password2">Confirmer le mot de passe&nbsp;:</label>
+          {% render_field form.new_password2 class="bg-gray-50 border font-montserrat border-gray-300 text-secondary text-sm rounded-lg focus:ring-secondary focus:border-secondary block w-full p-2.5" %}
+        </div>
+      </div>
+    </fieldset>
     <div class="mb-5">
       <label for="id_first_name"
-             class="block mb-2 text-sm font-medium text-gray-900 font-montserrat">Prénom&nbsp;:</label>
+             class="required block mb-2 text-sm font-medium text-gray-900 font-montserrat">Prénom&nbsp;:</label>
       {% render_field form.first_name class="bg-gray-50 border font-montserrat border-gray-300 text-secondary text-sm rounded-lg focus:ring-secondary focus:border-secondary block w-full p-2.5" %}
     </div>
     <div class="mb-5">
       <label for="id_last_name"
-             class="block mb-2 text-sm font-medium text-gray-900 font-montserrat">Nom&nbsp;:</label>
+             class="required block mb-2 text-sm font-medium text-gray-900 font-montserrat">Nom&nbsp;:</label>
       {% render_field form.last_name class="bg-gray-50 border font-montserrat border-gray-300 text-secondary text-sm rounded-lg focus:ring-secondary focus:border-secondary block w-full p-2.5" %}
     </div>
     <div class="mb-5">
       <label for="id_chambre"
-             class="block mb-2 text-sm font-medium text-gray-900 font-montserrat">Chambre&nbsp;:</label>
+             class="required block mb-2 text-sm font-medium text-gray-900 font-montserrat">Chambre&nbsp;:</label>
       {% render_field form.chambre class="bg-gray-50 border font-montserrat border-gray-300 text-secondary text-sm rounded-lg focus:ring-secondary focus:border-secondary block w-full p-2.5" %}
     </div>
     <div class="mb-5">
       <label for="id_tel"
-             class="block mb-2 text-sm font-medium text-gray-900 font-montserrat">Téléphone&nbsp;:</label>
+             class="required block mb-2 text-sm font-medium text-gray-900 font-montserrat">Téléphone&nbsp;:</label>
       {% render_field form.tel class="bg-gray-50 border font-montserrat border-gray-300 text-secondary text-sm rounded-lg focus:ring-secondary focus:border-secondary block w-full p-2.5" %}
     </div>
     <div class="mb-5">
@@ -40,27 +67,11 @@
         </div>
       </label>
     </div>
-    <div class="mb-5">
-      <label class="inline-flex items-center cursor-pointer">
-        {% render_field form.getOrderMail class="sr-only peer" %}
-        <span class="me-3 text-sm font-medium text-gray-900 font-montserrat dark:text-gray-300">Mail de confirmation de commande&nbsp;:</span>
-        <div class="relative w-11 h-6 bg-gray-200 peer-focus:outline-hidden peer-focus:ring-2 peer-focus:ring-secondary dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:rtl:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-primary">
-        </div>
-      </label>
-    </div>
     <div class="flex justify-center flex-row">
       <button type="submit"
               class="w-96 bg-inherit border-primary text-primary font-montserrat rounded-lg inline-block box-border border-2 rounded-x1 hover:bg-primary hover:text-white duration-100 h-12 font-bold align-middle">
-        Enregistrer les informations
+        Finaliser la création du compte
       </button>
-    </div>
-    <div class="flex justify-center flex-row py-10">
-      <a href="{% url 'password_change' %}" class="w-96">
-        <button type="button"
-                class="h-12 w-full bg-inherit border-primary text-primary font-montserrat rounded-lg inline-block box-border border-2 rounded-x1 hover:bg-primary hover:text-white duration-100 font-bold align-middle">
-          Changer le mot de passe
-        </button>
-      </a>
     </div>
   </form>
 {% endblock content %}

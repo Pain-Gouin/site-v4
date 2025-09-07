@@ -7,8 +7,11 @@
     {{ form.media }}
 {% endblock %}
 {% block content %}
-    {% tab_list "users" %}  
-    <div class="flex flex-col gap-8 mb-8">
-        {% crispy form "unfold_crispy" %}
-    </div>
+    {% tab_list "users" %}
+    <style>
+    td.flex {
+        display: table-cell !important;;
+    }
+    </style>
+    <div class="flex flex-col gap-8 mb-8">{% crispy form precreateuser_formset_helper "unfold_crispy" %}</div>
 {% endblock %}

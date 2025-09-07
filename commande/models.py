@@ -29,15 +29,17 @@ class Utilisateur(AbstractBaseUser, PermissionsMixin):
             "Unselect this instead of deleting accounts."
         ),
     )
+    email_verified = models.BooleanField("E-mail vérifié", default=False, help_text="Désigne si l'utilisateur a bien validé son e-mail")
+    autorisation_verified = models.BooleanField("Centralien vérifié", default=False, help_text="Désigne si l'utilisateur a été vérifié comme étant un Centralien, autorisé à utiliser le site")
     date_joined = models.DateTimeField(_("date joined"), default=timezone.now, null=True)
     # End of taken from AbstractUser
 
-    isLivreur = models.BooleanField(default=False)
-    isPermis = models.BooleanField(default=False)
+    isLivreur = models.BooleanField("Livreur", default=False)
+    isPermis = models.BooleanField("Permis", default=False)
     getOrderMail = models.BooleanField(default=True)
     chambre = models.CharField(max_length=10, blank=False, null=True)
     tel = models.CharField(max_length=20, blank=False, null=True)
-    last_order = models.DateTimeField(default=datetime.now)
+    last_order = models.DateTimeField(null=True)
     created_at = models.DateTimeField(default=datetime.now)
     credit = models.DecimalField(max_digits=8, decimal_places=2, default=0)
 

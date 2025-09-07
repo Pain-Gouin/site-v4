@@ -55,7 +55,7 @@ def login_page(request):
             else:
                 invalidCredential = True
     
-    msg = None
+    login_redirect_msg = None
     if 'login_message' in request.session:
         if request.session.get('login_next') is None: # Il faut set car c'est la première fois.
             request.session['login_next'] = request.GET.get('next')
@@ -63,9 +63,9 @@ def login_page(request):
             request.session.pop('login_message', None)
             request.session.pop('login_next', None)
         else:
-            msg = request.session['login_message']
+            login_redirect_msg = request.session['login_message']
         
-    return render(request, 'commande/login.html', context={'form': form, "invalidCredential":invalidCredential, 'msg':msg})
+    return render(request, 'commande/login.html', context={'form': form, "invalidCredential":invalidCredential, 'msg':login_redirect_msg})
 
 class ResetPasswordView(SuccessMessageMixin, PasswordResetView):
     template_name = 'commande/password_reset.html'
@@ -84,6 +84,7 @@ def logout_user(request):
     return redirect(index)
 
 def finish_signup_page(request, uidb64, token):
+
     # Decode de l'uid
     try:
         # urlsafe_base64_decode() decodes to bytestring
@@ -94,25 +95,60 @@ def finish_signup_page(request, uidb64, token):
         TypeError,
         ValueError,
         OverflowError,
+        Utilisateur.DoesNotExist,
         ValidationError,
     ):
         user = None
     
     if user is None:
         messages.error(request, "uid utilisateur non valide")
-        return redirect('signup')
+        return redirect(settings.LOGIN_URL)
 
     # Vérification du token
     if not PasswordResetTokenGenerator().check_token(user, token):
         messages.error(request, "lien non valide")
-        return redirect('signup')
+        return redirect(settings.LOGIN_URL)
     
-    messages.success(request, "Lien valide !")
-    return redirect('signup')
+    # Lien valide
+    if request.method == 'POST':
+        original_email = user.email
+        form = forms.FinishSignupForm(user, data=request.POST, instance=user)
+        if form.is_valid():
+            updated_user = form.save(commit=False)
+            updated_user.email_verified = (original_email == updated_user.email)
+            updated_user.date_joined = datetime.now()
+            updated_user.save()
+            login(request, user)
+            receiver_email = updated_user.email
+            template_name = "mail/signup_mail.html"
+            convert_to_html_content =  render_to_string(
+                template_name=template_name,
+                context = {
+                    'prenom':updated_user.first_name,
+                    'request':request,
+                }
+            )
+            plain_message = html_to_text(convert_to_html_content)
+
+            send_mail(
+                subject="Inscription confirmée",
+                message=plain_message,
+                from_email=settings.EMAIL_HOST_USER,
+                recipient_list=[receiver_email,],
+                html_message=convert_to_html_content,
+                fail_silently=True
+            )
+            messages.success(request, "Ton compte a bien été créé !")
+            return redirect(settings.LOGIN_REDIRECT_URL)
+        else:
+            for key, value in form.errors.items():
+                messages.error(request, value)
+    else:
+        form = forms.FinishSignupForm(user, instance=user)
+
+    return render(request, 'commande/finish_signup.html', context={'form': form})
 
 def signup_page(request):
-    form = forms.SignupForm()
-
     if request.method == 'POST':
         form = forms.SignupForm(request.POST)
         if form.is_valid():
@@ -138,7 +174,11 @@ def signup_page(request):
                 html_message=convert_to_html_content,
                 fail_silently=True
             )
+            messages.success(request, "Ton compte a bien été créé !")
             return redirect(settings.LOGIN_REDIRECT_URL)
+    else:
+        form = forms.SignupForm()
+
     return render(request, 'commande/signup.html', context={'form': form})
 
 @login_required
@@ -194,6 +234,7 @@ def commande(request):
             chambre = request.POST["chambre"]
             date = list(Livraison.objects.filter(id = request.POST["date"]))[0].date
             request.user.credit -= total_commande
+            request.user.last_order = datetime.now
             request.user.save()
 
             comm = Commande(client = request.user.get_username(), date = date, produit = order, chambre = chambre, total_commande = total_commande)

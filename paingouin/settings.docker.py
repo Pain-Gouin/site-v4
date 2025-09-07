@@ -53,6 +53,7 @@ INSTALLED_APPS = [
     'tailwind',
     'django_yubin',
     'django_mjml_template',
+    'crispy_forms',
     'theme',
     "commande",
 ]
@@ -227,8 +228,8 @@ UNFOLD = {
         "navigation": [
             {
                 "title": _("Accueil"),
-                "separator": True,  # Top border
-                "collapsible": True,  # Collapsible group of links
+                "separator": False,  # Top border
+                "collapsible": False,  # Collapsible group of links
                 "items": [
                     {
                         "title": _("Dashboard"),
@@ -245,18 +246,8 @@ UNFOLD = {
             {
                 "title": _("Commande"),
                 "separator": True,  # Top border
-                "collapsible": True,  # Collapsible group of links
+                "collapsible": False,  # Collapsible group of links
                 "items": [
-                    {
-                        "title": _("Gestion des catégories"),
-                        "icon": "mist",
-                        "link": reverse_lazy("admin:commande_categorieproduit_changelist"),
-                    },
-                    {
-                        "title": _("Gestion des articles"),
-                        "icon": "bakery_dining",
-                        "link": reverse_lazy("admin:commande_produit_changelist"),
-                    },
                     {
                         "title": _("Gestion des livraisons"),
                         "icon": "local_shipping",
@@ -275,9 +266,26 @@ UNFOLD = {
                 ],
             },
             {
+                "title": _("Articles"),
+                "separator": True,  # Top border
+                "collapsible": False,  # Collapsible group of links
+                "items": [
+                    {
+                        "title": _("Gestion des articles"),
+                        "icon": "bakery_dining",
+                        "link": reverse_lazy("admin:commande_produit_changelist"),
+                    },
+                    {
+                        "title": _("Gestion des catégories"),
+                        "icon": "mist",
+                        "link": reverse_lazy("admin:commande_categorieproduit_changelist"),
+                    },
+                ],
+            },
+            {
                 "title": _("Trésorerie"),
                 "separator": True,  # Top border
-                "collapsible": True,  # Collapsible group of links
+                "collapsible": False,  # Collapsible group of links
                 "items": [
                     {
                         "title": _("Gestion des soldes"),
@@ -293,6 +301,31 @@ UNFOLD = {
             },
         ],
     },
+    "TABS": [
+        {
+            "page": "users",
+            "models": [
+                "commande.utilisateur",
+            ],
+            "items": [
+                {
+                    "title": _("Utilisateurs"),
+                    "link": reverse_lazy("admin:commande_utilisateur_changelist"),
+                    "active": lambda request: request.path
+                    == reverse_lazy("admin:commande_utilisateur_changelist")
+                    and "status__exact" not in request.GET,
+                },
+                {
+                    "title": _("Précréation d'un utilisateur"),
+                    "link": reverse_lazy("admin:precreation_utilisateur"),
+                },
+                {
+                    "title": _("Précréation de plusieurs utilisateurs"),
+                    "link": reverse_lazy("admin:precreation_utilisateurs"),
+                },
+            ]
+        },
+    ],
     "THEME": "dark",
     "SHOW_HISTORY": False,
 }
@@ -318,3 +351,7 @@ CELERY_BROKER_URL = (
     + "/"
     + os.getenv("RABBITMQ_VHOST", "paingouinvhost")
 )
+
+CRISPY_TEMPLATE_PACK = "unfold_crispy"
+
+CRISPY_ALLOWED_TEMPLATE_PACKS = ["unfold_crispy"]
