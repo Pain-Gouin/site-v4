@@ -46,7 +46,6 @@ def login_page(request):
                 username = form.cleaned_data["email"],
                 password = form.cleaned_data["password"],
             )
-            request.user.last_login = datetime.now
             if user is not None :
                 login(request,user)
                 request.session.pop('login_message', None)
@@ -234,7 +233,7 @@ def commande(request):
             chambre = request.POST["chambre"]
             date = list(Livraison.objects.filter(id = request.POST["date"]))[0].date
             request.user.credit -= total_commande
-            request.user.last_order = datetime.now
+            request.user.last_order = datetime.now()
             request.user.save()
 
             comm = Commande(client = request.user.get_username(), date = date, produit = order, chambre = chambre, total_commande = total_commande)

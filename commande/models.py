@@ -39,7 +39,10 @@ class Utilisateur(AbstractBaseUser, PermissionsMixin):
     getOrderMail = models.BooleanField(default=True)
     chambre = models.CharField(max_length=10, blank=False, null=True)
     tel = models.CharField(max_length=20, blank=False, null=True)
-    last_order = models.DateTimeField(null=True)
+    last_order = models.DateTimeField(
+        null=True,
+        help_text="Date du jour où l'utilisateur a passé sa dernière commande (et non de la commande). Il a pu la supprimer par la suite.",
+    )
     created_at = models.DateTimeField(default=datetime.now)
     credit = models.DecimalField(max_digits=8, decimal_places=2, default=0)
 
