@@ -13,6 +13,7 @@ from django.http import HttpResponseServerError
 from django.utils.http import urlsafe_base64_decode
 from django.core.exceptions import ValidationError
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
+from django.utils import timezone
 from datetime import datetime
 from .utils import html_to_text, login_required_with_message
 
@@ -115,7 +116,7 @@ def finish_signup_page(request, uidb64, token):
         if form.is_valid():
             updated_user = form.save(commit=False)
             updated_user.email_verified = (original_email == updated_user.email)
-            updated_user.date_joined = datetime.now()
+            updated_user.date_joined = timezone.now()
             updated_user.save()
             login(request, user)
             receiver_email = updated_user.email
@@ -233,7 +234,7 @@ def commande(request):
             chambre = request.POST["chambre"]
             date = list(Livraison.objects.filter(id = request.POST["date"]))[0].date
             request.user.credit -= total_commande
-            request.user.last_order = datetime.now()
+            request.user.last_order = timezone.now()
             request.user.save()
 
             comm = Commande(client = request.user.get_username(), date = date, produit = order, chambre = chambre, total_commande = total_commande)

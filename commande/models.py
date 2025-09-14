@@ -43,7 +43,7 @@ class Utilisateur(AbstractBaseUser, PermissionsMixin):
         null=True,
         help_text="Date du jour où l'utilisateur a passé sa dernière commande (et non de la commande). Il a pu la supprimer par la suite.",
     )
-    created_at = models.DateTimeField(default=datetime.now)
+    created_at = models.DateTimeField(default=timezone.now)
     credit = models.DecimalField(max_digits=8, decimal_places=2, default=0)
 
     USERNAME_FIELD = "email"
