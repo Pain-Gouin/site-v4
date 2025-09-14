@@ -35,7 +35,9 @@ DEBUG = str_to_bool(os.getenv("DEBUG", "0"))
 
 ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS","paingouin.rezoleo.fr, www.paingouin.rezoleo.fr").split(",")
 
-CSRF_TRUSTED_ORIGINS = os.environ.get("DJANGO_CSRF_TRUSTED_ORIGINS","https://paingouin.rezoleo.fr").split(",")
+# Admins will reveive an email everytime a server error occurs
+ADMINS = [('vale', 'margerite.tonnere@gmail.com')]
+SERVER_EMAIL = 'admin.' + os.getenv('EMAIL_HOST_USER', 'noreply@paingouin.rezoleo.fr')
 
 
 # Application definition

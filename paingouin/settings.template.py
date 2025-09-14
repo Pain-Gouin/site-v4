@@ -30,6 +30,9 @@ SECRET_KEY = 'django-insecure-=5sf8@fhdxzr8(c!%-5xx1!5x6x07$%vc^0rr&$4ljgh&v5!w%
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
+# Admins will reveive an email everytime a servererror occurs
+ADMINS = [('Example', 'example@example.com')]
+SERVER_EMAIL = "paingouin@rezoleo.fr"
 ALLOWED_HOSTS = ['paingouindev.rezoleo.fr', 'www.paingouindev.rezoleo.fr', '127.0.0.1']
 
 
