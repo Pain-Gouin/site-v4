@@ -20,7 +20,7 @@ Lors d'une passation du bureau, il est nécessaire de mettre à jour certaines i
 
 Il faut :
 
-- Mettre à jour la page des mentions légales, avec le nouveau responsable de la publication, et le nouveau responsable web. Cela se fait [ici](https://github.com/Pain-Gouin/site-v4/blob/master/commande/templates/commande/mentions.html), en éditant le fichier depuis l'interface web.
+- Mettre à jour la page des mentions légales, avec le nouveau responsable de la publication, et le nouveau responsable web. Cela se fait [ici](https://github.com/Pain-Gouin/site-v4/blob/master/commande/templates/commande/mentions.html), en éditant le fichier depuis l'interface web (Attention à ne pas oublier la ligne 76 !).
 - Mettre à jour la liste des personnes à contacter pour recharger son compte via Lyf. Cela se fait [ici](https://github.com/Pain-Gouin/site-v4/blob/master/commande/templates/commande/contact_cards.html), en éditant le fichier depuis l'interface web. Pour obtenir les url, récupérer l'id utilisateur depuis l'url du profil Facebook, et rajouter `https://m.me/` au début.
 - Changer le contact des administrateurs qui vont recevoir un email en cas d'erreur serveur, en modifiant la variable `ADMINS` dans le fichier `settings.docker.py` ([ici](https://github.com/Pain-Gouin/site-v4/blob/master/paingouin/settings.docker.py))
 - Déployer les changements, en poussant les modifications sur la branche de production. Pour ce faire, aller [ici](https://github.com/Pain-Gouin/site-v4/compare/prod...master), cliquer sur `Create pull request`, puis confirmer la création du pull request.
