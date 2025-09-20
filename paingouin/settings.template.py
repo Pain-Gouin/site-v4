@@ -103,11 +103,11 @@ WSGI_APPLICATION = 'paingouin.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-       'NAME': 'dbdjango',
+       'NAME': 'paingouin',
         'HOST': '127.0.0.1',
         'PORT': '3306',
-        'USER': 'myuser',
-        'PASSWORD': 'monpassword',
+        'USER': 'root',
+        'PASSWORD': 'mysql',
         'OPTIONS':{
         "init_command": "SET foreign_key_checks = 0;",
         }
@@ -180,12 +180,12 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media').replace('\\', '/')
 
 EMAIL_BACKEND = 'django_yubin.backends.QueuedEmailBackend'
 MAILER_USE_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_USE_TLS = True
+EMAIL_USE_TLS = False
 EMAIL_USE_SSL = False
-EMAIL_HOST = 'ssl0.ovh.net'
-EMAIL_PORT = 587
-EMAIL_HOST_USER = formataddr(("L'équipe Pain'Gouin", 'contact@ic-art.fr'))
-EMAIL_HOST_PASSWORD = 'Demarchage'
+EMAIL_HOST = 'localhost'
+EMAIL_PORT = 1025
+EMAIL_HOST_USER = formataddr(("L'équipe Pain'Gouin", 'paingouin@rezoleo.fr'))
+EMAIL_HOST_PASSWORD = None
 
 UNFOLD = {
     "SITE_TITLE":"Panel administrateur de Pain'Gouin",

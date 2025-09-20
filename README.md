@@ -53,6 +53,8 @@ pip install -r requirements.txt
 ```
 ### Mise en place de NodeJS et de TailwindCSS
 Afin d'utiliser TailwindCSS, il faut installer NodeJS (22 au moment d'écrire ces lignes). Pour Linux, vous pouvez utiliser ce [site](https://nodesource.com/products/distributions).  
+### Test de l'envoie d'emails
+Cf. la [Documentation Technique](documentation/DocumentationTechnique.md#email), dans la section `email`.
 ### Démarrer le serveur local
 Une fois tout ceci fait, il faut configurer le site pour tourner sur sa machine local. Pour ce faire, copiez le fichier `paingouin/settings.template.py` vers `paingouin/settings.py`, et modifiez-le pour correspondre à votre base de donnée locale. Vous devez modifier les informations suivantes : 
 
@@ -103,23 +105,4 @@ python manage.py createsuperuser
 Cf la [Documentation Technique](documentation/DocumentationTechnique.md)
 
 ## Axes d'amélioration du site
-
-Le site n'est actuellement pas parfait (il est même bien loin de l'être), le code n'est pas forcément organisé de manière très propre (et je m'excuse pour ça) et il manque de commentaires. L'un des axes d'amélioration est donc de rendre le site le plus clair possible pour permettre à n'importe qui de modifier le site sans souci. Il est donc essentiel de documenter du mieux possible toutes les fonctionnalités ajoutées et de mettre à jour la documentation le plus souvent possible dès lors qu'une modification importante a été apportée au site (cf. date de mise à jour du document).
-
-Entre autres, voici une liste de choses à faire sur le site (pour le rendre encore meilleur) : 
-
- - [ ] Ajout de l'option "Pain tranché", "Pain non tranché" dans les produits et les commandes
- - [ ] Gérer les quotas des produits et empêcher la commande d'un produit dont le quota journalier est atteint
- - [ ] Rendre l'application PWA (ie. application mobile)
- - [ ] Ajouter la modification de commande de n'importe quel utilisateur sur le panel admin
- - [ ] Exporter directement des factures format PDF dans le panel admin
- - [ ] Modifier le style de certaines pages un peu trop simpliste (espace livreur par exemple) pour les rendre plus sympas (subjectif)
-
-## En attendant la modification de commande automatisée sur le panel admin
-Si une livraison se passe mal (ce qui n'arrive jamais hein...) et qu'un produit venait à ne pas être livré, pour rembourser un utilisateur, voici la marche à suivre : 
-
- - Trouver la commande de l'utilisateur sur le panel admin et retirer le produit concerné de sa commande (en se connectant directement au panel PHPMyAdmin à l'aide des identifiants donnés dans la documentation détaillée)
- - Le rembourser à la main du prix du produit retiré de sa commande
- - Le prévenir que le remboursement a été effectué 
-
-Si un problème survient, ou s'il y a des doutes, ne pas hésiter à contacter [Mathis Rimbert](https://www.facebook.com/profile.php?id=61550914982995)
+Cf. l'onglet Projet de Github.

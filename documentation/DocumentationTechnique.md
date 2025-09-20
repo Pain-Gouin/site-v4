@@ -86,24 +86,7 @@ Les mails utilisent la librairie [django-yubin](https://github.com/APSL/django-y
 
 Son utilisation nécessite l'usage de [celery](https://docs.celeryq.dev/en/stable/index.html), un système permettant l'exécution de tâches programmées, qui nécessite un serveur de message : Redis ou [RabbitMQ](https://www.rabbitmq.com/) (le choix de RabbitMQ a été fait ici ~~afin de se compliquer encore plus la vie~~ sur conseil de la doc de celery).
 
-Si vous voulez pouvoir faire du développement en local, il vous faut donc installer RabbitMQ, le configurer et lancer le serveur. Ce n'est pas évident et le lancement du serveur n'est pas automatisé. Je conseille donc plutôt d'utiliser le docker compose pour cela, qui inclut directement RabbitMQ, ainsi que [MailPit](https://github.com/axllent/mailpit) qui permet de tester la réception d'e-mails.
-
-Si vous voulez vraiment vous embêter à installer l'environnement de dev en local, voici les commandes qu'il a fallu que je fasse :
-```console
-sudo apt-get install rabbitmq-server
-sudo rabbitmqctl add_user paingouin xGmyRq8J5CSUT0fgD3m9iGgVs
-sudo rabbitmqctl add_vhost paingouinvhost
-sudo rabbitmqctl set_permissions -p paingouinvhost paingouin ".*" ".*" ".*"
-```
-Il faut ensuite s'assurer que le settings.py est bien rempli :
-```python
-CELERY_BROKER_URL = 'amqp://paingouin:xGmyRq8J5CSUT0fgD3m9iGgVs@localhost:5672/paingouinvhost'
-```
-et lancer le serveur RabbitMQ :
-```console
-sudo rabbitmq-server
-```
-Je ne promets pas que cela suffira, ni que ça ne cassera pas.
+Si vous voulez pouvoir faire du développement en local, il vous faut donc installer RabbitMQ, le configurer et lancer le serveur. Ce n'est pas évident et le lancement du serveur n'est pas automatisé. Je conseille donc plutôt d'utiliser le docker compose pour cela, qui inclut directement RabbitMQ, ainsi que [MailPit](https://github.com/axllent/mailpit) qui permet de tester la réception d'e-mails. Vous pouvez ne lancer que ces deux services et continuer à faire tourner le reste en local normalement, via la commande `tailwind dev`.
 
 Dû à une incompatibilité entre Unfold et django-yubin, le dossier [templates](../templates/) permet de forcer une des vues de django-yubin à utiliser l'interface originale administrateur. Ce n'est pas très beau, mais ça fonctionne. Il ne faut pas oublier de mettre à jour ces fichiers si yubin ou Django est un jour mis à jour.
 
