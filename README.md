@@ -100,6 +100,9 @@ Pour créer une base de donnée en local, vous pouvez utiliser l'outil Docker. R
 > [!NOTE]
 > Vous pouvez copier la BD de prod afin d'avoir un jeu de test (on passera sous silence les implications niveau réglementation sur la gestion des données utilisateurs...). N'oubliez pas d'également copier le dossier `media/` afin de récupérer les images des produits.
 
+> [!WARNING]
+> Le serveur MySQL doit contenir une table des timezones afin que le panel admin de django-yubin fonctionne (pouvoir voir les logs des emails). Cf https://stackoverflow.com/a/21571350.
+
 Une fois les informations modifiées, exécutez les commandes suivantes :
 
 ```console

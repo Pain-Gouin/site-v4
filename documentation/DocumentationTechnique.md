@@ -34,6 +34,9 @@ Le site devrait alors être accessible à l'adresse http://127.0.0.1:8000/.
 
 Le stack utilise le serveur mySQL du rézo. Le docker compose le générant ainsi que les fichiers media se situent sur l'accès SFTP.
 
+> [!WARNING]
+> Le serveur MySQL doit contenir une table des timezones afin que le panel admin de django-yubin fonctionne (pouvoir voir les logs des emails). Cf https://stackoverflow.com/a/21571350.
+
 ## Identifiants de connexion
 
 Pain'Gouin est hébergé par l'association Rézoléo, en cas de problèmes d'hébergements, il ne faut pas hésiter à les contacter.
