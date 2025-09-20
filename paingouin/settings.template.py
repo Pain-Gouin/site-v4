@@ -9,6 +9,7 @@ https://docs.djangoproject.com/en/5.0/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.0/ref/settings/
 """
+
 from django.templatetags.static import static
 from pathlib import Path
 import os
@@ -25,49 +26,49 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-=5sf8@fhdxzr8(c!%-5xx1!5x6x07$%vc^0rr&$4ljgh&v5!w%'
+SECRET_KEY = "django-insecure-=5sf8@fhdxzr8(c!%-5xx1!5x6x07$%vc^0rr&$4ljgh&v5!w%"
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
 # Admins will reveive an email everytime a servererror occurs
-ADMINS = [('Example', 'example@example.com')]
+ADMINS = [("Example", "example@example.com")]
 SERVER_EMAIL = "paingouin@rezoleo.fr"
-ALLOWED_HOSTS = ['paingouindev.rezoleo.fr', 'www.paingouindev.rezoleo.fr', '127.0.0.1']
+ALLOWED_HOSTS = ["paingouindev.rezoleo.fr", "www.paingouindev.rezoleo.fr", "127.0.0.1"]
 
 
 # Application definition
 
 INSTALLED_APPS = [
-    'widget_tweaks',
+    "widget_tweaks",
     "unfold",
-    'django.contrib.admin',
-    'django.contrib.auth',
-    'django.contrib.contenttypes',
-    'django.contrib.sessions',
-    'django.contrib.messages',
+    "django.contrib.admin",
+    "django.contrib.auth",
+    "django.contrib.contenttypes",
+    "django.contrib.sessions",
+    "django.contrib.messages",
     "whitenoise.runserver_nostatic",
-    'django.contrib.staticfiles',
-    'tailwind',
-    'django_yubin',
-    'django_mjml_template',
-    'crispy_forms',
-    'theme',
+    "django.contrib.staticfiles",
+    "tailwind",
+    "django_yubin",
+    "django_mjml_template",
+    "crispy_forms",
+    "theme",
     "commande",
 ]
 if DEBUG:
     # Add django_browser_reload only in DEBUG mode
-    INSTALLED_APPS += ['django_browser_reload']
+    INSTALLED_APPS += ["django_browser_reload"]
 
 MIDDLEWARE = [
-    'django.middleware.security.SecurityMiddleware',
+    "django.middleware.security.SecurityMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
-    'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    "django.contrib.sessions.middleware.SessionMiddleware",
+    "django.middleware.common.CommonMiddleware",
+    "django.middleware.csrf.CsrfViewMiddleware",
+    "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "django.contrib.messages.middleware.MessageMiddleware",
+    "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 if DEBUG:
     # Add django_browser_reload middleware only in DEBUG mode
@@ -75,42 +76,42 @@ if DEBUG:
         "django_browser_reload.middleware.BrowserReloadMiddleware",
     ]
 
-ROOT_URLCONF = 'paingouin.urls'
+ROOT_URLCONF = "paingouin.urls"
 
 TEMPLATES = [
     {
-        'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / "templates"],
-        'APP_DIRS': True,
-        'OPTIONS': {
-            'context_processors': [
-                'django.template.context_processors.debug',
-                'django.template.context_processors.request',
-                'django.contrib.auth.context_processors.auth',
-                'django.contrib.messages.context_processors.messages',
-                'django.template.context_processors.media',
+        "BACKEND": "django.template.backends.django.DjangoTemplates",
+        "DIRS": [BASE_DIR / "templates"],
+        "APP_DIRS": True,
+        "OPTIONS": {
+            "context_processors": [
+                "django.template.context_processors.debug",
+                "django.template.context_processors.request",
+                "django.contrib.auth.context_processors.auth",
+                "django.contrib.messages.context_processors.messages",
+                "django.template.context_processors.media",
             ],
         },
     },
 ]
 
-WSGI_APPLICATION = 'paingouin.wsgi.application'
+WSGI_APPLICATION = "paingouin.wsgi.application"
 
 
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-       'NAME': 'paingouin',
-        'HOST': '127.0.0.1',
-        'PORT': '3306',
-        'USER': 'root',
-        'PASSWORD': 'mysql',
-        'OPTIONS':{
-        "init_command": "SET foreign_key_checks = 0;",
-        }
+    "default": {
+        "ENGINE": "django.db.backends.mysql",
+        "NAME": "paingouin",
+        "HOST": "127.0.0.1",
+        "PORT": "3306",
+        "USER": "root",
+        "PASSWORD": "mysql",
+        "OPTIONS": {
+            "init_command": "SET foreign_key_checks = 0;",
+        },
     },
 }
 
@@ -120,16 +121,16 @@ DATABASES = {
 
 AUTH_PASSWORD_VALIDATORS = [
     {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+        "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+        "NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+        "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
     },
 ]
 
@@ -137,9 +138,9 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/5.0/topics/i18n/
 
-LANGUAGE_CODE = 'fr'
+LANGUAGE_CODE = "fr"
 
-TIME_ZONE = 'CET'
+TIME_ZONE = "CET"
 
 USE_I18N = True
 
@@ -149,47 +150,47 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = "static/"
 
-STATIC_ROOT = os.path.join(BASE_DIR, 'assets')
+STATIC_ROOT = os.path.join(BASE_DIR, "assets")
 
-COMPRESS_ROOT = 'paingouin/static/'
+COMPRESS_ROOT = "paingouin/static/"
 
 COMPRESS_ENABLED = True
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
-DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-TAILWIND_APP_NAME = 'theme'
+TAILWIND_APP_NAME = "theme"
 
 INTERNAL_IPS = [
     "127.0.0.1",
 ]
 
-STATIC_URL = 'static/'
+STATIC_URL = "static/"
 
-AUTH_USER_MODEL = 'commande.Utilisateur'
+AUTH_USER_MODEL = "commande.Utilisateur"
 
 LOGIN_REDIRECT_URL = "/"
-LOGIN_URL = 'login'
+LOGIN_URL = "login"
 
 MEDIA_URL = "/media/"
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media').replace('\\', '/')
+MEDIA_ROOT = os.path.join(BASE_DIR, "media").replace("\\", "/")
 
-EMAIL_BACKEND = 'django_yubin.backends.QueuedEmailBackend'
-MAILER_USE_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_BACKEND = "django_yubin.backends.QueuedEmailBackend"
+MAILER_USE_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 EMAIL_USE_TLS = False
 EMAIL_USE_SSL = False
-EMAIL_HOST = 'localhost'
+EMAIL_HOST = "localhost"
 EMAIL_PORT = 1025
-EMAIL_HOST_USER = formataddr(("L'équipe Pain'Gouin", 'paingouin@rezoleo.fr'))
+EMAIL_HOST_USER = formataddr(("L'équipe Pain'Gouin", "paingouin@rezoleo.fr"))
 EMAIL_HOST_PASSWORD = None
 
 UNFOLD = {
-    "SITE_TITLE":"Panel administrateur de Pain'Gouin",
-    "SITE_HEADER":"Panel administrateur de Pain'Gouin",
+    "SITE_TITLE": "Panel administrateur de Pain'Gouin",
+    "SITE_HEADER": "Panel administrateur de Pain'Gouin",
     "SITE_LOGO": {
         "light": lambda request: static("logo/logo.webp"),  # light mode
         "dark": lambda request: static("logo/logo.webp"),  # dark mode
@@ -276,7 +277,9 @@ UNFOLD = {
                     {
                         "title": _("Gestion des catégories"),
                         "icon": "mist",
-                        "link": reverse_lazy("admin:commande_categorieproduit_changelist"),
+                        "link": reverse_lazy(
+                            "admin:commande_categorieproduit_changelist"
+                        ),
                     },
                 ],
             },
@@ -321,7 +324,7 @@ UNFOLD = {
                     "title": _("Précréation de plusieurs utilisateurs"),
                     "link": reverse_lazy("admin:precreation_utilisateurs"),
                 },
-            ]
+            ],
         },
     ],
     "THEME": "dark",
@@ -334,10 +337,12 @@ STORAGES = {
     },
     "staticfiles": {
         "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage"
-    }
+    },
 }
 
-CELERY_BROKER_URL = 'amqp://paingouin:xGmyRq8J5CSUT0fgD3m9iGgVs@localhost:5672/paingouinvhost'
+CELERY_BROKER_URL = (
+    "amqp://paingouin:xGmyRq8J5CSUT0fgD3m9iGgVs@localhost:5672/paingouinvhost"
+)
 
 CRISPY_TEMPLATE_PACK = "unfold_crispy"
 

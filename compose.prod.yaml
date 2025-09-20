@@ -21,7 +21,7 @@ services:
       EMAIL_HOST:
       EMAIL_PORT:
       EMAIL_HOST_USER: example@email.com
-      EMAIL_HOST_PASSWORD: ''
+      EMAIL_HOST_PASSWORD: ""
       RABBITMQ_USER: paingouin
       RABBITMQ_PASS: xGmyRq8J5CSUT0fgD3m9iGgVs
       RABBITMQ_VHOST: paingouinvhost
@@ -29,7 +29,7 @@ services:
       RABBITMQ_PORT: 5672
     depends_on:
       - rabbitmq
-  
+
   celeryworker:
     <<: *django
     container_name: paingouin_prod_celeryworker

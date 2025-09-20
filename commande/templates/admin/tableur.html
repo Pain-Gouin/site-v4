@@ -1,15 +1,12 @@
 {% extends "unfold/layouts/base.html" %}
-
 {% load static %}
 {% load static tailwind_tags %}
-
 {% block content %}
-<h1>Sélectionner le mois de la livraison à exporter (le jour ne compte pas) :</h1>
-<form method="post" action="{% url 'admin:tableur' %}">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Exporter</button>
-    <div id="update-message"></div>
-</form>
-
+    <h1>Sélectionner le mois de la livraison à exporter (le jour ne compte pas) :</h1>
+    <form method="post" action="{% url 'admin:tableur' %}">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Exporter</button>
+        <div id="update-message"></div>
+    </form>
 {% endblock %}

@@ -1,48 +1,59 @@
 {% extends "unfold/layouts/base.html" %}
-
 {% load static %}
 {% load static tailwind_tags %}
-
 {% block content %}
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
-<div style="text-align: center;">
-    <h1>Sélectionnez une date pour afficher les commandes :</h1>
-    <input type="date" id="commande-date" name="date">
-</div>
-
-<div id="commandes-list" style="margin: 20px auto; width: 80%; display: none;"> <!-- Masquer par défaut -->
-    <table id="commandes-table" border="1" style="width: 100%; border-collapse: collapse; margin: 0 auto;">
-        <thead>
-            <tr>
-                <th>Commande ID</th>
-                <th>Client</th>
-                <th>Total (€)</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            <!-- Les lignes de commande seront insérées ici -->
-        </tbody>
-    </table>
-</div>
-
-<div id="produits-details" style="margin-top: 20px; text-align: left; width: 80%; margin: 20px auto; display: none;"> <!-- Masquer par défaut -->
-    <h3>Détails des Produits</h3>
-    <table id="produits-table" border="1" style="width: 100%; border-collapse: collapse;">
-        <thead>
-            <tr>
-                <th>Nom du Produit</th>
-                <th>Quantité</th>
-            </tr>
-        </thead>
-        <tbody id="produits-list">
-            <!-- Les détails des produits seront insérés ici -->
-        </tbody>
-    </table>
-</div>
-
-<script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <div style="text-align: center;">
+        <h1>Sélectionnez une date pour afficher les commandes :</h1>
+        <input type="date" id="commande-date" name="date">
+    </div>
+    <div id="commandes-list"
+         style="margin: 20px auto;
+                width: 80%;
+                display: none">
+        <!-- Masquer par défaut -->
+        <table id="commandes-table"
+               border="1"
+               style="width: 100%;
+                      border-collapse: collapse;
+                      margin: 0 auto">
+            <thead>
+                <tr>
+                    <th>Commande ID</th>
+                    <th>Client</th>
+                    <th>Total (€)</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Les lignes de commande seront insérées ici -->
+            </tbody>
+        </table>
+    </div>
+    <div id="produits-details"
+         style="margin-top: 20px;
+                text-align: left;
+                width: 80%;
+                margin: 20px auto;
+                display: none">
+        <!-- Masquer par défaut -->
+        <h3>Détails des Produits</h3>
+        <table id="produits-table"
+               border="1"
+               style="width: 100%;
+                      border-collapse: collapse">
+            <thead>
+                <tr>
+                    <th>Nom du Produit</th>
+                    <th>Quantité</th>
+                </tr>
+            </thead>
+            <tbody id="produits-list">
+                <!-- Les détails des produits seront insérés ici -->
+            </tbody>
+        </table>
+    </div>
+    <script>
 $('#commande-date').on('change', function() {
     const date = $(this).val();
 
@@ -139,12 +150,10 @@ $(document).on('click', '.delete-btn', function(e) {
         });
     }
 });
-</script>
-
-<style>
+    </script>
+    <style>
 .selected-row {
     background-color: #FFF6F6; /* Couleur de fond pour la ligne sélectionnée */
 }
-</style>
-
+    </style>
 {% endblock %}

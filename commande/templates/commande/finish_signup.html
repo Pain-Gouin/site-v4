@@ -2,13 +2,13 @@
 {% load static %}
 {% load widget_tweaks %}
 {% block content %}
-<style>
+  <style>
   .required:after {
     color: #e32;
     content: ' *';
     display:inline;
   }
-</style>
+  </style>
   <h1 class="text-3xl text-center font-bebas py-10 text-secondary px-2">Finir la création de ton compte</h1>
   <form class="max-w-lg mx-auto pt-5 pb-10 px-2" method="post">
     {% csrf_token %}

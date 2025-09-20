@@ -27,14 +27,14 @@ FROM python:3.12-slim-bullseye AS builder_tailwind
 # See https://docs.docker.com/go/dockerfile-user-best-practices/
 ARG UID=10001
 RUN adduser \
-    --disabled-password \
-    --gecos "" \
-    --home "/home/appuser" \
-    --shell "/sbin/nologin" \
-    --uid "${UID}" \
-    appuser && \
-   mkdir /app && \
-   chown -R appuser /app
+  --disabled-password \
+  --gecos "" \
+  --home "/home/appuser" \
+  --shell "/sbin/nologin" \
+  --uid "${UID}" \
+  appuser && \
+  mkdir /app && \
+  chown -R appuser /app
 
 # Set the working directory
 WORKDIR /app
@@ -78,15 +78,15 @@ FROM python:3.12-slim-bullseye
 # See https://docs.docker.com/go/dockerfile-user-best-practices/
 ARG UID=10001
 RUN adduser \
-    --disabled-password \
-    --gecos "" \
-    --home "/nonexistent" \
-    --shell "/sbin/nologin" \
-    --no-create-home \
-    --uid "${UID}" \
-    appuser && \
-   mkdir /app && \
-   chown -R appuser /app
+  --disabled-password \
+  --gecos "" \
+  --home "/nonexistent" \
+  --shell "/sbin/nologin" \
+  --no-create-home \
+  --uid "${UID}" \
+  appuser && \
+  mkdir /app && \
+  chown -R appuser /app
 
 # Set the working directory
 WORKDIR /app

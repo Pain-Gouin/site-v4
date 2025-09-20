@@ -14,15 +14,16 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+
 from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('yubin/', include('django_yubin.urls')),
-    path("", include("commande.urls"))
+    path("admin/", admin.site.urls),
+    path("yubin/", include("django_yubin.urls")),
+    path("", include("commande.urls")),
 ]
 
 # Made with ChatGPT to serve Media files even when debug=False
@@ -33,9 +34,13 @@ else:
     from django.urls import re_path
 
     urlpatterns += [
-        re_path(r'^media/(?P<path>.*)$', serve, {
-            'document_root': settings.MEDIA_ROOT,
-        }),
+        re_path(
+            r"^media/(?P<path>.*)$",
+            serve,
+            {
+                "document_root": settings.MEDIA_ROOT,
+            },
+        ),
     ]
 # By serving media files via Django directly, we loose performance. But we cannot serve them with whitenoise, so serving them outside of Django would necessitate a nginx server.
 

@@ -21,7 +21,7 @@ services:
       EMAIL_HOST: mailpit # for mailpit
       EMAIL_PORT: 1025 # for mailpit
       EMAIL_HOST_USER: example@email.com
-      EMAIL_HOST_PASSWORD: ''
+      EMAIL_HOST_PASSWORD: ""
       RABBITMQ_USER: paingouin
       RABBITMQ_PASS: xGmyRq8J5CSUT0fgD3m9iGgVs
       RABBITMQ_VHOST: paingouinvhost
@@ -30,7 +30,7 @@ services:
     depends_on:
       - rabbitmq
       - mailpit
-  
+
   celeryworker:
     <<: *django
     ports: []

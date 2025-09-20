@@ -1,45 +1,41 @@
 {% extends "unfold/layouts/base.html" %}
-
 {% load static %}
 {% load static tailwind_tags %}
-
 {% block content %}
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
-
-<body>
-
-    <h1 class="text-center">Rechercher un Utilisateur</h1>
-    <form id="user-form">
-        <input type="text" id="user-name" placeholder="Prénom Nom">
-        <button type="submit">Rechercher</button>
-    </form>
-    <div id="user-solde"></div>
-    <div id="credit-form-container" style="display: none;">
-        <h2 class="text-center">Modifier le Crédit de l'Utilisateur</h2>
-        <form id="credit-form">
-            <input type="hidden" id="user-first-name">
-            <input type="hidden" id="user-last-name">
-            <label for="new-credit">Nouveau Crédit :</label>
-            <input type="number" step="0.01" id="new-credit" name="new-credit"> <!-- Step pour accepter les décimales -->
-            <button type="submit">Modifier</button>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+    <body>
+        <h1 class="text-center">Rechercher un Utilisateur</h1>
+        <form id="user-form">
+            <input type="text" id="user-name" placeholder="Prénom Nom">
+            <button type="submit">Rechercher</button>
         </form>
-        <div id="update-message"></div>
-    </div>
-
-    <div id="add-credit-form-container" style="display: none;">
-        <h2 class="text-center">Ajouter des Crédits à l'Utilisateur</h2>
-        <form id="add-credit-form">
-            <input type="hidden" id="user-first-name-add">
-            <input type="hidden" id="user-last-name-add">
-            <label for="add-credit">Crédit à ajouter :</label>
-            <input type="number" step="0.01" id="add-credit" name="add-credit"> <!-- Step pour accepter les décimales -->
-            <button type="submit">Ajouter</button>
-        </form>
-        <div id="add-update-message"></div>
-    </div>
-
-    <script>
+        <div id="user-solde"></div>
+        <div id="credit-form-container" style="display: none;">
+            <h2 class="text-center">Modifier le Crédit de l'Utilisateur</h2>
+            <form id="credit-form">
+                <input type="hidden" id="user-first-name">
+                <input type="hidden" id="user-last-name">
+                <label for="new-credit">Nouveau Crédit :</label>
+                <input type="number" step="0.01" id="new-credit" name="new-credit">
+                <!-- Step pour accepter les décimales -->
+                <button type="submit">Modifier</button>
+            </form>
+            <div id="update-message"></div>
+        </div>
+        <div id="add-credit-form-container" style="display: none;">
+            <h2 class="text-center">Ajouter des Crédits à l'Utilisateur</h2>
+            <form id="add-credit-form">
+                <input type="hidden" id="user-first-name-add">
+                <input type="hidden" id="user-last-name-add">
+                <label for="add-credit">Crédit à ajouter :</label>
+                <input type="number" step="0.01" id="add-credit" name="add-credit">
+                <!-- Step pour accepter les décimales -->
+                <button type="submit">Ajouter</button>
+            </form>
+            <div id="add-update-message"></div>
+        </div>
+        <script>
         $(function() {
             // Activer l'autocomplétion pour le champ de recherche d'utilisateur
             $("#user-name").autocomplete({
@@ -152,6 +148,6 @@
                 });
             });
         });
-    </script>
-</body>
+        </script>
+    </body>
 {% endblock %}
