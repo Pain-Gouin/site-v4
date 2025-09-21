@@ -16,6 +16,7 @@ from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from django.utils import timezone
 from datetime import datetime
 from .utils import html_to_text, login_required_with_message
+from .admin import SendPrecreationMailFunction
 
 from . import forms
 
@@ -122,12 +123,25 @@ def finish_signup_page(request, uidb64, token):
         user = None
 
     if user is None:
-        messages.error(request, "uid utilisateur non valide")
+        messages.error(request, "Lien non valide.")
         return redirect(settings.LOGIN_URL)
 
     # Vérification du token
     if not PasswordResetTokenGenerator().check_token(user, token):
-        messages.error(request, "lien non valide")
+        if user.last_login is not None:
+            messages.warning(
+                request,
+                "Ce compte a déjà été activé, connecte-toi pour continuer.",
+            )
+        else:
+            # On suppose que le token n'est pas valide car expiré (ça pourrait être un token modifié/inventé)
+            SendPrecreationMailFunction(user, request)
+            messages.warning(
+                request,
+                mark_safe(
+                    "Ce lien a expiré, un nouveau lien de création de compte vient de t'être envoyé par email."
+                ),
+            )
         return redirect(settings.LOGIN_URL)
 
     # Lien valide

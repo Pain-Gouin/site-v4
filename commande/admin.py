@@ -543,6 +543,8 @@ def delete_commandes(request, commande_id):
 def PrecreateUserFunction(user, request):
     return PrecreateUsersFunction([user], request)
 
+def SendPrecreationMailFunction(user, request):
+    return SendPrecreationMailsFunction([user], request)
 
 def PrecreateUsersFunction(users, request):
     # Create users in DB
@@ -550,7 +552,10 @@ def PrecreateUsersFunction(users, request):
         user.date_joined = None  # To indicate that the user hasn't yet joined
         user.is_active = False
         user.save()
+    
+    SendPrecreationMailsFunction(users, request)
 
+def SendPrecreationMailsFunction(users, request):
     # Send pre-creation emails
     emails = []
     template_name = "mail/precreation_mail.html"

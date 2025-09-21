@@ -19,6 +19,15 @@ class Utilisateur(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(_("email address"), unique=True, null=False, blank=False)
 
     # Taken from AbstractBaseUser
+    last_login = models.DateTimeField(
+        _("last login"),
+        blank=True,
+        null=True,
+        help_text=_(
+            "Date de la dernière connexion de l'utilisateur. "
+            "Si vide, alors le compte n'a pas encore été activé."
+        ),
+    )
     first_name = models.CharField(
         _("first name"), max_length=150, blank=False, null=True
     )
@@ -39,7 +48,7 @@ class Utilisateur(AbstractBaseUser, PermissionsMixin):
     email_verified = models.BooleanField(
         "E-mail vérifié",
         default=False,
-        help_text="Désigne si l'utilisateur a bien validé son e-mail",
+        help_text="Désigne si l'utilisateur a bien vérifié son e-mail",
     )
     autorisation_verified = models.BooleanField(
         "Centralien vérifié",
@@ -58,7 +67,7 @@ class Utilisateur(AbstractBaseUser, PermissionsMixin):
     tel = models.CharField(max_length=20, blank=False, null=True)
     last_order = models.DateTimeField(
         null=True,
-        help_text="Date du jour où l'utilisateur a passé sa dernière commande (et non de la commande). Il a pu la supprimer par la suite.",
+        help_text="Date du jour où l'utilisateur a passé sa dernière commande (et non de la livraison). Il a pu la supprimer par la suite.",
     )
     created_at = models.DateTimeField(default=timezone.now)
     credit = models.DecimalField(max_digits=8, decimal_places=2, default=0)
