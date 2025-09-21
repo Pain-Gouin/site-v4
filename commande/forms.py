@@ -77,6 +77,11 @@ class SignupForm(UserCreationForm):
     def save(self, commit=True):
         if self.instance.date_joined is None:
             self.instance.date_joined = datetime.datetime.now()
+
+        if not self.instance.is_active:
+            # The user was precreated, but eventually ended-up signing up normally
+            self.instance.is_active = True
+
         return super().save(commit)
 
 
