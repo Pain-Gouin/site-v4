@@ -31,7 +31,7 @@ Il ne vous reste plus qu'à confirmer le Pull request, ce qui mettra à jour la 
 
 ### Mise en place de l'environnement de dev
 
-Pour apporter des modifications sur le site, voici un petit tutoriel. Il est conseillé d'utiliser une distribution linux (soit directement, soit via WSL sur Windows), mais si vous souhaitez ~~vous faire du mal~~ éviter, il est également possible de le faire sur Windodows.
+Pour apporter des modifications sur le site, voici un petit tutoriel. Il est conseillé d'utiliser une distribution linux (soit directement, soit via WSL sur Windows), mais si vous souhaitez ~~vous faire du mal~~ éviter, il est également possible de le faire sur Windows.
 
 #### Récupération du repo GitHub
 
@@ -95,7 +95,7 @@ DATABASES = {
 }
 ```
 
-Pour créer une base de donnée en local, vous pouvez utiliser l'outil Docker. Rézoléo peut fournir une formation pour l'utilisation de cet outil en cas de problème.
+Pour créer une base de donnée en local, vous pouvez utiliser l'outil Docker : un conteneur est décrit dans le docker compose de dev.
 
 > [!NOTE]
 > Vous pouvez copier la BD de prod afin d'avoir un jeu de test (on passera sous silence les implications niveau réglementation sur la gestion des données utilisateurs...). N'oubliez pas d'également copier le dossier `media/` afin de récupérer les images des produits.

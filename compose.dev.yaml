@@ -59,3 +59,25 @@ services:
     ports:
       - "1025:1025"
       - "8025:8025"
+
+  db:
+    image: mariadb:12.0
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: mysql
+    ports:
+      - 3306:3306
+    volumes:
+      - mariadb_data:/var/lib/mysql
+
+  # For dev, GUI to interact directly with DB
+  phpmyadmin:
+    image: phpmyadmin
+    restart: unless-stopped
+    ports:
+      - 8080:80
+    environment:
+      - PMA_ARBITRARY=1
+
+volumes:
+  mariadb_data:
