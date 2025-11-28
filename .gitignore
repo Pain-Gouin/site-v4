@@ -28,3 +28,4 @@ celerybeat-schedule-shm
 rabbitmq_data
 
 .vscode
+.idea
