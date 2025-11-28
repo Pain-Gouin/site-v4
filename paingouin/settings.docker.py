@@ -40,12 +40,19 @@ SECRET_KEY = os.environ.get(
 DEBUG = str_to_bool(os.getenv("DEBUG", "0"))
 
 ALLOWED_HOSTS = os.environ.get(
-    "DJANGO_ALLOWED_HOSTS", "paingouin.rezoleo.fr, www.paingouin.rezoleo.fr"
+    "DJANGO_ALLOWED_HOSTS", "paingouin.rezoleo.fr,www.paingouin.rezoleo.fr"
 ).split(",")
 
 CSRF_TRUSTED_ORIGINS = os.environ.get(
     "DJANGO_CSRF_TRUSTED_ORIGINS", "https://paingouin.rezoleo.fr"
 ).split(",")
+
+# HTTPS Enforcing
+if str_to_bool(os.getenv("ENFORCE_HTTPS", "1")):
+    SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+    SECURE_SSL_REDIRECT = True
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
 
 # Admins will reveive an email everytime a server error occurs
 ADMINS = [("vale", "margerite.tonnere@gmail.com")]

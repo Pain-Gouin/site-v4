@@ -10,6 +10,7 @@ services:
       DEBUG: 0 # Should be set to 0 in production !
       DJANGO_ALLOWED_HOSTS: 127.0.0.1, localhost
       DJANGO_CSRF_TRUSTED_ORIGINS: "https://paingouin.rezoleo.fr"
+      ENFORCE_HTTPS: 1 # Should be set to 1 in production !
       DATABASE_ENGINE: mysql
       DATABASE_NAME: dbdjango
       DATABASE_USERNAME: myuser
