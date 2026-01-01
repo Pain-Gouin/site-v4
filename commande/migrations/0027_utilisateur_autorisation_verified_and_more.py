@@ -2,26 +2,36 @@
 
 from django.db import migrations, models
 
+
 def verify_existing_active_users(apps, _schema_editor):
-    users = apps.get_model("commande", "Utilisateur")
+    users = apps.get_model("commande", "User")
     users.objects.filter(credit__gt=0).update(autorisation_verified=True)
+
 
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('commande', '0026_alter_utilisateur_chambre_and_more'),
+        ("commande", "0026_alter_utilisateur_chambre_and_more"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='utilisateur',
-            name='autorisation_verified',
-            field=models.BooleanField(default=False, help_text="Désigne si l'utilisateur a été vérifié comme étant un Centralien, autorisé à utiliser le site", verbose_name='Centralien vérifié'),
+            model_name="user",
+            name="autorisation_verified",
+            field=models.BooleanField(
+                default=False,
+                help_text="Désigne si l'utilisateur a été vérifié comme étant un Centralien, autorisé à utiliser le site",
+                verbose_name="Centralien vérifié",
+            ),
         ),
         migrations.AddField(
-            model_name='utilisateur',
-            name='email_verified',
-            field=models.BooleanField(default=False, help_text="Désigne si l'utilisateur a bien validé son e-mail", verbose_name='E-mail vérifié'),
+            model_name="user",
+            name="email_verified",
+            field=models.BooleanField(
+                default=False,
+                help_text="Désigne si l'utilisateur a bien validé son e-mail",
+                verbose_name="E-mail vérifié",
+            ),
         ),
         migrations.RunPython(verify_existing_active_users, migrations.RunPython.noop),
     ]

@@ -7,25 +7,47 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('commande', '0007_alter_utilisateur_created_at_and_more'),
+        ("commande", "0007_alter_utilisateur_created_at_and_more"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='CategorieProduit',
+            name="CategorieProduit",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('nom', models.CharField(max_length=100)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("nom", models.CharField(max_length=100)),
             ],
         ),
         migrations.CreateModel(
-            name='Produit',
+            name="Produit",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('nom', models.CharField(max_length=100)),
-                ('prix', models.FloatField(default=0)),
-                ('quota', models.IntegerField()),
-                ('categorie', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='commande.categorieproduit')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("nom", models.CharField(max_length=100)),
+                ("prix", models.FloatField(default=0)),
+                ("quota", models.IntegerField()),
+                (
+                    "categorie",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="commande.categorieproduit",
+                    ),
+                ),
             ],
         ),
     ]

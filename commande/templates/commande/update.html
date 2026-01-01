@@ -23,18 +23,18 @@
       {% render_field form.last_name class="bg-gray-50 border font-montserrat border-gray-300 text-secondary text-sm rounded-lg focus:ring-secondary focus:border-secondary block w-full p-2.5" %}
     </div>
     <div class="mb-5">
-      <label for="id_chambre"
+      <label for="id_room"
              class="block mb-2 text-sm font-medium text-gray-900 font-montserrat">Chambre&nbsp;:</label>
-      {% render_field form.chambre class="bg-gray-50 border font-montserrat border-gray-300 text-secondary text-sm rounded-lg focus:ring-secondary focus:border-secondary block w-full p-2.5" %}
+      {% render_field form.room class="bg-gray-50 border font-montserrat border-gray-300 text-secondary text-sm rounded-lg focus:ring-secondary focus:border-secondary block w-full p-2.5" %}
     </div>
     <div class="mb-5">
-      <label for="id_tel"
+      <label for="id_phone"
              class="block mb-2 text-sm font-medium text-gray-900 font-montserrat">Téléphone&nbsp;:</label>
-      {% render_field form.tel class="bg-gray-50 border font-montserrat border-gray-300 text-secondary text-sm rounded-lg focus:ring-secondary focus:border-secondary block w-full p-2.5" %}
+      {% render_field form.phone class="bg-gray-50 border font-montserrat border-gray-300 text-secondary text-sm rounded-lg focus:ring-secondary focus:border-secondary block w-full p-2.5" %}
     </div>
     <div class="mb-5">
       <label class="inline-flex items-center cursor-pointer">
-        {% render_field form.isPermis class="sr-only peer" %}
+        {% render_field form.has_drivers_licence class="sr-only peer" %}
         <span class="me-3 text-sm font-medium text-gray-900 font-montserrat dark:text-gray-300">As-tu le permis&nbsp;?</span>
         <div class="relative w-11 h-6 bg-gray-200 peer-focus:outline-hidden peer-focus:ring-2 peer-focus:ring-secondary dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:rtl:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-primary">
         </div>
@@ -42,7 +42,7 @@
     </div>
     <div class="mb-5">
       <label class="inline-flex items-center cursor-pointer">
-        {% render_field form.getOrderMail class="sr-only peer" %}
+        {% render_field form.get_order_email class="sr-only peer" %}
         <span class="me-3 text-sm font-medium text-gray-900 font-montserrat dark:text-gray-300">Mail de confirmation de commande&nbsp;:</span>
         <div class="relative w-11 h-6 bg-gray-200 peer-focus:outline-hidden peer-focus:ring-2 peer-focus:ring-secondary dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:rtl:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-primary">
         </div>

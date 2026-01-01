@@ -6,21 +6,23 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('commande', '0024_alter_commande_total_commande_alter_produit_prix_and_more'),
+        ("commande", "0024_alter_commande_total_commande_alter_produit_prix_and_more"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='utilisateur',
+            name="user",
             options={},
         ),
         migrations.RemoveField(
-            model_name='utilisateur',
-            name='username',
+            model_name="user",
+            name="username",
         ),
         migrations.AlterField(
-            model_name='utilisateur',
-            name='email',
-            field=models.EmailField(max_length=254, null=True, unique=True, verbose_name='email address'),
+            model_name="user",
+            name="email",
+            field=models.EmailField(
+                max_length=254, null=True, unique=True, verbose_name="email address"
+            ),
         ),
     ]

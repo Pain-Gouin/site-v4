@@ -3,6 +3,9 @@
 import commande.models
 from django.db import migrations, models
 
+# Not used anymore, but referenced in migration...
+def defaultJson():
+    return ["None"]
 
 class Migration(migrations.Migration):
 
@@ -18,11 +21,11 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='livraison',
             name='produit',
-            field=models.JSONField(default=commande.models.defaultJson),
+            field=models.JSONField(default=defaultJson),
         ),
         migrations.AddField(
             model_name='commande',
             name='produit',
-            field=models.JSONField(default=commande.models.defaultJson),
+            field=models.JSONField(default=defaultJson),
         ),
     ]

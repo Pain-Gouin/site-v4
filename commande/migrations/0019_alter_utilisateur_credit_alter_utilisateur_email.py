@@ -11,12 +11,12 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.AlterField(
-            model_name='utilisateur',
+            model_name='user',
             name='credit',
             field=models.DecimalField(decimal_places=2, default=0, max_digits=10),
         ),
         migrations.AlterField(
-            model_name='utilisateur',
+            model_name='user',
             name='email',
             field=models.EmailField(max_length=254),
         ),

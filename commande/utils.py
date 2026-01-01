@@ -2,6 +2,9 @@ from html2text import HTML2Text
 from functools import wraps
 from django.contrib.auth.decorators import login_required
 from django.core.mail import get_connection, EmailMultiAlternatives
+from datetime import time, timedelta
+from django.utils import timezone
+from django.conf import settings
 
 # Configuration of html2text
 text_maker = HTML2Text()
@@ -62,3 +65,32 @@ def send_mass_html_mail(
         message.attach_alternative(html, "text/html")
         messages.append(message)
     return connection.send_messages(messages)
+
+
+def append_unique_in_order(list1, list2, *lists):
+    # 1. Create a set from list_a for fast O(1) lookups.
+    # We use a set for efficiency, and it contains all elements already in list_a.
+    existing_elements = set(list1)
+    new_list = list(list1[:])  # to not modify original list
+
+    # 2. Iterate through list_b, maintaining the original order.
+    for l in (list2,) + lists:
+        for item in l:
+            # Check if the item is NOT already in our set of existing elements
+            if item not in existing_elements:
+                # 3. If it's new, append it to list_a and ADD it to the set.
+                new_list.append(item)
+                existing_elements.add(item)
+
+    return new_list
+
+
+def first_editable_day():
+    current_time = timezone.now()
+    today = current_time.date()
+    cutoff = getattr(settings, "DELIVERY_CUTOFF_TIME", time(6, 30))
+
+    if current_time.time() < cutoff:
+        return today
+    else:
+        return today + timedelta(1)

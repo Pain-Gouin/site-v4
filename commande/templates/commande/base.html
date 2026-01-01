@@ -49,7 +49,7 @@
                                     data-dropdown-toggle="dropdownInformation"
                                     class="font-montserrat hover:text-primary duration-100 rounded-lg text-center inline-flex items-center text-base mb-2"
                                     type="button">
-                                <b>ton solde est de {{ user.credit }}€</b>
+                                <b>ton solde est de {{ user.balance_cache }}€</b>
                                 <svg class="w-2.5 h-2.5 ms-1"
                                      aria-hidden="true"
                                      xmlns="http://www.w3.org/2000/svg"
@@ -82,7 +82,7 @@
                                             <a href="{% url 'recharge' %}"
                                                class="block px-4 py-2 hover:bg-gray-200 hover:font-bold">Recharger mon compte</a>
                                         </li>
-                                        {% if user.isLivreur %}
+                                        {% if user.is_delivery_man %}
                                             <li>
                                                 <a href="{% url 'livreur' %}"
                                                    class="block px-4 py-2 hover:bg-gray-200 hover:font-bold">Espace livreur</a>

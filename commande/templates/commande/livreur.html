@@ -134,9 +134,49 @@
       </div>
     </div>
   </div>
-  {% if livraison %}
-    <h1 class="text-2xl md:text-4xl text-secondary text-center py-5">Commande du {{ livraison.date }}</h1>
-    {% if produit %}
+  {% if show_calendar %}
+    <div class="flex justify-center">
+      {{ allowed_dates|json_script:"allowed-dates-data" }}
+      <script type="module" src="{% static 'externe/js/vendor/cally.0.9.0.js' %}"></script>
+      <calendar-date value="{{ target_date|date:"Y-m-d" }}" locale="fr-FR">
+      <calendar-month></calendar-month>
+      </calendar-date>
+      <script type="module">
+        const allowedDatesArray = JSON.parse(document.getElementById('allowed-dates-data').textContent);
+        const allowedDatesSet = new Set(allowedDatesArray);
+
+        const calendar = document.querySelector('calendar-date');
+
+        calendar.isDateDisallowed = (date) => {
+          // Format the JS Date object to 'YYYY-MM-DD'
+          const year = date.getFullYear();
+          const month = String(date.getMonth() + 1).padStart(2, '0');
+          const day = String(date.getDate()).padStart(2, '0');
+          const formattedDate = `${year}-${month}-${day}`;
+
+          // Use .has() for O(1) lookup performance
+          return !allowedDatesSet.has(formattedDate);
+        }
+
+        calendar.addEventListener('change', (event) => {
+          const selectedDate = event.target.value;
+
+          if (selectedDate) {
+            // Get current URL without existing query strings
+            const baseUrl = window.location.origin + window.location.pathname;
+            
+            // Redirect to ?date=YYYY-MM-DD
+            window.location.href = `${baseUrl}?date=${selectedDate}`;
+          }
+        });
+      </script>
+    </div>
+  {% endif %}
+  {% if delivery %}
+    <h1 class="text-2xl md:text-4xl text-secondary text-center py-5">
+      Livraison du <b>{{ delivery.date|date:"l" }} {{ delivery.date }}</b>
+    </h1>
+    {% if products %}
       <div class="grid md:grid-cols-2 grid-cols-1 justify-around pb-10">
         <div class="px-2">
           <h2 class="text-xl md:text-3xl text-primary text-center py-2 font-bold ">Commande globale :</h2>
@@ -149,11 +189,11 @@
                 </tr>
               </thead>
               <tbody>
-                {% for prod in produit %}
+                {% for product in products %}
                   <tr class="bg-white border-b">
                     <th scope="row"
-                        class="px-6 py-4 font-medium text-secondary whitespace-nowrap">{{ prod.0 }}</th>
-                    <td class="px-6 py-4">{{ prod.1 }}</td>
+                        class="px-6 py-4 font-medium text-secondary whitespace-nowrap">{{ product.product__name }}</th>
+                    <td class="px-6 py-4">{{ product.total_quantity }}</td>
                   </tr>
                 {% endfor %}
               </tbody>
@@ -171,13 +211,13 @@
                 </tr>
               </thead>
               <tbody>
-                {% for batiment in commande_batiment %}
-                  {% if batiment.commande %}
+                {% for building in buildings %}
+                  {% if building.commande %}
                     <tr class="bg-white border-b">
-                      <th scope="row" class="px-6 py-4 font-medium text-secondary">{{ batiment.nom }}</th>
+                      <th scope="row" class="px-6 py-4 font-medium text-secondary">{{ building.nom }}</th>
                       <td class="px-6 py-4">
-                        {% for prod in batiment.commande %}
-                          {{ prod.1 }} {{ prod.0 }}
+                        {% for prod in building.commande %}
+                          {{ prod.total_quantity }} {{ prod.product__name }}
                           <br>
                         {% endfor %}
                       </td>
@@ -192,28 +232,99 @@
           <h2 class="text-xl md:text-3xl text-primary text-center py-2 font-bold ">Liste des livraisons :</h2>
           <div class="flex flex-row justify-center">
             <div class="relative overflow-x-auto pb-10 pt-5 basis-full md:basis-1/2">
-              <table class="w-full text-sm text-left rtl:text-right text-secondary">
-                <thead class="text-xs text-gray-700 uppercase bg-orangemoinsclair">
-                  <tr>
-                    <th scope="col" class="px-6 py-3">Chambre à livrer</th>
-                    <th scope="col" class="px-6 py-3">Commande</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {% for comm in commande %}
-                    <tr class="bg-white border-b">
-                      <th scope="row"
-                          class="px-6 py-4 font-medium text-secondary whitespace-nowrap">{{ comm.0 }}</th>
-                      <td class="px-6 py-4">
-                        {% for prod in comm.1 %}
-                          {{ prod.1 }} {{ prod.0 }}
-                          <br>
-                        {% endfor %}
-                      </td>
+              {% if formset %}
+                <form method="post" autocomplete="off">
+                  {% csrf_token %}
+                  {{ formset.management_form }}
+                {% endif %}
+                <table class="w-full text-sm text-left rtl:text-right text-secondary">
+                  <thead class="text-xs text-gray-700 uppercase bg-orangemoinsclair">
+                    <tr>
+                      <th scope="col" class="px-6 py-3">Chambre à livrer</th>
+                      <th scope="col" class="px-6 py-3">Commande</th>
+                      {% if formset %}<th scope="col" class="px-6 py-3">État de livraison des produits</th>{% endif %}
                     </tr>
-                  {% endfor %}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody>
+                    {% for order in orders %}
+                      {% with products=order.orderproduct_set.all %}
+                        {% for orderproduct in products %}
+                          <tr class="bg-white{% if forloop.last %} border-b{% endif %}">
+                            {% if forloop.first %}
+                              <th scope="row"
+                                  rowspan="{{ products|length }}"
+                                  class="px-6 py-4 font-medium text-secondary whitespace-nowrap ">{{ order.room }}</th>
+                            {% endif %}
+                            <td class="px-6 py-0.5 justify-between items-center{% if forloop.first %} pt-4{% endif %}{% if forloop.last %} pb-4{% endif %}{% if orderproduct.delivery_status != 'NA' %} text-red-700{% if orderproduct.delivery_status != 'NDELIV' %} line-through{% endif %}{% endif %}">
+                              {{ orderproduct.quantity }} {{ orderproduct.product.name }} {{ orderproduct.delivery_status }}
+                            </td>
+                            {% if formset %}
+                              <td>
+                                <div class="flex items-center gap-2">
+                                  {{ orderproduct.form.non_field_errors }}
+                                  {{ orderproduct.form.id }}
+                                  {{ orderproduct.form.delivery_status }}
+                                  {{ orderproduct.form.delivery_status.errors }}
+                                </div>
+                              </td>
+                            {% endif %}
+                          </tr>
+                        {% endfor %}
+                      {% endwith %}
+                    {% endfor %}
+                  </tbody>
+                  {% if formset %}
+                    <tfoot class="text-xs bg-orangemoinsclair">
+                      <tr>
+                        <td></td>
+                        <td></td>
+                        <td>
+                          <button type="submit"
+                                  class="my-1 w-64 bg-inherit border-gray-700 text-gray-700 font-montserrat rounded-lg inline-block box-border border-2 rounded-x1 hover:bg-gray-700 hover:text-white duration-100 h-10 font-bold">
+                            Sauvegarder l'état des produits
+                          </button>
+                        </td>
+                      </tr>
+                    </tfoot>
+                  {% endif %}
+                </table>
+                {% if formset %}
+                </form>
+                <script>
+                  document.addEventListener('DOMContentLoaded', function() {
+                      const deliveryForm = document.querySelector('form');
+                      let isDirty = false;
+                      let isSubmitting = false;
+
+                      // 1. Mark the form as "dirty" when any value changes
+                      deliveryForm.addEventListener('change', () => {
+                          isDirty = true;
+                      });
+
+                      // 2. If the user is intentionally submitting the form, don't warn them
+                      deliveryForm.addEventListener('submit', () => {
+                          isSubmitting = true;
+                      });
+
+                      // 3. Intercept the page leave event
+                      window.addEventListener('beforeunload', (event) => {
+                          if (isDirty && !isSubmitting) {
+                              // Standard way to trigger the browser's confirmation dialog
+                              event.preventDefault();
+                              event.returnValue = ''; 
+                          }
+                      });
+                  });
+                </script>
+                <a href="/admin/commande/delivery/{{ delivery.id }}/cancel_delivery_action_row/"
+                   onclick="return confirm('Êtes-vous sûr de vouloir annuler cette date de livraison ? Cette action est irréversible.');">
+                  <button type="button"
+                          class="m-2 border-2 bg-white border-red-400 text-red-400 rounded-lg focus:ring-2 focus:ring-orange-400 p-1.5 hover:text-red-600 hover:bg-red-300 hover:border-red-600 hover:border-3 font-bold inline-flex items-center justify-center"
+                          aria-label="Supprimer la commande">
+                    <span>Annuler la date de livraison</span>
+                  </button>
+                </a>
+              {% endif %}
             </div>
           </div>
         </div>
@@ -221,7 +332,9 @@
     {% else %}
       <h2 class="text-2xl md:text-4xl text-primary text-center py-5 px-3 font-bold">Personne n'a encore commandé&nbsp;!</h2>
     {% endif %}
+  {% elif request.GET.date %}
+    <h1 class="text-2xl md:text-4xl text-secondary text-center py-10 px-3">Pas de livraisons ce jour-ci !</h1>
   {% else %}
-    <h1 class="text-2xl md:text-4xl text-secondary text-center py-10 px-3">Pas de livraison aujourd'hui&nbsp;!</h1>
+    <h1 class="text-2xl md:text-4xl text-secondary text-center py-10 px-3">Pas de livraisons à venir !</h1>
   {% endif %}
 {% endblock content %}

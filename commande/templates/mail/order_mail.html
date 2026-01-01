@@ -3,60 +3,62 @@
 {% load static %}
 {% mjml %}
 {% block content %}
-<mj-section mj-class="color-quaternary" text-align="center">
+  <mj-section mj-class="color-quaternary" text-align="center">
   <mj-column>
-      <mj-text align="center"><strong>Merci pour ta commande {{ prenom }}, pense à mettre un sac devant ta porte !</strong></mj-text>
-    </mj-column>
-</mj-section>
-
-<!-- Articles -->
-{% for prod in commande %}
-<mj-section mj-class="color-quaternary" text-align="center">
-  <mj-column width="30%" vertical-align="middle">
-    <mj-image border-radius="8px" width="150px" align="left" src="{{ request.scheme }}://{{ request.get_host }}{{ media_url }}{{ prod.object.image }}" />
+  <mj-text align="center"><strong>Merci pour ta commande {{ prenom }}, pense à mettre un sac devant ta porte !</strong></mj-text>
   </mj-column>
-  <mj-group vertical-align="middle" width="70%">
-    <mj-column>
-      <mj-text align="left">
-        <strong>{{ prod.object.nom }}</strong><br>
-        Tranché&nbsp;: n/a<br>
-        Quantité&nbsp;: {{ prod.quantity }}
-      </mj-text>
+  </mj-section>
+  <!-- Articles -->
+  {% for op in order.orderproduct_set.all %}
+    <mj-section mj-class="color-quaternary" text-align="center">
+    <mj-column width="30%" vertical-align="middle">
+    <mj-image border-radius="8px" width="150px" align="left" src="{{ request.scheme }}://{{ request.get_host }}{{ media_url }}{{ op.product.image }}" />
     </mj-column>
+    <mj-group vertical-align="middle" width="70%">
     <mj-column>
-      <mj-text align="right">Prix : {{ prod.price }}€</mj-text>
-    </mj-column>
-  </mj-group>
-</mj-section>
-{% endfor %}
-<!-- Divider -->
-<mj-section mj-class="color-quaternary" padding="0">
-  <mj-column>
-    <mj-divider mj-class="divider-simple" />
-  </mj-column>
-</mj-section>
-<!-- Delivery date and Total amount -->
-<mj-section mj-class="color-quaternary" padding="0" >
-  <mj-column width="66%" vertical-align="top" >
-    <mj-text padding-top="0">
-      Date de livraison&nbsp;: {{ date }}<br>
-      Chambre&nbsp;: {{ chambre }}
+    <mj-text align="left">
+    <strong>{{ op.product.name }}</strong>
+    <br>
+    Tranché&nbsp;: n/a
+    <br>
+    Quantité&nbsp;: {{ op.quantity }}
     </mj-text>
+    </mj-column>
+    <mj-column>
+    <mj-text align="right">Prix : {{ op.total_price }}€</mj-text>
+    </mj-column>
+    </mj-group>
+    </mj-section>
+  {% endfor %}
+  <!-- Divider -->
+  <mj-section mj-class="color-quaternary" padding="0">
+  <mj-column>
+  <mj-divider mj-class="divider-simple" />
+  </mj-column>
+  </mj-section>
+  <!-- Delivery date and Total amount -->
+  <mj-section mj-class="color-quaternary" padding="0">
+  <mj-column width="66%" vertical-align="top">
+  <mj-text padding-top="0">
+  Date de livraison&nbsp;: {{ date }}
+  <br>
+  Chambre&nbsp;: {{ room }}
+  </mj-text>
   </mj-column>
   <mj-column width="34%">
-    <mj-text align="right" padding-top="0">
-      Total&nbsp;: {{ total }}€
-    </mj-text>
+  <mj-text align="right" padding-top="0">
+  Total&nbsp;: {{ total }}€
+  </mj-text>
   </mj-column>
-</mj-section>
-<!-- Modifier sa commande -->
-<mj-section mj-class="color-quaternary">
+  </mj-section>
+  <!-- Modifier sa commande -->
+  <mj-section mj-class="color-quaternary">
   <mj-column width="60%" vertical-align="middle">
-    <mj-text align="center">Tu peux annuler cette commande ou en faire une nouvelle jusqu'au matin même 6h30&nbsp;:</mj-text>
+  <mj-text align="center">Tu peux annuler cette commande ou en faire une nouvelle jusqu'au matin même 6h30&nbsp;:</mj-text>
   </mj-column>
   <mj-column width="35%" vertical-align="middle">
-    <mj-button mj-class="color-primary" color="#FFFFFF" border-radius="8px" href="{{ request.scheme }}://{{ request.get_host }}{% url 'historique' %}"><strong>Voir mes commandes</strong></mj-button>
+  <mj-button mj-class="color-primary" color="#FFFFFF" border-radius="8px" href="{{ request.scheme }}://{{ request.get_host }}{% url 'historique' %}"><strong>Voir mes commandes</strong></mj-button>
   </mj-column>
-</mj-section>
+  </mj-section>
 {% endblock content %}
 {% endmjml %}

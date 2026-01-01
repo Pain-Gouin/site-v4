@@ -5,33 +5,19 @@ from django.contrib.auth import get_user_model
 from django.utils.translation import gettext_lazy as _
 from django.core.exceptions import ValidationError
 
-from django.forms import ModelForm
+from django.forms import BooleanField
 
-from .models import Produit, Livraison
+from commande.utils import first_editable_day
+from commande.widgets import MultiDateField
+
+from .models import Delivery
 
 import datetime
-import re
 
-from django.forms.widgets import Widget, Select
-from django.utils.dates import MONTHS
-from django.utils.safestring import mark_safe
 
 from unfold.widgets import (
-    UnfoldAdminCheckboxSelectMultiple,
-    UnfoldAdminDateWidget,
     UnfoldAdminEmailInputWidget,
-    UnfoldAdminExpandableTextareaWidget,
-    UnfoldAdminFileFieldWidget,
-    UnfoldAdminImageFieldWidget,
-    UnfoldAdminIntegerFieldWidget,
-    UnfoldAdminMoneyWidget,
-    UnfoldAdminRadioSelectWidget,
-    UnfoldAdminSelect2Widget,
-    UnfoldAdminSplitDateTimeWidget,
-    UnfoldAdminTextareaWidget,
     UnfoldAdminTextInputWidget,
-    UnfoldAdminTimeWidget,
-    UnfoldAdminURLInputWidget,
     UnfoldBooleanSwitchWidget,
 )
 
@@ -50,7 +36,14 @@ class LoginForm(forms.Form):
 class SignupForm(UserCreationForm):
     class Meta(UserCreationForm.Meta):
         model = get_user_model()
-        fields = ("email", "first_name", "last_name", "chambre", "tel", "isPermis")
+        fields = (
+            "email",
+            "first_name",
+            "last_name",
+            "room",
+            "phone",
+            "has_drivers_licence",
+        )
 
     def clean_email(self):
         """Check if user had been precreated, and reject usernames that differ only in case."""
@@ -88,7 +81,14 @@ class SignupForm(UserCreationForm):
 class FinishSignupForm(SetPasswordForm, forms.ModelForm):
     class Meta(UserChangeForm.Meta):
         model = get_user_model()
-        fields = ("email", "first_name", "last_name", "chambre", "tel", "isPermis")
+        fields = (
+            "email",
+            "first_name",
+            "last_name",
+            "room",
+            "phone",
+            "has_drivers_licence",
+        )
 
     def save(self, commit=True):
         user = super().save(commit=False)
@@ -111,10 +111,10 @@ class UpdateForm(UserChangeForm):
             "email",
             "first_name",
             "last_name",
-            "chambre",
-            "tel",
-            "isPermis",
-            "getOrderMail",
+            "room",
+            "phone",
+            "has_drivers_licence",
+            "get_order_email",
         )
 
 
@@ -133,28 +133,24 @@ class ProductOrderForm(forms.Form):
     )
 
 
-class LivraisonForm(forms.ModelForm):
-    class Meta:
-        model = Livraison
-        exclude = ["produit"]
-
-
-class ExportForm(forms.Form):
-    mois = forms.DateField(
-        required=True, widget=forms.DateInput(attrs={"type": "date"})
-    )
-
-
 class PrecreateUserForm(forms.ModelForm):
     class Meta:
         model = get_user_model()
-        fields = ("first_name", "last_name", "email", "isLivreur", "isPermis")
+        fields = (
+            "first_name",
+            "last_name",
+            "email",
+            "is_delivery_man",
+            "has_drivers_licence",
+            "verified_genuine_user",
+        )
         widgets = {
             "email": UnfoldAdminEmailInputWidget(),
-            "isPermis": UnfoldBooleanSwitchWidget(),
-            "isLivreur": UnfoldBooleanSwitchWidget(),
+            "has_drivers_licence": UnfoldBooleanSwitchWidget(),
+            "is_delivery_man": UnfoldBooleanSwitchWidget(),
             "first_name": UnfoldAdminTextInputWidget(),
             "last_name": UnfoldAdminTextInputWidget(),
+            "verified_genuine_user": forms.HiddenInput(),
         }
 
     def __init__(self, *args, **kwargs):
@@ -162,6 +158,7 @@ class PrecreateUserForm(forms.ModelForm):
 
         self.fields["first_name"].required = False
         self.fields["last_name"].required = False
+        self.fields["verified_genuine_user"].initial = True
 
         self.helper = FormHelper()
         self.helper.layout = Layout(
@@ -170,8 +167,8 @@ class PrecreateUserForm(forms.ModelForm):
                 "email",
                 "first_name",
                 "last_name",
-                "isPermis",
-                "isLivreur",
+                "has_drivers_licence",
+                "is_delivery_man",
                 css_class="mb-8",
             ),
         )
@@ -189,3 +186,23 @@ class PrecreateUsersFormHelper(FormHelper):
             "novalidate": "novalidate",
         }
         self.add_input(Submit("submit", _("Pré-créer")))
+
+
+class bulkCreateDeliveriesForm(forms.Form):
+    dates = MultiDateField(required=False, min_date=first_editable_day)
+    cancel_orders = BooleanField(
+        initial=False,
+        widget=UnfoldBooleanSwitchWidget(),
+        label=_("Annuler les commandes clients si nécessaire ?"),
+        help_text=_("En cas de suppression d'une date existante."),
+        required=False,
+    )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        # Update the initial value dynamically
+        self.old_dates = list(
+            Delivery.objects.editable().values_list("date", flat=True)
+        )
+        self.fields["dates"].initial = self.old_dates

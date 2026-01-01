@@ -2,8 +2,9 @@
 
 from django.db import migrations, models
 
+
 def remove_existing_last_order(apps, _schema_editor):
-    users = apps.get_model("commande", "Utilisateur")
+    users = apps.get_model("commande", "User")
     commandes = apps.get_model("commande", "Commande")
     for user in users.objects.all():
         last_commandes = commandes.objects.filter(client__exact=user.email)
@@ -13,16 +14,17 @@ def remove_existing_last_order(apps, _schema_editor):
             user.last_order = None
         user.save()
 
+
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('commande', '0028_alter_utilisateur_islivreur_and_more'),
+        ("commande", "0028_alter_utilisateur_islivreur_and_more"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='utilisateur',
-            name='last_order',
+            model_name="user",
+            name="last_order",
             field=models.DateTimeField(null=True),
         ),
         migrations.RunPython(remove_existing_last_order, migrations.RunPython.noop),

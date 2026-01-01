@@ -6,28 +6,28 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('commande', '0023_utilisateur_getordermail'),
+        ("commande", "0023_utilisateur_getordermail"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='commande',
-            name='total_commande',
+            model_name="commande",
+            name="total_commande",
             field=models.DecimalField(decimal_places=2, default=0, max_digits=8),
         ),
         migrations.AlterField(
-            model_name='produit',
-            name='prix',
+            model_name="produit",
+            name="prix",
             field=models.DecimalField(decimal_places=2, default=0, max_digits=8),
         ),
         migrations.AlterField(
-            model_name='produit',
-            name='prix_achat',
+            model_name="produit",
+            name="prix_achat",
             field=models.DecimalField(decimal_places=2, default=0, max_digits=8),
         ),
         migrations.AlterField(
-            model_name='utilisateur',
-            name='credit',
+            model_name="user",
+            name="credit",
             field=models.DecimalField(decimal_places=2, default=0, max_digits=8),
         ),
     ]

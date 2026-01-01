@@ -7,44 +7,55 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('commande', '0025_alter_utilisateur_options_and_more'),
+        ("commande", "0025_alter_utilisateur_options_and_more"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='utilisateur',
-            name='chambre',
+            model_name="user",
+            name="chambre",
             field=models.CharField(max_length=10, null=True),
         ),
         migrations.AlterField(
-            model_name='utilisateur',
-            name='date_joined',
-            field=models.DateTimeField(default=django.utils.timezone.now, null=True, verbose_name='date joined'),
+            model_name="user",
+            name="date_joined",
+            field=models.DateTimeField(
+                default=django.utils.timezone.now, null=True, verbose_name="date joined"
+            ),
         ),
         migrations.AlterField(
-            model_name='utilisateur',
-            name='email',
-            field=models.EmailField(default='email.not.set@example.com', max_length=254, unique=True, verbose_name='email address'),
+            model_name="user",
+            name="email",
+            field=models.EmailField(
+                default="email.not.set@example.com",
+                max_length=254,
+                unique=True,
+                verbose_name="email address",
+            ),
             preserve_default=False,
         ),
         migrations.AlterField(
-            model_name='utilisateur',
-            name='first_name',
-            field=models.CharField(max_length=150, null=True, verbose_name='first name'),
+            model_name="user",
+            name="first_name",
+            field=models.CharField(
+                max_length=150, null=True, verbose_name="first name"
+            ),
         ),
         migrations.AlterField(
-            model_name='utilisateur',
-            name='last_login',
-            field=models.DateTimeField(blank=True, null=True, verbose_name='last login'),
+            model_name="user",
+            name="last_login",
+            field=models.DateTimeField(
+                blank=True, null=True, verbose_name="last login"
+            ),
         ),
         migrations.AlterField(
-            model_name='utilisateur',
-            name='last_name',
-            field=models.CharField(max_length=150, null=True, verbose_name='last name'),
+            model_name="user",
+            name="last_name",
+            field=models.CharField(max_length=150, null=True, verbose_name="last name"),
         ),
         migrations.AlterField(
-            model_name='utilisateur',
-            name='tel',
+            model_name="user",
+            name="tel",
             field=models.CharField(max_length=20, null=True),
         ),
     ]

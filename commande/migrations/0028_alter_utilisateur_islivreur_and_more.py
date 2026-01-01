@@ -6,18 +6,18 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('commande', '0027_utilisateur_autorisation_verified_and_more'),
+        ("commande", "0027_utilisateur_autorisation_verified_and_more"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='utilisateur',
-            name='isLivreur',
-            field=models.BooleanField(default=False, verbose_name='Livreur'),
+            model_name="user",
+            name="isLivreur",
+            field=models.BooleanField(default=False, verbose_name="Livreur"),
         ),
         migrations.AlterField(
-            model_name='utilisateur',
-            name='isPermis',
-            field=models.BooleanField(default=False, verbose_name='Permis'),
+            model_name="user",
+            name="isPermis",
+            field=models.BooleanField(default=False, verbose_name="Permis"),
         ),
     ]

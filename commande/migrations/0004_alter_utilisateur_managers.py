@@ -12,7 +12,7 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.AlterModelManagers(
-            name='utilisateur',
+            name='user',
             managers=[
                 ('objects', django.contrib.auth.models.UserManager()),
             ],

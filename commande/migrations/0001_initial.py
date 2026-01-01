@@ -7,26 +7,33 @@ class Migration(migrations.Migration):
 
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name='Utilisateur',
+            name="User",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('prenom', models.CharField(max_length=200)),
-                ('nom', models.CharField(max_length=200)),
-                ('isLivreur', models.BooleanField()),
-                ('isAdmin', models.BooleanField()),
-                ('isPermis', models.BooleanField()),
-                ('mail', models.CharField(max_length=200)),
-                ('chambre', models.CharField(max_length=100)),
-                ('tel', models.CharField(max_length=50)),
-                ('lastLogin', models.DateTimeField()),
-                ('lastOrder', models.DateTimeField()),
-                ('created_at', models.DateField()),
-                ('credit', models.FloatField(default=0)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("prenom", models.CharField(max_length=200)),
+                ("nom", models.CharField(max_length=200)),
+                ("isLivreur", models.BooleanField()),
+                ("isAdmin", models.BooleanField()),
+                ("isPermis", models.BooleanField()),
+                ("mail", models.CharField(max_length=200)),
+                ("chambre", models.CharField(max_length=100)),
+                ("tel", models.CharField(max_length=50)),
+                ("lastLogin", models.DateTimeField()),
+                ("lastOrder", models.DateTimeField()),
+                ("created_at", models.DateField()),
+                ("credit", models.FloatField(default=0)),
             ],
         ),
     ]

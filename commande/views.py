@@ -1,3 +1,6 @@
+from django.db.models import Sum, Prefetch
+from django.db.models.functions import Lower, Substr
+from django.forms import modelformset_factory
 from django.shortcuts import render, redirect
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.decorators import login_required
@@ -14,15 +17,21 @@ from django.utils.http import urlsafe_base64_decode
 from django.core.exceptions import ValidationError
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from django.utils import timezone
-from datetime import datetime
+from django.db import transaction
+from datetime import datetime, time, timedelta
 from .utils import html_to_text, login_required_with_message
 from .admin import SendPrecreationMailFunction
 
 from . import forms
 
-import json
-
-from .models import Produit, CategorieProduit, Commande, Livraison, Utilisateur
+from .models import (
+    ProductCategory,
+    Order,
+    Delivery,
+    User,
+    Transaction,
+    OrderProduct,
+)
 
 
 # Create your views here.
@@ -111,13 +120,13 @@ def finish_signup_page(request, uidb64, token):
     try:
         # urlsafe_base64_decode() decodes to bytestring
         uid = urlsafe_base64_decode(uidb64).decode()
-        pk = Utilisateur._meta.pk.to_python(uid)
-        user = Utilisateur._default_manager.get(pk=pk)
+        pk = User._meta.pk.to_python(uid)
+        user = User._default_manager.get(pk=pk)
     except (
         TypeError,
         ValueError,
         OverflowError,
-        Utilisateur.DoesNotExist,
+        User.DoesNotExist,
         ValidationError,
     ):
         user = None
@@ -242,38 +251,29 @@ def update_user_page(request):
 
 @login_required_with_message("Authentifie toi avant de pouvoir commander")
 def commande(request):
-    order = []
+    livraison_query = Delivery.objects.editable().order_by("date")
 
-    livraison_query = Livraison.objects.modifiable()
-
-    categorie_query = CategorieProduit.objects.prefetch_related("produit_set").all()
+    category_query = ProductCategory.objects.prefetch_related("product_set").all()
 
     category_dict = {}
-    for cat in categorie_query:
-        category_dict[cat] = list(cat.produit_set.all())
+    for cat in category_query:
+        queryset = cat.product_set.filter(is_active=True)
+        if queryset.exists():
+            category_dict[cat] = list(queryset)
 
     if request.user.is_authenticated and request.method == "POST":
-
+        order_list = []
         total_commande = 0
 
-        bought_prod = []
         for product_list in category_dict.values():
             for prod in product_list:
-                quantity = request.POST["quantity" + str(prod.id)]
+                quantity = int(request.POST["quantity" + str(prod.id)])
 
-                total_commande += int(quantity) * prod.prix
-                if int(quantity) > 0:
-                    bought_prod.append(
-                        {
-                            "object": prod,
-                            "quantity": quantity,
-                            "price": int(quantity) * prod.prix,
-                        }
-                    )
-                    order.append([prod.nom, quantity])
-        order = json.dumps(order)
+                if quantity > 0:
+                    order_list.append([prod, quantity, quantity * prod.resell_price])
+                    total_commande += order_list[-1][2]
 
-        if total_commande > request.user.credit:
+        if total_commande > request.user.balance_cache:
             messages.error(
                 request,
                 mark_safe(
@@ -281,38 +281,50 @@ def commande(request):
                 ),
             )
         elif (
-            len(bought_prod) == 0
+            len(order_list) == 0
         ):  # Avec la vérification javascript côté client, ce n'est pas sensé être possible
             messages.error(request, "Sélectionne au moins un article !")
         else:
-            chambre = request.POST["chambre"]
-            date = list(Livraison.objects.filter(id=request.POST["date"]))[0].date
-            request.user.credit -= total_commande
-            request.user.last_order = timezone.now()
-            request.user.save()
+            room = request.POST["room"]
+            delivery_id = request.POST["date"]
+            with transaction.atomic():
+                order = Order.objects.create(
+                    original_price=total_commande,
+                    client=request.user,
+                    delivery=Delivery.objects.get(id=delivery_id),
+                    room=room,
+                )
+                order_transaction = Transaction.objects.create(
+                    user=request.user,
+                    order=order,
+                    amount=-total_commande,
+                    type=Transaction.TransactionTypeChoices.ORDER_CHARGE,
+                    initiator=request.user,
+                )
 
-            comm = Commande(
-                client=request.user.get_username(),
-                date=date,
-                produit=order,
-                chambre=chambre,
-                total_commande=total_commande,
-            )
-            comm.save()
+                order_product_instances = []
+                for item in order_list:
+                    op = OrderProduct(
+                        order=order,  # The crucial step: link the saved Order object
+                        product=item[0],
+                        quantity=item[1],
+                        total_price_sold=item[2],
+                        total_price_bought=item[1] * item[0].purchase_price,
+                    )
+                    order_product_instances.append(op)
+                OrderProduct.objects.bulk_create(order_product_instances)
 
-            add_to_livraison(date, order)
-
-            if request.user.getOrderMail:
+            if request.user.get_order_email:
                 receiver_email = request.user.email
                 template_name = "mail/order_mail.html"
                 convert_to_html_content = render_to_string(
                     template_name=template_name,
                     context={
                         "prenom": request.user.first_name,
-                        "date": date,
-                        "commande": bought_prod,
+                        "date": order.delivery.date,
+                        "order": order,
                         "total": total_commande,
-                        "chambre": chambre,
+                        "room": room,
                         "request": request,
                         "media_url": settings.MEDIA_URL,
                     },
@@ -338,14 +350,14 @@ def commande(request):
             )
             return redirect("commande")
 
-    if request.user.credit == 0:
+    if request.user.balance_cache == 0:
         messages.warning(
             request,
             mark_safe(
                 f'Avant de pouvoir passer commande, tu dois d\'abord <a href="{reverse('recharge')}" class="font-semibold underline hover:no-underline">alimenter ton compte</a>.'
             ),
         )
-    elif request.user.credit <= 2:
+    elif request.user.balance_cache <= 2:
         messages.warning(
             request,
             mark_safe(
@@ -356,33 +368,9 @@ def commande(request):
     context = {
         "category_dict": category_dict,
         "livraison": livraison_query,
-        "solde_vide": request.user.credit == 0,
+        "solde_vide": request.user.balance_cache == 0,
     }
     return render(request, "commande/order.html", context)
-
-
-def add_to_livraison(date, commande):
-    livraison = Livraison.objects.get(date=date).produit
-    liste_commande = json.loads(commande)
-
-    if livraison == ["None"]:
-        livraison.pop()
-    else:
-        livraison = json.loads(livraison)
-
-    for produit in liste_commande:
-        compteur = 0
-        for liv in livraison:
-            if produit[0] == liv[0]:
-                a = int(liv[1]) + int(produit[1])
-                liv[1] = str(a)
-                break
-            compteur += 1
-        if compteur == len(livraison) and int(produit[1]) != 0:
-            livraison.append(produit.copy())
-
-    update = Livraison.objects.filter(date=date).update(produit=json.dumps(livraison))
-    return
 
 
 def add_livraison_batiment(batiment, commande_batiment, produit_client):
@@ -405,142 +393,199 @@ def add_livraison_batiment(batiment, commande_batiment, produit_client):
 
 @login_required
 def livreur(request):
-    produit = ["None"]
-    date = datetime.today().strftime("%Y-%m-%d")
-    try:
-        livraison_query = Livraison.objects.get(date=date)
-    except Livraison.DoesNotExist:  # la date de livraison n'existe pas
-        return render(request, "commande/livreur.html", {"livraison": None})
-    except Exception:
-        # Not supposed to happen, another exception happened
-        return HttpResponseServerError()
+    if not (
+        request.user.is_delivery_man
+        or request.user.is_staff
+        or request.user.is_superuser
+    ):
+        messages.warning(
+            request,
+            "Tu dois être un livreur ou un administrateur pour accéder à la page de livraison.",
+        )
+        return redirect("/")
 
-    produit = livraison_query.produit
+    context = {}
+    context["show_calendar"] = request.user.is_staff
+    if context["show_calendar"]:
+        if request.user.is_staff:
+            context["allowed_dates"] = list(
+                Delivery.objects.filter(is_active=True).values_list("date", flat=True)
+            )
+    if "date" in request.GET:
+        if context["show_calendar"]:
+            querystring = request.GET.get("date")
+            target_date = datetime.strptime(querystring, "%Y-%m-%d").date()
+        else:
+            messages.warning(request, "Tu n'as pas le droit d'accéder à cette date !")
+            return redirect("livreur")
+        context["target_date"] = target_date
 
-    commande = list(Commande.objects.filter(date=date).order_by("chambre"))
-    commande_list = []
-    commande_batiment = [
-        {"nom": "Bâtiment A", "commande": []},
-        {"nom": "Bâtiment B", "commande": []},
-        {"nom": "Bâtiment C", "commande": []},
-        {"nom": "Bâtiment D", "commande": []},
-        {"nom": "Bâtiment E", "commande": []},
-        {"nom": "Bâtiment F", "commande": []},
-        {"nom": "Autre (indeterminé)", "commande": []},
-    ]
-
-    for comm in commande:
-        produit_client = json.loads(comm.produit)
-        produit_client2 = json.loads(comm.produit)
-        commande_list.append([comm.chambre, produit_client])
-        match comm.chambre[0].upper():
-            case "A":
-                commande_batiment = add_livraison_batiment(
-                    0, commande_batiment, produit_client2
-                )
-            case "B":
-                commande_batiment = add_livraison_batiment(
-                    1, commande_batiment, produit_client2
-                )
-            case "C":
-                commande_batiment = add_livraison_batiment(
-                    2, commande_batiment, produit_client2
-                )
-            case "D":
-                commande_batiment = add_livraison_batiment(
-                    3, commande_batiment, produit_client2
-                )
-            case "E":
-                commande_batiment = add_livraison_batiment(
-                    4, commande_batiment, produit_client2
-                )
-            case "F":
-                commande_batiment = add_livraison_batiment(
-                    5, commande_batiment, produit_client2
-                )
-            case _:
-                commande_batiment = add_livraison_batiment(
-                    6, commande_batiment, produit_client2
-                )
-
-    if produit == ["None"]:
-        produit = False
+        try:
+            delivery = Delivery.objects.filter(is_active=True).get(date=target_date)
+        except Delivery.DoesNotExist:  # la date de livraison n'existe pas
+            delivery = False
+        except Exception:
+            # Not supposed to happen, another exception happened
+            return HttpResponseServerError()
     else:
-        produit = json.loads(produit)
+        CUTOFF_TIME = time(14, 0)  # Time at wich to show tomorrow's delivery
+        now = timezone.now()
+        if now.time() >= CUTOFF_TIME:
+            target_date = now.date() + timedelta(days=1)
+        else:
+            target_date = now.date()
+        delivery = (
+            Delivery.objects.filter(date__gte=target_date, is_active=True)
+            .order_by("date")
+            .first()
+        )
+        if delivery is None:
+            delivery = False
+        else:
+            context["target_date"] = delivery.date
 
-    context = {
-        "livraison": livraison_query,
-        "produit": produit,
-        "commande": commande_list,
-        "commande_batiment": commande_batiment,
-    }
+    context["delivery"] = delivery
+    if delivery:
+        current_orderproducts = OrderProduct.objects.filter(
+            order__delivery=delivery,  # Filter backwards to the specific Delivery instance
+            order__is_cancelled=False,  # Filter the related Order's status
+            delivery_status=OrderProduct.OrderProductStatusChoices.VALID,  # Filter the item status
+        )
+
+        context["products"] = (
+            current_orderproducts.values("product", "product__name")
+            .annotate(total_quantity=Sum("quantity"))
+            .order_by("product__category", "product__sort")
+        )
+
+        current_orderproducts_bybuildings = (
+            current_orderproducts.annotate(bat_id=Lower(Substr("order__room", 1, 1)))
+            .values("bat_id", "product_id", "product__name")
+            .annotate(total_quantity=Sum("quantity"))
+            .order_by("product__category", "product__sort")
+        )
+        context["buildings"] = [
+            {
+                "nom": "Bâtiment A",
+                "commande": current_orderproducts_bybuildings.filter(bat_id="a"),
+            },
+            {
+                "nom": "Bâtiment B",
+                "commande": current_orderproducts_bybuildings.filter(bat_id="b"),
+            },
+            {
+                "nom": "Bâtiment C",
+                "commande": current_orderproducts_bybuildings.filter(bat_id="c"),
+            },
+            {
+                "nom": "Bâtiment D",
+                "commande": current_orderproducts_bybuildings.filter(bat_id="d"),
+            },
+            {
+                "nom": "Bâtiment E",
+                "commande": current_orderproducts_bybuildings.filter(bat_id="e"),
+            },
+            {
+                "nom": "Bâtiment F",
+                "commande": current_orderproducts_bybuildings.filter(bat_id="f"),
+            },
+            {
+                "nom": "Autre (indeterminé)",
+                "commande": current_orderproducts_bybuildings.exclude(
+                    bat_id__in=["a", "b", "c", "d", "e", "f"]
+                ),
+            },
+        ]
+
+        context["orders"] = list(
+            Order.objects.filter(delivery=delivery, is_cancelled=False)
+            .prefetch_related(
+                Prefetch(
+                    "orderproduct_set",
+                    queryset=OrderProduct.objects.order_by(
+                        "product", "product__category", "product__sort"
+                    ).select_related("product"),
+                )
+            )
+            .order_by("room")
+        )
+
+        if request.user.is_staff or request.user.is_superuser:
+            ProductOrderFormSet = modelformset_factory(
+                OrderProduct,
+                fields=("delivery_status",),
+                extra=0,
+                widgets={
+                    "delivery_status": forms.Select(
+                        attrs={
+                            "class": "font-montserrat p-1 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 text-sm focus:ring-secondary focus:border-secondary"
+                        },
+                    )
+                },
+            )
+
+            formset_qs = (
+                OrderProduct.objects.filter(order__in=context["orders"])
+                .select_related("product", "order")
+                .order_by(
+                    "order__room", "product", "product__category", "product__sort"
+                )
+            )
+
+            if request.method == "POST":
+                formset = ProductOrderFormSet(request.POST, queryset=formset_qs)
+                if formset.is_valid():
+                    with transaction.atomic():
+                        formset.save()
+                        for order in context["orders"]:
+                            order.update_transactions(
+                                request,
+                                reason="Modification du statut de livraison d'articles",
+                            )
+                        messages.success(
+                            request,
+                            "Mise à jour des statuts de livraison effectué avec succés.",
+                        )
+                    return redirect(request.get_full_path())
+            else:
+                formset = ProductOrderFormSet(queryset=formset_qs)
+
+            form_map = {form.instance.id: form for form in formset}
+            for order in context["orders"]:
+                for op in order.orderproduct_set.all():
+                    op.form = form_map.get(op.id)
+            context["formset"] = formset
+
     return render(request, "commande/livreur.html", context)
 
 
 @login_required
 def historique(request):
-    user_order = Commande.objects.filter(client=request.user.get_username()).order_by(
-        "-date"
+    user_orders = (
+        Order.objects.filter(client=request.user)
+        .annotate(current_price=-Sum("transactions__amount"))
+        .select_related("delivery")
+        .prefetch_related("orderproduct_set__product")
+        .order_by("-created_at")
     )
-    historique = []
 
-    for commande in user_order:
-        passe = commande.est_modifiable
-        historique.append(
-            {
-                "date": commande.date,
-                "produits": json.loads(commande.produit),
-                "total": commande.total_commande,
-                "passe": passe,
-                "id": commande.id,
-            }
-        )
-
-    context = {"historique": historique}
-    return render(request, "commande/historique.html", context)
+    return render(request, "commande/historique.html", {"user_orders": user_orders})
 
 
 @login_required
 def del_order(request, order):
-    query_order = Commande.objects.get(id=order)
-    if query_order.client != request.user.get_username():
+    query_order = Order.objects.get(id=order)
+    if query_order.client != request.user:
         messages.error(request, "Tu dois être connecté pour faire cela !")
         return redirect(settings.LOGIN_REDIRECT_URL)
-    elif query_order.date <= datetime.today().date():
+    elif not query_order.is_editable:
         messages.error(
             request,
-            "La commande est déjà passée, il n'est plus possible de la supprimer.",
+            "La livraison est déjà en cours ou passée, il n'est plus possible de supprimer la commande.",
         )
     else:
-        request.user.credit += query_order.total_commande
-        request.user.save()
+        query_order.cancel(request)
 
-        del_to_livraison(query_order.date, query_order.produit)
         messages.success(request, "Commande bien annulée.")
 
-        query_order.delete()
-
     return redirect("historique")
-
-
-def del_to_livraison(date, commande):
-    livraison = Livraison.objects.get(date=date).produit
-    liste_commande = json.loads(commande)
-
-    if livraison == ["None"]:
-        livraison.pop()
-    else:
-        livraison = json.loads(livraison)
-
-    for produit in liste_commande:
-        for liv in livraison:
-            if produit[0] == liv[0]:
-                a = int(liv[1]) - int(produit[1])
-                if a == 0:
-                    livraison.remove(liv)
-                else:
-                    liv[1] = str(a)
-                break
-
-    update = Livraison.objects.filter(date=date).update(produit=json.dumps(livraison))
-    return

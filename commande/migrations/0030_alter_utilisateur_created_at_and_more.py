@@ -7,18 +7,21 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('commande', '0029_alter_utilisateur_last_order'),
+        ("commande", "0029_alter_utilisateur_last_order"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='utilisateur',
-            name='created_at',
+            model_name="user",
+            name="created_at",
             field=models.DateTimeField(default=django.utils.timezone.now),
         ),
         migrations.AlterField(
-            model_name='utilisateur',
-            name='last_order',
-            field=models.DateTimeField(help_text="Date du jour où l'utilisateur a passé sa dernière commande (et non de la commande). Il a pu la supprimer par la suite.", null=True),
+            model_name="user",
+            name="last_order",
+            field=models.DateTimeField(
+                help_text="Date du jour où l'utilisateur a passé sa dernière commande (et non de la commande). Il a pu la supprimer par la suite.",
+                null=True,
+            ),
         ),
     ]

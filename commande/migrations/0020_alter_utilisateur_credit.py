@@ -11,7 +11,7 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.AlterField(
-            model_name='utilisateur',
+            model_name='user',
             name='credit',
             field=models.FloatField(default=0),
         ),

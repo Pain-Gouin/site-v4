@@ -6,19 +6,19 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('commande', '0008_categorieproduit_produit'),
+        ("commande", "0008_categorieproduit_produit"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='produit',
-            name='image',
-            field=models.FileField(default='Coucou', upload_to='images'),
+            model_name="produit",
+            name="image",
+            field=models.FileField(default="Coucou", upload_to="images"),
             preserve_default=False,
         ),
         migrations.AddField(
-            model_name='produit',
-            name='isQuota',
+            model_name="produit",
+            name="isQuota",
             field=models.BooleanField(default=False),
         ),
     ]

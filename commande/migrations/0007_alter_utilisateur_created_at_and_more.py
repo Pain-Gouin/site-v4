@@ -7,28 +7,28 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('commande', '0006_utilisateur_username_alter_utilisateur_email'),
+        ("commande", "0006_utilisateur_username_alter_utilisateur_email"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='utilisateur',
-            name='created_at',
+            model_name="user",
+            name="created_at",
             field=models.DateTimeField(default=datetime.datetime.now),
         ),
         migrations.AlterField(
-            model_name='utilisateur',
-            name='credit',
+            model_name="user",
+            name="credit",
             field=models.FloatField(default=0),
         ),
         migrations.AlterField(
-            model_name='utilisateur',
-            name='last_login',
+            model_name="user",
+            name="last_login",
             field=models.DateTimeField(default=datetime.datetime.now),
         ),
         migrations.AlterField(
-            model_name='utilisateur',
-            name='last_order',
+            model_name="user",
+            name="last_order",
             field=models.DateTimeField(default=datetime.datetime.now),
         ),
     ]

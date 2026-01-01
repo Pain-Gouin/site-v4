@@ -6,19 +6,21 @@
         <form method="post" class="px-1">
             {% csrf_token %}
             {% for cat, produits in category_dict.items %}
-                <h1 class="text-3xl text-primary text-center pb-3 pt-10 font-bold">{{ cat.nom }}</h1>
+                <h1 class="text-3xl text-primary text-center pb-3 pt-10 font-bold">{{ cat.name }}</h1>
                 <div class="mx-auto grid md:flex flex-wrap grid-cols-1 max-w-(--breakpoint-xl) justify-evenly justify-items-center gap-x-1 gap-y-3 py-2">
                     {% for prod in produits %}
                         <div class="grid shadow-md gap-x-2 grid-cols-[auto_1fr] md:grid-cols-1 py-2 px-2 md:py-5 justify-items-end md:justify-items-center w-full max-w-xl md:max-w-sm md:w-[375px] border-orangemoinsclair bg-white border-3 rounded-lg">
                             <p class="order-2 md:order-1 text-lg sm:text-xl text-secondary text-right md:text-center font-semibold md:pb-3 pt-2">
-                                {{ prod.nom }}
+                                {{ prod.name }}
                             </p>
                             <div class="order-1 row-span-3 md:order-2 md:row-span-1 content-center">
-                                <img src="{{ prod.image.url }}"
+                                <img src="{{ prod.image_resized.url }}"
                                      alt="{{ prod.nom }}"
-                                     class="rounded-lg md:max-h-80 max-h-60 max-w-[33vw] md:w-full md:max-w-full object-fill xl:pb-0">
+                                     class="rounded-lg md:max-h-80 max-h-60 max-w-[33vw] md:w-full md:max-w-full object-fill xl:pb-0"
+                                     height="{{ prod.image_resized.height }}"
+                                     width="{{ prod.image_resized.width }}">
                             </div>
-                            <p class="order-3 text-lg sm:text-xl font-bebas text-center pt-2">Prix&nbsp;: {{ prod.prix }}€</p>
+                            <p class="order-3 text-lg sm:text-xl font-bebas text-center pt-2">Prix&nbsp;: {{ prod.resell_price }}€</p>
                             <div class="order-4">
                                 <label for="quantity-input"
                                        class="float-left md:float-none block mb-2 mr-2 md:mr-0 md:text-base text-sm font-medium text-gray-900 md:text-center text-right pt-2">
@@ -67,11 +69,11 @@
                 </div>
             {% endfor %}
             <div class="flex flex-row place-content-center items-center gap-3 pt-5">
-                <label for="chambre" class="block mb-2 text-sm font-medium text-gray-900">Chambre à livrer&nbsp;:</label>
+                <label for="room" class="block mb-2 text-sm font-medium text-gray-900">Chambre à livrer&nbsp;:</label>
                 <input type="text"
-                       name="chambre"
+                       name="room"
                        class=" max-w-32 font-montserrat w-full p-2 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 text-sm focus:ring-secondary focus:border-secondary"
-                       value="{{ user.chambre }}">
+                       value="{{ user.room }}">
             </div>
             <div class="flex flex-row place-content-center items-center gap-3 py-3">
                 <label for="date"

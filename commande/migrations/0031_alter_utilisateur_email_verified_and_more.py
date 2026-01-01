@@ -6,23 +6,35 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('commande', '0030_alter_utilisateur_created_at_and_more'),
+        ("commande", "0030_alter_utilisateur_created_at_and_more"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='utilisateur',
-            name='email_verified',
-            field=models.BooleanField(default=False, help_text="Désigne si l'utilisateur a bien vérifié son e-mail", verbose_name='E-mail vérifié'),
+            model_name="user",
+            name="email_verified",
+            field=models.BooleanField(
+                default=False,
+                help_text="Désigne si l'utilisateur a bien vérifié son e-mail",
+                verbose_name="E-mail vérifié",
+            ),
         ),
         migrations.AlterField(
-            model_name='utilisateur',
-            name='last_login',
-            field=models.DateTimeField(blank=True, help_text="Date de la dernière connexion de l'utilisateur. Si vide, alors le compte n'a pas encore été activé.", null=True, verbose_name='last login'),
+            model_name="user",
+            name="last_login",
+            field=models.DateTimeField(
+                blank=True,
+                help_text="Date de la dernière connexion de l'utilisateur. Si vide, alors le compte n'a pas encore été activé.",
+                null=True,
+                verbose_name="last login",
+            ),
         ),
         migrations.AlterField(
-            model_name='utilisateur',
-            name='last_order',
-            field=models.DateTimeField(help_text="Date du jour où l'utilisateur a passé sa dernière commande (et non de la livraison). Il a pu la supprimer par la suite.", null=True),
+            model_name="user",
+            name="last_order",
+            field=models.DateTimeField(
+                help_text="Date du jour où l'utilisateur a passé sa dernière commande (et non de la livraison). Il a pu la supprimer par la suite.",
+                null=True,
+            ),
         ),
     ]

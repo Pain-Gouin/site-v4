@@ -12,4 +12,3 @@ gunicorn==23.0.0
 html2text==2025.4.15
 mysqlclient==2.2.7
 whitenoise==6.11.0
-xlsxwriter==3.2.9

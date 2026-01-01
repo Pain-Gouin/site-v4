@@ -6,13 +6,13 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('commande', '0022_alter_livraison_date'),
+        ("commande", "0022_alter_livraison_date"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='utilisateur',
-            name='getOrderMail',
+            model_name="user",
+            name="getOrderMail",
             field=models.BooleanField(default=True),
         ),
     ]

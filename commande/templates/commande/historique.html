@@ -17,21 +17,27 @@
             </tr>
           </thead>
           <tbody>
-            {% for commande in historique %}
-              <tr class="bg-white border-b">
+            {% for order in user_orders %}
+              <tr class="bg-white border-b align-top {% if order.is_cancelled %}line-through{% endif %}">
                 <th scope="row" class="pr-1 pl-3 py-4 font-medium text-secondary">
-                  <span class="hidden sm:inline">{{ commande.date }}</span><span class="inline sm:hidden">{{ commande.date|date:"SHORT_DATE_FORMAT" }}</span>
+                  <span class="hidden sm:inline">{{ order.delivery.date }}</span><span class="inline sm:hidden">{{ order.delivery.date|date:"SHORT_DATE_FORMAT" }}</span>
                 </th>
                 <td class="px-1 py-4">
-                  {% for produit in commande.produits %}
-                    {{ produit.1 }} {{ produit.0 }}
+                  {% for product in order.orderproduct_set.all %}
+                    <span {% if product.delivery_status == 'NDELIV' or product.delivery_status == 'NBOUGHT' %}class="line-through text-red-800"{% endif %}>{{ product.quantity }} {{ product.product.name }}</span>
                     <br>
                   {% endfor %}
                 </td>
-                <td class="px-1 py-4">{{ commande.total }}€</td>
-                <td class="w-10">
-                  {% if commande.passe %}
-                    <a href="{% url 'del_order' commande.id %}">
+                <td class="px-1 py-4">
+                  <span {% if not order.is_cancelled and order.original_price != order.current_price %}class="text-red-800 line-through"{% endif %}>{{ order.original_price }}€</span>
+                  {% if order.original_price != order.current_price and not order.is_cancelled %}
+                    <br>
+                    <span><b>{{ order.current_price }}€</b></span>
+                  {% endif %}
+                </td>
+                <td class="w-10 align-middle">
+                  {% if not order.is_cancelled and order.is_editable %}
+                    <a href="{% url 'del_order' order.id %}">
                       <button type="button"
                               class="ms-auto h-6 w-6 md:h-8 md:w-8 -mx-1 -my-1 border-2 border-red-400 text-red-400 rounded-lg focus:ring-2 focus:ring-orange-400 p-1.5 hover:text-red-600 hover:bg-red-300 hover:border-red-600 hover:border-3 font-bold inline-flex items-center justify-center"
                               aria-label="Supprimer la commande">

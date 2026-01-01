@@ -6,13 +6,13 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('commande', '0020_alter_utilisateur_credit'),
+        ("commande", "0020_alter_utilisateur_credit"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='produit',
-            name='prix_achat',
+            model_name="produit",
+            name="prix_achat",
             field=models.FloatField(default=0),
         ),
     ]
