@@ -63,7 +63,6 @@ services:
 
   db:
     image: mariadb:12.0
-    restart: unless-stopped
     environment:
       MYSQL_ROOT_PASSWORD: mysql
     ports:
@@ -74,7 +73,6 @@ services:
   # For dev, GUI to interact directly with DB
   phpmyadmin:
     image: phpmyadmin
-    restart: unless-stopped
     ports:
       - 8080:80
     environment:
