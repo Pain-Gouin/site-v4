@@ -62,8 +62,8 @@ Les identifiants associés aux différents mails pouvant être utilisés par le 
 ## Structure du code
 
     📦site-v4
-     ┣ 📂commande               // application de gestion des commandes
-     ┣ 📂media                  // fichiers importé par l'utilisateur
+     ┣ 📂commande               // application de gestion des commandes (tout le site)
+     ┣ 📂media                  // fichiers importés par l'utilisateur
      ┣ 📂paingouin		        // fichiers de base du projet
      ┣ 📂theme                  // style utilisé par TailwindCSS
      ┗ 📜README.md              // fichier README...
@@ -76,14 +76,15 @@ Ce schéma n'est pas une représentation réelle de toute la base de donnée, Dj
 
 ## TailwindCSS
 
-La version 4 de tailwind est utilisée. Elle est intégrée à Django à l'aide de la librairie [django-tailwind](https://github.com/timonweb/django-tailwind).  
+C'est une manière simplifié de faire du CSS, en n'utilisant que des classes.  
+La version 4 de [tailwindCSS](https://tailwindcss.com/) est utilisée. Elle est intégrée à Django à l'aide de la librairie [django-tailwind](https://github.com/timonweb/django-tailwind).  
 Pour développer avec tailwind, il est nécessaire d'utiliser la commande `python manage.py tailwind dev` au lieu de la commande `python manage.py runserver`. Cela permet d'automatiquement mettre à jour le fichier de style lorsqu'une page HTML est éditée, afin d'inclure les potentielles nouvelles fonctionnalités utilisées.  
 En effet, seules les fonctionnalités de tailwind utilisées par le site web sont incluses dans la feuille de style, pour réduire sa taille.  
 Avant "déploiement", il est nécessaire d'utiliser la commande `python manage.py tailwind build`, pour générer une feuille de style optimisée pour la prod, juste avant d'utiliser la commande `python manage.py collectstatic`. Cette étape est effectuée automatiquement lorsque le conteneur docker est utilisé.
 
 ## Flowbite
 
-Flowbite est utilisé.  
+[Flowbite](https://flowbite.com/) est utilisé. Il permet l'utilisation de "components" UI déjà codés (boutons, sélecteurs, popups...).  
 Il a été inclus comme plugin tailwind (via la commande `python manage.py tailwind plugin_install flowbite`), ce qui permet d'inclure le CSS optimisé en même temps que celui de Tailwind.  
 Par ailleurs, le javascript nécessaire au bon fonctionnement des interactions est inclus via un fichier static, se situant dans `theme/static/js/dist/flowbite.min.js`. Si flowbite est mis à jour, il faut également mettre à jour ce fichier, qui provient de `theme/static_src/node_modules/flowbite/dist/flowbite.min.js`, avec simplement la seconde ligne supprimée.
 
@@ -105,3 +106,14 @@ Le langage de templating [MJML](https://mjml.io/) est utilisé pour l'écriture 
 Si un jour django-mjml est mis à jour pour supporter la port Rust de MJML, il pourrait être judicieux de basculer sur cette extension.
 
 Pour facilement éditer les templates de mail, vous pouvez soit utiliser l'extension VS Code [MJML Official](https://marketplace.visualstudio.com/items?itemName=mjmlio.vscode-mjml), ou utiliser le [live editor](https://mjml.io/try-it-live) sur le site de MJML.
+
+## Permissions
+
+Le système de permissions de Django n'est pas actuellement utilisé. À la place, une classe spéciale _CustomModelAdmin_ permet de gérer les permissions des staffeurs/administrateurs.
+
+Le panel administrateur est accessible à toute personne ayant le champ _is_staff_ en True. Les administrateurs (staff) peuvent gérer les articles, les catégories, les livreurs, les livraisons, créer des transactions manuelles.  
+Un administrateur ne doit pas être capable de faire quelque chose d'interdit (supprimer une transaction par exemple) ou qui casserait le site (supprimer un article qui casserait des références dans la BD, ou jouer avec des fields complexes dans le panel utilisateur).  
+Un webmaster (superuser) peut tout faire, et donc tout casser. ATTENTION !
+
+Pour mettre quelqu'un admin, il faut être admin. Pour mettre quelqu'un superuser, il faut être superuser.  
+Il est également possible de faire cela depuis la phpmyadmin avec les codes qui sont sur le drive.

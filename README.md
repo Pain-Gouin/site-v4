@@ -16,7 +16,7 @@ En ce qui concerne le style, le site utilise Tailwind CSS et l'implémente dans 
 
 ## Guide de passations
 
-Lors d'une passation du bureau, il est nécessaire de mettre à jour certaines informations du site. Toutes les modifications peuvent se faire directement depuis GitHub, avec des connaissances simples en HTML.
+Lors d'une passation du bureau, il est nécessaire de mettre à jour certaines informations du site. Toutes les modifications peuvent se faire directement depuis GitHub ou sur le site Pain'Gouin, avec des connaissances simples en HTML.
 
 Il faut :
 
@@ -24,8 +24,10 @@ Il faut :
 - Mettre à jour la liste des personnes à contacter pour recharger son compte via Lyf. Cela se fait [ici](https://github.com/Pain-Gouin/site-v4/blob/master/commande/templates/commande/contact_cards.html), en éditant le fichier depuis l'interface web. Pour obtenir les url, récupérer l'id utilisateur depuis l'url du profil Facebook, et rajouter `https://m.me/` au début.
 - Changer le contact des administrateurs qui vont recevoir un email en cas d'erreur serveur, en modifiant la variable `ADMINS` dans le fichier `settings.docker.py` ([ici](https://github.com/Pain-Gouin/site-v4/blob/master/paingouin/settings.docker.py))
 - Déployer les changements, en poussant les modifications sur la branche de production. Pour ce faire, aller [ici](https://github.com/Pain-Gouin/site-v4/compare/prod...master), cliquer sur `Create pull request`, puis confirmer la création du pull request.
+- Mettre à jour les droits d'accès : tous le bureau doit avoir la permission _is_staff_ qui permet d'accéder au panel administrateur et gérer les produits/soldes/commandes. Les _webmaster_ doivent en plus avoir la permission "is_superuser" pour avoir accès à l'entièreté de la base de donnée et des logs (Attention ! Cela donne le pouvoir de tout casser !). (Cf. la [Documentation Technique](documentation/DocumentationTechnique.md#Permissions), dans la section `Permissions`.)
 
-Il ne vous reste plus qu'à confirmer le Pull request, ce qui mettra à jour la branche `prod`. Les changements devraient alors automatiquement être mise à jour sur le site en production, après **Insérer ici la durée quand ce sera opérationnel**.
+Il ne vous reste plus qu'à confirmer le Pull request, ce qui mettra à jour la branche `prod`. Les changements devraient alors automatiquement être mise à jour sur le site en production, après **Insérer ici la durée quand ce sera opérationnel**. (Cela n'est pas encore mise en place, il faut donc demander à un membre de Rézoléo de manuellement repull et restart le conteneur sur leurs serveurs)
+
 
 ## Comment développer sur le site ?
 
