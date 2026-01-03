@@ -8,7 +8,7 @@ from django.core.exceptions import ValidationError
 from django.forms import BooleanField
 
 from commande.utils import first_editable_day
-from commande.widgets import MultiDateField
+from commande.widgets import DateRangeField, MultiDateField
 
 from .models import Delivery
 
@@ -24,6 +24,8 @@ from unfold.widgets import (
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Fieldset
 from unfold.layout import Submit
+from unfold.contrib.import_export.forms import ExportForm
+from datetime import date
 
 
 class LoginForm(forms.Form):
@@ -206,3 +208,12 @@ class bulkCreateDeliveriesForm(forms.Form):
             Delivery.objects.editable().values_list("date", flat=True)
         )
         self.fields["dates"].initial = self.old_dates
+
+
+class CustomOrderProductExportForm(ExportForm):
+    date_range = DateRangeField(
+        label="Période",
+        required=True,
+        min_date=Delivery.objects.order_by("date").first().date,
+        max_date=date.today,
+    )

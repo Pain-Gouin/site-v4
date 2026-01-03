@@ -1,0 +1,87 @@
+<div id="{{ widget.attrs.id }}" class="flex flex-col date-range-container">
+  {% for subwidget in widget.subwidgets %}
+    {% include subwidget.template_name with widget=subwidget %}
+  {% endfor %}
+  <calendar-range min="{{ widget.options.minDate|date:'Y-m-d' }}" max="{{ widget.options.maxDate|date:'Y-m-d' }}"
+  {% if widget.value.0 and widget.value.1 %}
+    value="{{ widget.value.0|date:'Y-m-d' }}/{{ widget.value.1|date:'Y-m-d' }}"
+  {% endif %}
+  locale="FR-fr" class="border border-base-200 rounded-default p-2">
+  <svg aria-label="Previous"
+       slot="previous"
+       xmlns="http://www.w3.org/2000/svg"
+       viewBox="0 0 24 24">
+    <path d="M15.75 19.5 8.25 12l7.5-7.5"></path>
+  </svg>
+  <svg aria-label="Next"
+       slot="next"
+       xmlns="http://www.w3.org/2000/svg"
+       viewBox="0 0 24 24">
+    <path d="m8.25 4.5 7.5 7.5-7.5 7.5"></path>
+  </svg>
+  <calendar-month style="--color-accent: #7048e8; --color-text-on-accent: #ffffff;"></calendar-month>
+  </calendar-range>
+  <style>
+    calendar-range {
+      svg {
+        height: 16px;
+        width: 16px;
+        fill: none;
+        stroke: currentColor;
+        stroke-width: 1.5;
+      }
+
+      path {
+        stroke-linecap: round;
+        stroke-linejoin: round;
+      }
+
+      &::part(months) {
+        display: flex;
+        gap: 1.5em;
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+
+      &::part(button) {
+        border: 1px solid #adb5bd;
+        background-color: #fff;
+        border-radius: 3px;
+        width: 26px;
+        height: 26px;
+      }
+
+      &::part(button):focus-visible {
+        outline: 2px solid #7048e8;
+      }
+    }
+
+    calendar-month {
+      --color-accent: #7048e8;
+      --color-text-on-accent: #ffffff;
+
+      &::part(button) {
+        border-radius: 3px;
+      }
+
+      &::part(range-inner) {
+        border-radius: 0;
+        background-color: #845ef7;
+      }
+
+      &::part(range-start) {
+        border-start-end-radius: 0;
+        border-end-end-radius: 0;
+      }
+
+      &::part(range-end) {
+        border-start-start-radius: 0;
+        border-end-start-radius: 0;
+      }
+
+      &::part(range-start range-end) {
+        border-radius: 3px;
+      }
+    }
+  </style>
+</div>

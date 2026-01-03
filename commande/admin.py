@@ -40,11 +40,14 @@ from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from django.forms import modelformset_factory
 from unfold.decorators import action
 from unfold.enums import ActionVariant
+from import_export.admin import ExportMixin
+from import_export.resources import ModelResource
 
 from django.core.exceptions import ObjectDoesNotExist
 
 
 from .forms import (
+    CustomOrderProductExportForm,
     PrecreateUserForm,
     PrecreateUsersFormHelper,
     bulkCreateDeliveriesForm,
@@ -382,8 +385,36 @@ class OrderAdmin(CustomModelAdmin):
         return redirect(reverse_lazy("admin:commande_order_changelist"))
 
 
+class OrderProductResource(ModelResource):
+    def __init__(self, **kwargs):
+        super().__init__()
+        self.start_date = kwargs.get("start_date")
+        self.end_date = kwargs.get("end_date")
+
+    def filter_export(self, queryset, **kwargs):
+        return queryset.filter(
+            order__delivery__date__range=(self.start_date, self.end_date),
+            delivery_status__in=[
+                OrderProduct.OrderProductStatusChoices.VALID,
+                OrderProduct.OrderProductStatusChoices.NOT_DELIVERED,
+            ],
+        )
+
+    class Meta:
+        model = OrderProduct
+        fields = [
+            "order__delivery__date",
+            "order__client__email",
+            "product__name",
+            "quantity",
+            "total_price_bought",
+            "total_price_sold",
+            "delivery_status",
+        ]
+
+
 @admin.register(OrderProduct)
-class OrderProductAdmin(CustomModelAdmin):
+class OrderProductAdmin(ExportMixin, CustomModelAdmin):
     list_display = (
         "product",
         "product_preview",
@@ -411,6 +442,16 @@ class OrderProductAdmin(CustomModelAdmin):
     # Optimization to avoid N+1 queries for the product images
     def get_queryset(self, request):
         return super().get_queryset(request).select_related("product")
+
+    export_form_class = CustomOrderProductExportForm
+    resource_classes = [OrderProductResource]
+
+    def get_export_resource_kwargs(self, request, **kwargs):
+        export_form = kwargs.get("export_form")
+        if export_form:
+            start_date, end_date = export_form.cleaned_data["date_range"]
+            kwargs.update(start_date=start_date, end_date=end_date)
+        return kwargs
 
 
 class AmountSliderNumericFilter(SliderNumericFilter):

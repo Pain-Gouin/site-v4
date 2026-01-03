@@ -516,7 +516,7 @@ def livreur(request):
                 fields=("delivery_status",),
                 extra=0,
                 widgets={
-                    "delivery_status": forms.Select(
+                    "delivery_status": Select(
                         attrs={
                             "class": "font-montserrat p-1 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 text-sm focus:ring-secondary focus:border-secondary"
                         },
