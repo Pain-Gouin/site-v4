@@ -256,7 +256,7 @@
                                   class="px-6 py-4 font-medium text-secondary whitespace-nowrap ">{{ order.room }}</th>
                             {% endif %}
                             <td class="px-6 py-0.5 justify-between items-center{% if forloop.first %} pt-4{% endif %}{% if forloop.last %} pb-4{% endif %}{% if orderproduct.delivery_status != 'NA' %} text-red-700{% if orderproduct.delivery_status != 'NDELIV' %} line-through{% endif %}{% endif %}">
-                              {{ orderproduct.quantity }} {{ orderproduct.product.name }} {{ orderproduct.delivery_status }}
+                              {{ orderproduct.quantity }} {{ orderproduct.product.name }}
                             </td>
                             {% if formset %}
                               <td>

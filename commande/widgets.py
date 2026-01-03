@@ -35,7 +35,6 @@ class MultiDateCalendarWidget(forms.HiddenInput):
         return context
 
     class Media:
-        # Note: You should host these files locally or use reliable CDNs
         css = {
             "all": [
                 "externe/css/jquery-ui.min.css",
