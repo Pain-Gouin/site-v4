@@ -6,7 +6,7 @@ django-imagekit==6.0.0
 django-import-export[xlsx,ods]==4.3.14
 django-mjml-template==1.0.0
 django-tailwind==4.4.2
-django-unfold==0.74.1
+django-unfold==0.75.0
 django-widget-tweaks==1.5.0
 django-yubin==2.0.6
 gunicorn==23.0.0
