@@ -86,11 +86,11 @@ def append_unique_in_order(list1, list2, *lists):
 
 
 def first_editable_day():
-    current_time = timezone.now()
-    today = current_time.date()
+    current_time_local = timezone.localtime(timezone.now())
+    today = current_time_local.date()
     cutoff = getattr(settings, "DELIVERY_CUTOFF_TIME", time(6, 30))
 
-    if current_time.time() < cutoff:
+    if current_time_local.time() < cutoff:
         return today
     else:
         return today + timedelta(1)
