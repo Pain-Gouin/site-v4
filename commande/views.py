@@ -2,6 +2,7 @@ from django.db.models import Sum, Prefetch
 from django.db.models.functions import Lower, Substr
 from django.forms import modelformset_factory, Select
 from django.shortcuts import render, redirect
+from django.contrib.admin.models import LogEntry, CHANGE
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
@@ -536,15 +537,34 @@ def livreur(request):
                 formset = ProductOrderFormSet(request.POST, queryset=formset_qs)
                 if formset.is_valid():
                     with transaction.atomic():
-                        formset.save()
-                        for order in context["orders"]:
+                        # Initialize the set to track unique orders
+                        modified_orders = set()
+
+                        for form in formset.initial_forms:
+                            if form.has_changed():
+                                instance = form.save()
+
+                                # Log the change:
+                                field = form.changed_data[0]  # We have only one field
+                                LogEntry.objects.log_actions(
+                                    user_id=request.user.id,
+                                    queryset=(instance,),
+                                    action_flag=CHANGE,
+                                    change_message=f"Statut changé de {form.initial.get(field)} à {form.cleaned_data.get(field)}",
+                                )
+
+                                modified_orders.add(instance.order)
+
+                        # Mettre à jour les transactions liées aux produits
+                        for order in modified_orders:
                             order.update_transactions(
                                 request,
                                 reason="Modification du statut de livraison d'articles",
                             )
+
                         messages.success(
                             request,
-                            "Mise à jour des statuts de livraison effectué avec succés.",
+                            "Mise à jour des statuts de livraison effectuée avec succés.",
                         )
                     return redirect(request.get_full_path())
             else:
