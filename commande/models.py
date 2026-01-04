@@ -157,10 +157,14 @@ class User(AbstractBaseUser, PermissionsMixin):
     objects = UserManager()
 
     def save(self, *args, **kwargs):
-        if self._state.adding:
+        add_default_group = self._state.adding
+        
+        super().save(*args, **kwargs)
+
+        if add_default_group:
             group, _ = Group.objects.get_or_create(name="default")
             self.groups.add(group)
-        super().save(*args, **kwargs)
+
 
     def __str__(self):
         return f"{self.first_name} {self.last_name.upper()}"
