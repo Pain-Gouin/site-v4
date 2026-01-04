@@ -12,10 +12,10 @@ services:
       DJANGO_CSRF_TRUSTED_ORIGINS: "https://paingouin.rezoleo.fr"
       ENFORCE_HTTPS: 0 # Should be set to 1 in production !
       DATABASE_ENGINE: mysql
-      DATABASE_NAME: dbdjango
-      DATABASE_USERNAME: myuser
-      DATABASE_PASSWORD: monpassword
-      DATABASE_HOST: 127.0.0.1
+      DATABASE_NAME: paingouin
+      DATABASE_USERNAME: root
+      DATABASE_PASSWORD: mysql
+      DATABASE_HOST: 172.18.0.1
       DATABASE_PORT: 3306
       EMAIL_USE_TLS: False # for mailpit
       EMAIL_USE_SSL: False # for mailpit
