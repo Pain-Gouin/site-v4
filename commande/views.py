@@ -274,6 +274,7 @@ def commande(request):
                     order_list.append([prod, quantity, quantity * prod.resell_price])
                     total_commande += order_list[-1][2]
 
+        delivery = Delivery.objects.get(id=request.POST["date"])
         if total_commande > request.user.balance_cache:
             messages.error(
                 request,
@@ -285,14 +286,15 @@ def commande(request):
             len(order_list) == 0
         ):  # Avec la vérification javascript côté client, ce n'est pas sensé être possible
             messages.error(request, "Sélectionne au moins un article !")
+        elif not delivery.is_editable:
+            messages.error(request, "Il n'est plus possible de passer une commande pour cette date, la livraison est peut-être déjà en cours.")
         else:
             room = request.POST["room"]
-            delivery_id = request.POST["date"]
             with transaction.atomic():
                 order = Order.objects.create(
                     original_price=total_commande,
                     client=request.user,
-                    delivery=Delivery.objects.get(id=delivery_id),
+                    delivery=delivery,
                     room=room,
                 )
                 order_transaction = Transaction.objects.create(
