@@ -188,6 +188,7 @@ class ProductCategory(models.Model):
     class Meta:
         verbose_name = _("Catégorie produit")
         verbose_name_plural = _("Catégories produit")
+        ordering = ["sort"]
 
 
 class Product(models.Model):
