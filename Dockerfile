@@ -65,8 +65,8 @@ USER appuser
 RUN mv paingouin/settings.docker.py paingouin/settings.py
 
 # Install and build tailwind
-RUN python manage.py tailwind install --no-package-lock --no-input
-RUN python manage.py tailwind build --no-input;
+RUN python manage.py tailwind install --no-package-lock
+RUN python manage.py tailwind build
 
 # Remove development files that are not needed anymore to save space
 RUN rm -rf theme/static_src
