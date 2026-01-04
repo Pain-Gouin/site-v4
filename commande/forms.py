@@ -214,6 +214,6 @@ class CustomOrderProductExportForm(ExportForm):
     date_range = DateRangeField(
         label="Période",
         required=True,
-        min_date=Delivery.objects.order_by("date").first().date,
+        min_date=lambda: Delivery.objects.order_by("date").first().date,
         max_date=date.today,
     )
