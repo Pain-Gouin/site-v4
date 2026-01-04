@@ -18,6 +18,7 @@ from django.urls import reverse_lazy
 from django.utils.translation import gettext_lazy as _
 from email.utils import formataddr
 from datetime import time
+from import_export.formats.base_formats import XLSX, CSV, ODS
 
 DELIVERY_CUTOFF_TIME = time(6, 30)
 
@@ -68,6 +69,7 @@ INSTALLED_APPS = [
     "widget_tweaks",
     "unfold",
     "unfold.contrib.filters",
+    "unfold.contrib.import_export",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -80,6 +82,7 @@ INSTALLED_APPS = [
     "django_mjml_template",
     "crispy_forms",
     "imagekit",
+    "import_export",
     "theme",
     "commande",
 ]
@@ -411,3 +414,6 @@ CELERY_BROKER_URL = (
 CRISPY_TEMPLATE_PACK = "unfold_crispy"
 
 CRISPY_ALLOWED_TEMPLATE_PACKS = ["unfold_crispy"]
+
+# For django-import-export
+IMPORT_EXPORT_FORMATS = [CSV, ODS, XLSX]
