@@ -12,7 +12,7 @@
   {% for op in order.orderproduct_set.all %}
     <mj-section mj-class="color-quaternary" text-align="center">
     <mj-column width="30%" vertical-align="middle">
-    <mj-image border-radius="8px" width="150px" align="left" src="{{ request.scheme }}://{{ request.get_host }}{{ media_url }}{{ op.product.image }}" />
+    <mj-image border-radius="8px" width="150px" align="left" src="{{ request.scheme }}://{{ request.get_host }}{{ op.product.image_resized.url }}" />
     </mj-column>
     <mj-group vertical-align="middle" width="70%">
     <mj-column>

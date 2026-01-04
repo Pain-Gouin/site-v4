@@ -17,36 +17,12 @@
 <mj-body>
 {% block header %}
   <mj-section background-color="#ffffff" padding="0">
-  <mj-column vertical-align="middle" width="33.33333333333%">
-  <mj-image alt="logo" href="
-  {% if request %}
-    {{ request.scheme }}://{{ request.get_host }}
-  {% else %}
-    {{ protocol }}://{{ domain }}
-  {% endif %}
-  {% url 'index' %}" src="
-  {% if request %}
-    {{ request.scheme }}://{{ request.get_host }}
-  {% else %}
-    {{ protocol }}://{{ domain }}
-  {% endif %}
-  {% static 'logo/logo.png' %}" />
-  </mj-column>
-  <mj-column vertical-align="middle" width="66.666666666666%">
-  <mj-image alt="Pain'Gouin" width="212px" href="
-  {% if request %}
-    {{ request.scheme }}://{{ request.get_host }}
-  {% else %}
-    {{ protocol }}://{{ domain }}
-  {% endif %}
-  {% url 'index' %}" src="
-  {% if request %}
-    {{ request.scheme }}://{{ request.get_host }}
-  {% else %}
-    {{ protocol }}://{{ domain }}
-  {% endif %}
-  {% static 'logo/PainGouin.png' %}" />
-  </mj-column>
+    <mj-column vertical-align="middle" width="33.33333333333%">
+      <mj-image alt="logo" href="{% if request %}{{ request.scheme }}://{{ request.get_host }}{% else %}{{ protocol }}://{{ domain }}{% endif %}{% url 'index' %}" src="{% if request %}{{ request.scheme }}://{{ request.get_host }}{% else %}{{ protocol }}://{{ domain }}{% endif %}{% static 'logo/logo.png' %}" />
+    </mj-column>
+    <mj-column vertical-align="middle" width="66.666666666666%">
+      <mj-image alt="Pain'Gouin" width="212px" href="{% if request %}{{ request.scheme }}://{{ request.get_host }}{% else %}{{ protocol }}://{{ domain }}{% endif %}{% url 'index' %}" src="{% if request %}{{ request.scheme }}://{{ request.get_host }}{% else %}{{ protocol }}://{{ domain }}{% endif %}{% static 'logo/PainGouin.png' %}" />
+    </mj-column>
   </mj-section>
 {% endblock header %}
 {% block content %}
@@ -54,17 +30,16 @@
 {% block footer %}
   <!-- Au revoir -->
   <mj-section mj-class="color-quaternary">
-  <mj-column>
-  <mj-text>Bonne journée,
-  <br />
-  l'équipe Pain'Gouin</mj-text>
-  </mj-column>
+    <mj-column>
+      <mj-text>Bonne journée,
+      <br />
+      l'équipe Pain'Gouin</mj-text>
+    </mj-column>
   </mj-section>
   <mj-section background-color="white" padding-bottom="0">
-  <mj-column>
-  <mj-text color="#9B9B9B" align="center" font-size="11px" padding="0">Si tu ne souhaites plus recevoir ces e-mails, tu peux te désincrire <a style="color: #9B9B9B"
-    href="{% if request %}{{ request.scheme }}://{{ request.get_host }}{% else %}{{ protocol }}://{{ domain }}{% endif %}{% url 'update' %}">ici</a>.</mj-text>
-  </mj-column>
+    <mj-column>
+      <mj-text color="#9B9B9B" align="center" font-size="11px" padding="0">Si tu ne souhaites plus recevoir ces e-mails, tu peux te désincrire <a style="color: #9B9B9B" href="{% if request %}{{ request.scheme }}://{{ request.get_host }}{% else %}{{ protocol }}://{{ domain }}{% endif %}{% url 'update' %}">ici</a>.</mj-text>
+    </mj-column>
   </mj-section>
 {% endblock footer %}
 </mj-body>
