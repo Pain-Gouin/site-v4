@@ -1,6 +1,7 @@
 {% extends "commande/base.html" %}
 {% load static %}
 {% block content %}
+    <link rel="preload" fetchpriority="high" as="image" href="{% static 'illustration/banner.jpg' %}">
     <div style="background-image: url({% static 'illustration/banner.jpg' %})"
          class="w-full bg-cover">
         <div class="backdrop-blur-xs w-full md:h-[650px] md:grid grid-cols-1 grid-rows-2">
@@ -23,7 +24,7 @@
     </h2>
     <div class="text-justify lg:text-left text-lg sm:text-xl px-2 ">
         <div class="grid lg:grid-cols-2  place-items-center pb-10 auto-rows-max">
-            <img src="{% static 'illustration/PainGouinOrdi.png' %}"
+            <img src="{% static 'illustration/PainGouinOrdi.webp' %}"
                  alt="Commande PainGouin"
                  class="w-3/4 lg:w-auto">
             <div class="max-w-xl">
@@ -49,13 +50,13 @@
                     Pour faciliter la livraison et éviter que ton pain soit posé sur le sol, <b class="text-secondary">pense à accrocher un sac</b> à ta poignée de porte.
                 </p>
             </div>
-            <img src="{% static 'illustration/PainGouinPorte.png' %}"
+            <img src="{% static 'illustration/PainGouinPorte.webp' %}"
                  alt="Sac PainGouin"
                  class="order-1 lg:order-2 h-[480px] lg:h-[580px]">
         </div>
         <div class="grid lg:grid-cols-2  place-items-center pb-10 auto-rows-max">
             <div>
-                <img src="{% static 'illustration/PainGouinBoulangerie.png' %}"
+                <img src="{% static 'illustration/PainGouinBoulangerie.webp' %}"
                      alt="Boulangerie PainGouin">
             </div>
             <div class="max-w-xl">

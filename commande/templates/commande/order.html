@@ -18,7 +18,8 @@
                                      alt="{{ prod.nom }}"
                                      class="rounded-lg md:max-h-80 max-h-60 max-w-[33vw] md:w-full md:max-w-full object-fill xl:pb-0"
                                      height="{{ prod.image_resized.height }}"
-                                     width="{{ prod.image_resized.width }}">
+                                     width="{{ prod.image_resized.width }}"
+                                     fetchpriority=high>
                             </div>
                             <p class="order-3 text-lg sm:text-xl font-bebas text-center pt-2">Prix&nbsp;: {{ prod.resell_price }}€</p>
                             <div class="order-4">
