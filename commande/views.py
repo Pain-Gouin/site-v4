@@ -456,7 +456,7 @@ def livreur(request):
         )
 
         context["products"] = (
-            current_orderproducts.values("product", "product__name")
+            current_orderproducts.select_related("product")
             .annotate(total_quantity=Sum("quantity"))
             .order_by("product__category", "product__sort")
         )

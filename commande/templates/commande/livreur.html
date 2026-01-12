@@ -192,7 +192,7 @@
                 {% for product in products %}
                   <tr class="bg-white border-b">
                     <th scope="row"
-                        class="px-6 py-4 font-medium text-secondary whitespace-nowrap">{{ product.product__name }}</th>
+                        class="px-6 py-4 font-medium text-secondary whitespace-nowrap">{{ product.product.name }}</th>
                     <td class="px-6 py-4">{{ product.total_quantity }}</td>
                   </tr>
                 {% endfor %}
@@ -231,7 +231,7 @@
         <div class="px-2 md:col-span-2">
           <h2 class="text-xl md:text-3xl text-primary text-center py-2 font-bold ">Liste des livraisons :</h2>
           <div class="flex flex-row justify-center">
-            <div class="relative overflow-x-auto pb-10 pt-5 basis-full md:basis-1/2">
+            <div class="relative overflow-x-auto pb-10 pt-5">
               {% if formset %}
                 <form method="post" autocomplete="off">
                   {% csrf_token %}
@@ -256,7 +256,20 @@
                                   class="px-6 py-4 font-medium text-secondary whitespace-nowrap ">{{ order.room }}</th>
                             {% endif %}
                             <td class="px-6 py-0.5 justify-between items-center{% if forloop.first %} pt-4{% endif %}{% if forloop.last %} pb-4{% endif %}{% if orderproduct.delivery_status != 'NA' %} text-red-700{% if orderproduct.delivery_status != 'NDELIV' %} line-through{% endif %}{% endif %}">
-                              {{ orderproduct.quantity }} {{ orderproduct.product.name }}
+                              <span class="inline-flex items-center gap-2">
+                                <button 
+                                  data-modal-target="{{ orderproduct.product.name }}-modal" 
+                                  data-modal-toggle="{{ orderproduct.product.name }}-modal" 
+                                  class="relative inline-flex items-center justify-center border-2 border-secondary hover:border-primary hover:bg-orangemoinsclair bg-none focus:ring-4 focus:outline-none focus:ring-primary rounded-lg h-8 w-8 overflow-hidden shrink-0" 
+                                  type="button">
+                                  
+                                  <img src="{% static 'externe/image_zoom.svg' %}" class="relative z-10 w-5 h-5" alt="Zoom" />
+                                </button>
+
+                                <span class="whitespace-nowrap">
+                                  {{ orderproduct.quantity }} {{ orderproduct.product.name }}
+                                </span>
+                              </span>
                             </td>
                             {% if formset %}
                               <td>
@@ -329,6 +342,34 @@
           </div>
         </div>
       </div>
+      <!-- Modals -->
+      {% for product in products %}
+        <div id="{{ product.product.name }}-modal" tabindex="-1" aria-hidden="true" class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
+            <div class="relative p-4 w-full h-full">
+                <div class="relative bg-white h-full flex flex-col rounded-lg shadow-sm dark:bg-gray-700">
+                    <div class="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600 border-gray-200">
+                        <h3 class="text-xl font-semibold text-gray-900 dark:text-white">
+                            {{ product.product.name }}
+                        </h3>
+                        <button type="button" class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white" data-modal-hide="{{ product.product.name }}-modal">
+                            <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
+                            </svg>
+                            <span class="sr-only">Close modal</span>
+                        </button>
+                    </div>
+                    <div class="flex-1 p-4 flex items-center justify-center overflow-hidden">
+                      <img src="{{ product.product.image_resized.url }}"
+                          alt="{{ product.product.name }}"
+                          class="w-full h-full object-contain"
+                          height="{{ product.product.image_resized.height }}"
+                          width="{{ product.product.image_resized.width }}"
+                          loading="lazy">
+                    </div>
+                </div>
+            </div>
+        </div>
+      {% endfor %}
     {% else %}
       <h2 class="text-2xl md:text-4xl text-primary text-center py-5 px-3 font-bold">Personne n'a encore commandé&nbsp;!</h2>
     {% endif %}
