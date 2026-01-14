@@ -1,6 +1,7 @@
 from django.contrib import admin, messages
 from django.contrib.admin.models import LogEntry, CHANGE
 from django.db import transaction
+from django.core.exceptions import PermissionDenied
 from django.utils.safestring import mark_safe
 from django.views.generic import FormView
 from imagekit.admin import AdminThumbnail
@@ -477,7 +478,7 @@ class TransactionAdmin(CustomModelAdmin):
     )
     STAFF_EDITABLE_FIELDS = ["user", "amount", "type", "note"]
     STAFF_CREATION_HIDDEN_FIELDS = ["initiator", "order", "created_at"]
-    autocomplete_fields = ["user"]
+    autocomplete_fields = ["user", "initiator", "order"]
 
     def amount_(self, obj):
         return mark_safe(
@@ -487,30 +488,39 @@ class TransactionAdmin(CustomModelAdmin):
     amount_.admin_order_field = "amount"
     amount_.short_description = "Quantité"
 
+    allowed_codes = [
+        Transaction.TransactionTypeChoices.LYF_TOPUP,
+        Transaction.TransactionTypeChoices.POS_TERMINAL_TOPUP,
+        Transaction.TransactionTypeChoices.CASH_TOPUP,
+        Transaction.TransactionTypeChoices.OTHER,
+    ]
     # To limit the manual types allowed when creating a transaction (only UI enforcement)
     def formfield_for_choice_field(self, db_field, request, **kwargs):
         if db_field.name == "type":
-            # Define the types allowed for manual entry
-            allowed_codes = [
-                Transaction.TransactionTypeChoices.LYF_TOPUP,
-                Transaction.TransactionTypeChoices.POS_TERMINAL_TOPUP,
-                Transaction.TransactionTypeChoices.CASH_TOPUP,
-                Transaction.TransactionTypeChoices.OTHER,
-            ]
-
             # Filter the choices
             kwargs["choices"] = [
                 choice
                 for choice in Transaction.TransactionTypeChoices.choices
-                if choice[0] in allowed_codes
+                if choice[0] in self.allowed_codes
             ]
 
         return super().formfield_for_choice_field(db_field, request, **kwargs)
 
-    # To inject the initiator when creating a new transaction
+    # To inject the initiator in the creation form when adding (UI enforcement)
+    def get_form(self, request, obj=None, **kwargs):
+        form = super().get_form(request, obj, **kwargs)
+        if request.user.is_superuser:
+            form.base_fields['initiator'].initial = request.user.id
+        return form
+
     def save_model(self, request, obj, form, change):
+        # To inject the initiator when creating a new transaction (Actual enforcement, even superusers)
         if not obj.pk:  # Only set on creation
             obj.initiator = request.user
+        
+        if obj.type not in self.allowed_codes:
+            raise PermissionDenied("You cannot manually create this type of transaction.")
+        
         super().save_model(request, obj, form, change)
 
 
