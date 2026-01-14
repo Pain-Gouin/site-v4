@@ -3,10 +3,10 @@ Django==5.2.10
 django-browser-reload==1.21.0
 django-crispy-forms==2.5
 django-imagekit==6.0.0
-django-import-export[xlsx,ods]==4.3.14
+django-import-export[xlsx,ods]==4.4.0
 django-mjml-template==1.0.0
 django-tailwind==4.4.2
-django-unfold==0.75.0
+django-unfold==0.76.0
 django-widget-tweaks==1.5.1
 django-yubin==2.0.6
 gunicorn==23.0.0
