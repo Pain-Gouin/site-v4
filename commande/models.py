@@ -197,7 +197,7 @@ class ProductCategory(models.Model):
 
 class Product(models.Model):
     name = models.CharField(max_length=100, verbose_name="Nom du produit")
-    image = models.FileField(upload_to="images")
+    image = models.ImageField(upload_to="images")
     image_resized = ImageSpecField(
         source="image",
         processors=[ResizeToFit(500, 500)],

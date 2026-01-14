@@ -345,9 +345,9 @@
       <!-- Modals -->
       {% for product in products %}
         <div id="{{ product.product.name }}-modal" tabindex="-1" aria-hidden="true" class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
-            <div class="relative p-4 w-full h-full">
+            <div class="relative p-2 md:p-4 w-full h-full">
                 <div class="relative bg-white h-full flex flex-col rounded-lg shadow-sm dark:bg-gray-700">
-                    <div class="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600 border-gray-200">
+                    <div class="flex items-center justify-between px-2 py-1 md:p-3 border-b rounded-t dark:border-gray-600 border-gray-200">
                         <h3 class="text-xl font-semibold text-gray-900 dark:text-white">
                             {{ product.product.name }}
                         </h3>
@@ -358,12 +358,12 @@
                             <span class="sr-only">Close modal</span>
                         </button>
                     </div>
-                    <div class="flex-1 p-4 flex items-center justify-center overflow-hidden">
-                      <img src="{{ product.product.image_resized.url }}"
+                    <div class="flex-1 p-2 flex items-center justify-center overflow-hidden">
+                      <img src="{{ product.product.image.url }}"
                           alt="{{ product.product.name }}"
                           class="w-full h-full object-contain"
-                          height="{{ product.product.image_resized.height }}"
-                          width="{{ product.product.image_resized.width }}"
+                          height="{{ product.product.image.height }}"
+                          width="{{ product.product.image.width }}"
                           loading="lazy">
                     </div>
                 </div>
