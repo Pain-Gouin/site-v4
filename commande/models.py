@@ -283,7 +283,7 @@ class Delivery(models.Model):
         with transaction.atomic():
             for order in self.order_set.all():
                 if cancel_orders:
-                    order.cancel(request)
+                    order.cancel(request, False)
                 elif not order.is_cancelled:
                     return False
 
@@ -349,7 +349,7 @@ class Order(models.Model):
                 return True
             return False
 
-    def cancel(self, request):
+    def cancel(self, request, from_user=True):
         if self.is_cancelled:
             return  # already cancelled
         with transaction.atomic():
@@ -357,7 +357,7 @@ class Order(models.Model):
                 delivery_status=OrderProduct.OrderProductStatusChoices.CANCELLED,
                 updated_at=timezone.now(),  # Manually update timestamp, as auto_now=True is bypassed by update()
             )
-            self.is_cancelled = True
+            self.is_cancelled = from_user # If not from the user, than should not be marked cancelled by the user.
             self.update_transactions(request, False)
             self.save()
 

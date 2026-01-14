@@ -550,9 +550,9 @@ class DeliveryAdmin(CustomModelAdmin):
     )
     STAFF_CAN_CREATE = True
     STAFF_CREATION_HIDDEN_FIELDS = ["is_active"]
-    actions = ["cancel_deliveries_action", "activate_delivery_action"]
+    actions = ["cancel_deliveries_action", "uncancel_deliveries_action", "activate_deliveries_action"]
     actions_list = ["bulk_edit_action"]
-    actions_row = ["cancel_delivery_action_row", "activate_delivery_action_row"]
+    actions_row = ["cancel_delivery_action_row", "uncancel_delivery_action_row", "activate_delivery_action_row"]
     actions_detail = actions_row
     inlines = [OrderInline]
 
@@ -560,15 +560,7 @@ class DeliveryAdmin(CustomModelAdmin):
     def cancel_deliveries_action(self, request: HttpRequest, queryset: QuerySet):
         n = 0
         for delivery in queryset:
-            with transaction.atomic():
-                if delivery.deactivate(request):
-                    LogEntry.objects.log_actions(
-                        user_id=request.user.id,
-                        queryset=[delivery],
-                        action_flag=CHANGE,
-                        change_message="Annulation de la livraison",
-                    )
-                    n += 1
+            n += self.cancel_delivery_action_row(request, delivery.id, alone=False)
         tot = len(queryset)
         if n == tot:
             messages.success(request, f"{n} livraisons bien annulées.")
@@ -582,35 +574,32 @@ class DeliveryAdmin(CustomModelAdmin):
                 request, f"Ce(s) {tot} livraison(s) est(sont) déjà désactivée(s) !"
             )
 
+    @admin.action(description=_("Désannuler les dates"))
+    def uncancel_deliveries_action(self, request: HttpRequest, queryset: QuerySet):
+        return self.activate_deliveries_action(request, queryset, True)
+
     @admin.action(
         description=_(
             "Réactiver les dates (cette opération n'impacte pas les commandes déjà annulées)"
         )
     )
-    def activate_delivery_action(self, request: HttpRequest, queryset: QuerySet):
+    def activate_deliveries_action(self, request: HttpRequest, queryset: QuerySet, uncancel=False):
         n = 0
+        uncanceled_n = 0
         for delivery in queryset:
-            if not delivery.is_active:
-                with transaction.atomic():
-                    n += 1
-                    delivery.is_active = True
-                    delivery.save()
-                    LogEntry.objects.log_actions(
-                        user_id=request.user.id,
-                        queryset=[delivery],
-                        action_flag=CHANGE,
-                        change_message="Activation de la livraison",
-                    )
+            cn, cuncanceled = self.activate_delivery_action_row(request, delivery.id, uncancel, False)
+            n += cn
+            uncanceled_n += cuncanceled
         tot = len(queryset)
         if n == tot:
             messages.success(
                 request,
-                f"{n} livraisons bien réactivées (cette opération n'impacte pas les commandes déjà annulées).",
+                f"{n} livraison(s) bien réactivée(s)" + (f" et {uncanceled_n} commande(s) désannulée(s)." if uncancel else " (cette opération n'impacte pas les commandes déjà annulées)."),
             )
         elif n > 0:
             messages.warning(
                 request,
-                f"{n}/{tot} livraison(s) réactivée(s) (cette opération n'impacte pas les commandes déjà annulées). Les autres étaient déjà réactivées.",
+                f"{n}/{tot} livraison(s) réactivée(s)" + (f" et {uncanceled_n} commande(s) désannulée(s)." if uncancel else " (cette opération n'impacte pas les commandes déjà annulées)."),
             )
         else:
             messages.error(
@@ -622,7 +611,7 @@ class DeliveryAdmin(CustomModelAdmin):
         variant=ActionVariant.DANGER,
         permissions=["cancel_delivery_action_row"],
     )
-    def cancel_delivery_action_row(self, request: HttpRequest, object_id: int):
+    def cancel_delivery_action_row(self, request: HttpRequest, object_id: int, alone=True):
         with transaction.atomic():
             deliv = Delivery.objects.get(id=object_id)
             if deliv.deactivate(request):
@@ -632,9 +621,15 @@ class DeliveryAdmin(CustomModelAdmin):
                     action_flag=CHANGE,
                     change_message="Annulation de la livraison",
                 )
-                messages.success(request, "Livraison annulée avec succés.")
+                if alone:
+                    messages.success(request, "Livraison annulée avec succés.")
+                else:
+                    return 1
             else:
-                messages.error(request, "La livraison était déjà annulée !")
+                if alone:
+                    messages.error(request, "La livraison était déjà annulée !")
+                else:
+                    return 0
         return redirect(
             request.headers.get("referer")
             or reverse_lazy("admin:commande_delivery_changelist")
@@ -646,13 +641,21 @@ class DeliveryAdmin(CustomModelAdmin):
         return object_id is None or Delivery.objects.get(id=object_id).is_active
 
     @action(
+        description=_("Désannuler la date"),
+        variant=ActionVariant.SUCCESS,
+        permissions=["activate_delivery_action_row"],
+    )
+    def uncancel_delivery_action_row(self, request: HttpRequest, object_id: int, alone=True):
+        return self.activate_delivery_action_row(request, object_id, True)
+
+    @action(
         description=_(
             "Réactiver la date (cette opération n'impacte pas les commandes déjà annulées)"
         ),
         variant=ActionVariant.SUCCESS,
         permissions=["activate_delivery_action_row"],
     )
-    def activate_delivery_action_row(self, request: HttpRequest, object_id: int):
+    def activate_delivery_action_row(self, request: HttpRequest, object_id: int, uncancel=False, alone=True):
         deliv = Delivery.objects.get(id=object_id)
         if not deliv.is_active:
             with transaction.atomic():
@@ -664,12 +667,27 @@ class DeliveryAdmin(CustomModelAdmin):
                 )
                 deliv.is_active = True
                 deliv.save()
-            messages.success(
-                request,
-                "Livraison réactivée (cette opération n'impacte pas les commandes déjà annulées).",
-            )
+                uncanceled = 0
+                if uncancel:
+                    for order in deliv.order_set.all():
+                        if not order.is_cancelled:
+                            for orderproduct in order.orderproduct_set.all():
+                                orderproduct.delivery_status = OrderProduct.OrderProductStatusChoices.VALID
+                                orderproduct.save()
+                                uncanceled += 1
+                            order.update_transactions(request, save=True, reason="Désannulation")
+            if alone:
+                messages.success(
+                    request,
+                    "Livraison réactivée" + (f" et {uncanceled} commande(s) désannulée(s)." if uncancel else " (cette opération n'impacte pas les commandes déjà annulées)."),
+                )
+            else:
+                return 1, uncanceled
         else:
-            messages.error(request, "La livraison était déjà active !")
+            if alone:
+                messages.error(request, "La livraison était déjà active !")
+            else:
+                return 0, 0
         return redirect(
             request.headers.get("referer")
             or reverse_lazy("admin:commande_delivery_changelist")
