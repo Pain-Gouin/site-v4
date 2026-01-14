@@ -455,11 +455,17 @@ def livreur(request):
             delivery_status=OrderProduct.OrderProductStatusChoices.VALID,  # Filter the item status
         )
 
-        context["products"] = (
-            current_orderproducts.select_related("product")
-            .annotate(total_quantity=Sum("quantity"))
-            .order_by("product__category", "product__sort")
-        )
+        order_items = current_orderproducts.select_related("product").order_by("product__category", "product__sort")
+        # I had issues with the group_by while keeping the model instances, so I group them manually.
+        grouped_data = {}
+        for item in order_items:
+            prod_id = item.product.id
+            if prod_id not in grouped_data:
+                grouped_data[prod_id] = item
+            else:
+                grouped_data[prod_id].quantity += item.quantity
+
+        context["products"] = grouped_data.values()
 
         current_orderproducts_bybuildings = (
             current_orderproducts.annotate(bat_id=Lower(Substr("order__room", 1, 1)))
