@@ -1,0 +1,19 @@
+# It allows to keep dependencies up to date using Dependabot.
+#
+# You can find more info about the file-format here:
+# https://docs.github.com/en/code-security/reference/supply-chain-security/dependabot-options-reference
+
+version: 2
+updates:
+  - package-ecosystem: "pip" # See documentation for possible values
+    directory: "/" # Location of package manifests
+    schedule:
+      interval: "weekly"
+  - package-ecosystem: "github-actions"
+    directory: "/" # Location of package manifests
+    schedule:
+      interval: "weekly"
+  - package-ecosystem: "npm"
+    directory: "/theme/static_src" # Location of package manifests
+    schedule:
+      interval: "weekly"
