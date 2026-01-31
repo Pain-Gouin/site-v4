@@ -32,7 +32,7 @@
                 <p class="font-montserrat pb-5">
                     Nous livrons <b class="text-secondary">tous les jours</b>, sauf le dimanche et les jours fériés. Passe ta commande depuis ton téléphone ou ton ordinateur et indique simplement le jour de livraison souhaité.
                     <br />
-                    Tu peux commander jusqu'à <b class="text-secondary">6h30 le jour même</b> — idéal pour les petites faims de fin de soirée.
+                    Tu peux commander jusqu'à <b class="text-secondary">{{ DELIVERY_CUTOFF_TIME|time:"G\hi" }} le jour même</b> — idéal pour les petites faims de fin de soirée &#128521;
                 </p>
                 <p class="text-xl font-montserrat">
                     <b class="text-secondary">Pour recharger ton compte,</b> <a href="{% url 'recharge' %}"
