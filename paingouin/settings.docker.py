@@ -22,6 +22,7 @@ from import_export.formats.base_formats import XLSX, CSV, ODS
 
 DELIVERY_CUTOFF_TIME = time(6, 30)
 
+GIT_COMMIT = os.environ.get('GIT_COMMIT_SHA', 'Develop')[:7]
 
 def str_to_bool(s):
     return str(s).lower() in ["true", "1", "yes"]

@@ -1,3 +1,5 @@
+ARG COMMIT_SHA
+
 # Stage 1: Python build stage
 FROM python:3.12-bullseye AS builder_python
 
@@ -73,6 +75,8 @@ RUN rm -rf theme/static_src
 
 # Stage 3: Production stage
 FROM python:3.12-slim-bullseye
+
+ENV GIT_COMMIT_SHA=$COMMIT_SHA
 
 # Create a non-privileged user that the app will run under.
 # See https://docs.docker.com/go/dockerfile-user-best-practices/

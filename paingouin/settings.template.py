@@ -22,6 +22,8 @@ from import_export.formats.base_formats import XLSX, CSV, ODS
 
 DELIVERY_CUTOFF_TIME = time(6, 30)
 
+GIT_COMMIT = 'Develop'
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
