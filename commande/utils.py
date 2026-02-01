@@ -5,6 +5,11 @@ from django.core.mail import get_connection, EmailMultiAlternatives
 from datetime import time, timedelta
 from django.utils import timezone
 from django.conf import settings
+from django.contrib.auth.tokens import PasswordResetTokenGenerator
+from django.utils.encoding import force_bytes
+from django.utils.http import urlsafe_base64_encode
+from django.template.loader import render_to_string
+from django.conf import settings
 
 # Configuration of html2text
 text_maker = HTML2Text()
@@ -94,3 +99,50 @@ def first_editable_day():
         return today
     else:
         return today + timedelta(1)
+
+
+def PrecreateUserFunction(user, request):
+    return PrecreateUsersFunction([user], request)
+
+def SendPrecreationMailFunction(user, request):
+    return SendPrecreationMailsFunction([user], request)
+
+def PrecreateUsersFunction(users, request):
+    # Create users in DB
+    for user in users:
+        user.date_joined = None  # To indicate that the user hasn't yet joined
+        user.is_active = False
+        user.save()
+
+    SendPrecreationMailsFunction(users, request)
+
+def SendPrecreationMailsFunction(users, request):
+    from .models import User
+    # Send pre-creation emails
+    emails = []
+    template_name = "mail/precreation_mail.html"
+    for user in users:
+        user_pk_bytes = force_bytes(User._meta.pk.value_to_string(user))
+        token = PasswordResetTokenGenerator().make_token(user)
+        convert_to_html_content = render_to_string(
+            template_name=template_name,
+            context={
+                "request": request,
+                "uid": urlsafe_base64_encode(user_pk_bytes),
+                "token": token,
+                "user": user,
+            },
+        )
+        emails.append(
+            (
+                "Création de ton compte Pain'Gouin",
+                html_to_text(convert_to_html_content),
+                convert_to_html_content,
+                settings.EMAIL_HOST_USER,
+                [
+                    user.email,
+                ],
+            )
+        )
+
+    send_mass_html_mail(emails, fail_silently=True)

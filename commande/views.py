@@ -20,8 +20,7 @@ from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from django.utils import timezone
 from django.db import transaction
 from datetime import datetime, time, timedelta
-from .utils import html_to_text, login_required_with_message
-from .admin import SendPrecreationMailFunction
+from .utils import html_to_text, login_required_with_message, PrecreateUserFunction, SendPrecreationMailFunction
 
 from . import forms
 
