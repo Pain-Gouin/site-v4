@@ -8,17 +8,20 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.conf import settings
 from django.core.mail import send_mail
+from django.template import RequestContext
 from django.template.loader import render_to_string
 from django.utils.safestring import mark_safe
 from django.contrib.auth.views import PasswordResetView
 from django.contrib.messages.views import SuccessMessageMixin
 from django.urls import reverse_lazy, reverse
-from django.http import HttpResponseServerError
+from django.http import HttpResponseServerError, JsonResponse
 from django.utils.http import urlsafe_base64_decode
 from django.core.exceptions import ValidationError
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
+from django.contrib.auth.forms import PasswordResetForm
 from django.utils import timezone
 from django.db import transaction
+from django.views.decorators.http import require_POST
 from datetime import datetime, time, timedelta
 from .utils import html_to_text, login_required_with_message, PrecreateUserFunction, SendPrecreationMailFunction
 
@@ -96,17 +99,49 @@ def login_page(request):
         },
     )
 
+@require_POST
+def check_email(request):
+    email = request.POST.get('email')
+    exists = User.objects.filter(email=email, is_active=True).exists()
+    return JsonResponse({'exists': exists})
 
-class ResetPasswordView(SuccessMessageMixin, PasswordResetView):
-    template_name = "commande/password_reset.html"
-    html_email_template_name = "mail/password_reset_mail.html"
-    subject_template_name = "mail/password_reset_subject.txt"
-    search_field = ["email"]
-    from_email = settings.EMAIL_HOST_USER
-    success_message = """Si un compte est associé à cette adresse e-mail, un message contenant les instructions pour réinitialiser ton mot de passe vient de t’être envoyé.
-Si tu ne le reçois pas, vérifie que l’adresse saisie est correcte et consulte également tes spams.
-En cas de difficulté persistante, contacte l’association."""
-    success_url = reverse_lazy("password_reset")
+@require_POST
+def signup(request):
+    email = request.POST.get('email')
+    user, created = User.objects.get_or_create(email=email)
+
+    if not created and user.is_active:
+        return JsonResponse({'success': False, 'error': 'User already exists'}, status=400)
+    
+    PrecreateUserFunction(user, request)
+    messages.success(request, f"Un email avec un lien pour créer ton compte vient d'être envoyé à l'adresse {email}")
+
+    msg = render_to_string('commande/messages.html', request=request)
+    return JsonResponse({'success': True, 'msg': msg})
+
+@require_POST
+def reset_password_ajax(request):
+    form = PasswordResetForm(request.POST)
+    
+    if form.is_valid():
+        form.save(
+            request=request,
+            use_https=request.is_secure(),
+            subject_template_name = "mail/password_reset_subject.txt",
+            html_email_template_name="mail/password_reset_mail.html",
+            from_email=settings.EMAIL_HOST_USER,
+        )
+        
+        messages.success(request, "Un lien de réinitialisation a été envoyé.")
+        msg_html = render_to_string('commande/messages.html', request=request)
+        
+        return JsonResponse({'success': True, 'msg': msg_html})
+
+    # If the form is invalid (e.g. bad email format)
+    return JsonResponse({
+        'success': False, 
+        'error': 'Adresse e-mail invalide.'
+    }, status=400)
 
 
 def logout_user(request):
@@ -159,7 +194,7 @@ def finish_signup_page(request, uidb64, token):
         form = forms.FinishSignupForm(user, data=request.POST, instance=user)
         if form.is_valid():
             updated_user = form.save(commit=False)
-            updated_user.email_verified = original_email == updated_user.email
+            updated_user.email_verified = (original_email == updated_user.email)
             updated_user.date_joined = timezone.now()
             updated_user.save()
             login(request, user)
@@ -193,42 +228,6 @@ def finish_signup_page(request, uidb64, token):
         form = forms.FinishSignupForm(user, instance=user)
 
     return render(request, "commande/finish_signup.html", context={"form": form})
-
-
-def signup_page(request):
-    if request.method == "POST":
-        form = forms.SignupForm(request.POST)
-        if form.is_valid():
-            user = form.save()
-            login(request, user)
-            receiver_email = request.user.email
-            request.user.save()
-            template_name = "mail/signup_mail.html"
-            convert_to_html_content = render_to_string(
-                template_name=template_name,
-                context={
-                    "prenom": request.user.first_name,
-                    "request": request,
-                },
-            )
-            plain_message = html_to_text(convert_to_html_content)
-
-            send_mail(
-                subject="Inscription confirmée",
-                message=plain_message,
-                from_email=settings.EMAIL_HOST_USER,
-                recipient_list=[
-                    receiver_email,
-                ],
-                html_message=convert_to_html_content,
-                fail_silently=True,
-            )
-            messages.success(request, "Ton compte a bien été créé !")
-            return redirect(settings.LOGIN_REDIRECT_URL)
-    else:
-        form = forms.SignupForm()
-
-    return render(request, "commande/signup.html", context={"form": form})
 
 
 @login_required

@@ -81,6 +81,12 @@ class SignupForm(UserCreationForm):
 
 
 class FinishSignupForm(SetPasswordForm, forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Prevents modification in the UI and ignores POST data for this field
+        if 'email' in self.fields:
+            self.fields['email'].disabled = True
+
     class Meta(UserChangeForm.Meta):
         model = get_user_model()
         fields = (

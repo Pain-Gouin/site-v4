@@ -25,8 +25,8 @@
             </div>
         </div>
     {% endif %}
-    <h1 class="text-3xl text-center font-bebas py-10 text-secondary">Connexion à votre compte Pain'Gouin</h1>
-    <form class="max-w-lg mx-auto pb-1 px-2" method="post">
+    <h1 class="text-3xl text-center font-bebas py-10 text-secondary">Connexion/création de ton compte Pain'Gouin</h1>
+    <form class="max-w-lg mx-auto pb-1 px-2" method="post" id="login-form">
         {% if invalidCredential %}
             <div id="alert-1"
                  class="flex items-center p-4 mb-4 text-yellow-800 border border-yellow-400 rounded-lg bg-yellow-50"
@@ -59,30 +59,303 @@
         <div class="mb-5">
             <label for="id_email"
                    class="block mb-2 text-sm font-medium text-gray-900 font-montserrat">E-mail :</label>
-            {% render_field form.email class="bg-gray-50 border font-montserrat border-gray-300 text-secondary text-sm rounded-lg focus:ring-secondary focus:border-secondary block w-full p-2.5" %}
+            {% render_field form.email class="bg-gray-50 border mb-7 font-montserrat border-gray-300 text-secondary text-sm rounded-lg focus:ring-secondary focus:border-secondary block w-full p-2.5" %}
+            <div class="flex justify-center flex-row">
+                <button type="button"
+                        class="transition-all transition-discrete w-96 bg-inherit border-primary text-primary font-montserrat rounded-lg inline-block box-border border-2 rounded-x1 hover:bg-primary hover:text-white duration-100 h-12 font-bold align-middle"
+                        id="next-btn">Continuer</button>
+                <div id="next-spinner" role="status" class="flex items-center m-2 hidden">
+                    <svg aria-hidden="true"
+                         class="w-8 h-8 text-gray-200 animate-spin dark:text-gray-600 fill-primary"
+                         viewBox="0 0 100 101"
+                         fill="none"
+                         xmlns="http://www.w3.org/2000/svg">
+                        <path d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z" fill="currentColor" />
+                        <path d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z" fill="currentFill" />
+                    </svg>
+                    <span class="sr-only">Loading...</span>
+                </div>
+            </div>
         </div>
-        <div class="mb-5">
+        <div id="signup-section" class="section-collapse">
+            <div class="flex flex-row  place-content-center px-2 mb-2">
+                <div id="alert-2"
+                     class="flex items-center p-3 text-green-800 border border-green-400 rounded-lg bg-green-50"
+                     role="alert">
+                    <svg class="shrink-0 w-4 h-4"
+                         aria-hidden="true"
+                         xmlns="http://www.w3.org/2000/svg"
+                         fill="currentColor"
+                         viewBox="0 0 20 20">
+                        <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z" />
+                    </svg>
+                    <span class="sr-only">Info</span>
+                    <div class="ms-3 font-normal">Aucun compte n'est rattaché à cet e-mail.</div>
+                </div>
+            </div>
+            <div class="flex justify-center flex-row">
+                <button type="button"
+                        class="transition-all transition-discrete w-96 bg-inherit border-green-400 text-green-800 font-montserrat rounded-lg inline-block box-border border-2 rounded-x1 hover:bg-green-400 hover:text-white duration-100 h-12 font-bold align-middle"
+                        id="signup-btn">Se créer un compte</button>
+                <div id="signup-spinner"
+                     role="status"
+                     class="flex items-center m-2 hidden">
+                    <svg aria-hidden="true"
+                         class="w-8 h-8 text-gray-200 animate-spin dark:text-gray-600 fill-primary"
+                         viewBox="0 0 100 101"
+                         fill="none"
+                         xmlns="http://www.w3.org/2000/svg">
+                        <path d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z" fill="currentColor" />
+                        <path d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z" fill="currentFill" />
+                    </svg>
+                    <span class="sr-only">Loading...</span>
+                </div>
+            </div>
+        </div>
+        <div class="section-collapse" id="password-section">
             <div class="mb-7">
                 <label for="id_password"
                        class="block mb-2 text-sm font-medium text-gray-900 font-montserrat">Mot de passe :</label>
                 {% render_field form.password class="bg-gray-50 border font-montserrat border-gray-300 text-secondary text-sm rounded-lg focus:ring-secondary focus:border-secondary block w-full p-2.5" %}
-                <a href="{% url 'password_reset' %}"
-                   class="font-montserrat underline hover:text-primary duration-100 text-sm">Mot de passe oublié ?</a>
+                <button data-modal-target="popup-modal"
+                        data-modal-toggle="popup-modal"
+                        class="font-montserrat underline hover:text-primary duration-100 text-sm"
+                        type="button">Mot de passe oublié ?</button>
             </div>
             <div class="flex justify-center flex-row">
                 <button type="submit"
                         class="w-96 bg-inherit border-primary text-primary font-montserrat rounded-lg inline-block box-border border-2 rounded-x1 hover:bg-primary hover:text-white duration-100 h-12 font-bold align-middle">
                     Se connecter
                 </button>
+                <div id="login-spinner" role="status" class="flex items-center m-2 hidden">
+                    <svg aria-hidden="true"
+                         class="w-8 h-8 text-gray-200 animate-spin dark:text-gray-600 fill-primary"
+                         viewBox="0 0 100 101"
+                         fill="none"
+                         xmlns="http://www.w3.org/2000/svg">
+                        <path d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z" fill="currentColor" />
+                        <path d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z" fill="currentFill" />
+                    </svg>
+                    <span class="sr-only">Loading...</span>
+                </div>
             </div>
-            <div class="flex justify-center flex-row py-10">
-                <a href="{% url 'signup' %}" class="w-96">
+        </div>
+        <div id="popup-modal"
+             tabindex="-1"
+             class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
+            <div class="relative p-4 w-full max-w-md max-h-full">
+                <div class="relative bg-white rounded-lg shadow-sm dark:bg-gray-700">
                     <button type="button"
-                            class="h-12 w-full bg-inherit border-primary text-primary font-montserrat rounded-lg inline-block box-border border-2 rounded-x1 hover:bg-primary hover:text-white duration-100 font-bold align-middle">
-                        Pas encore de compte&nbsp;? S'inscrire
+                            class="absolute top-3 end-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white"
+                            data-modal-hide="popup-modal"
+                            id="close-modal-btn">
+                        <svg class="w-3 h-3"
+                             aria-hidden="true"
+                             xmlns="http://www.w3.org/2000/svg"
+                             fill="none"
+                             viewBox="0 0 14 14">
+                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
+                        </svg>
+                        <span class="sr-only">Fermer le popup</span>
                     </button>
-                </a>
+                    <div class="p-4 md:p-5 text-center">
+                        <svg class="mx-auto mb-4 text-gray-400 w-12 h-12 dark:text-gray-200"
+                             aria-hidden="true"
+                             xmlns="http://www.w3.org/2000/svg"
+                             fill="none"
+                             viewBox="0 0 20 20">
+                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 11V6m0 8h.01M19 10a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                        </svg>
+                        <h3 class="mb-5 text-lg font-normal text-gray-500 dark:text-gray-400">Veux-tu réinitialiser ton mot de passe ?</h3>
+                        <button type="button"
+                                id="reset-btn"
+                                class="text-white bg-tertiary hover:bg-primary focus:ring-4 focus:outline-none focus:ring-primary font-medium rounded-lg text-sm inline-flex items-center px-5 py-2.5 text-center">
+                            Oui, recevoir un e-mail
+                        </button>
+                        <button data-modal-hide="popup-modal"
+                                type="button"
+                                class="py-2.5 px-5 ms-3 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">
+                            Finalement non
+                        </button>
+                        <div id="reset-spinner" role="status" class="flex items-center m-2 hidden">
+                            <svg aria-hidden="true"
+                                 class="w-8 h-8 text-gray-200 animate-spin dark:text-gray-600 fill-primary"
+                                 viewBox="0 0 100 101"
+                                 fill="none"
+                                 xmlns="http://www.w3.org/2000/svg">
+                                <path d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z" fill="currentColor" />
+                                <path d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z" fill="currentFill" />
+                            </svg>
+                            <span class="sr-only">Loading...</span>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </form>
+    <style>
+    .section-collapse {
+        opacity: .1;
+        max-height: 0;
+        overflow: hidden;
+        transition: opacity 0.4s ease, max-height 0.4s ease, margin 0.4s ease;
+        margin-bottom: 0;
+    }
+
+    .section-expand {
+        opacity: 1;
+        max-height: 500px;
+        margin-bottom: 1.25rem;
+    }
+    </style>
+    <script>
+        const emailInput = document.getElementById('id_email');
+        const passwordSection = document.getElementById('password-section');
+        const passwordField = document.getElementById('id_password');
+        const signupSection = document.getElementById('signup-section');
+        const nextBtn = document.getElementById('next-btn');
+        const signupBtn = document.getElementById('signup-btn');
+        const resetBtn = document.getElementById('reset-btn');
+        const nextBtnDiv = document.getElementById('next-btn').parentNode;
+        const nextSpinner = document.getElementById('next-spinner');
+        const loginSpinner = document.getElementById('login-spinner');
+        const signupSpinner = document.getElementById('signup-spinner');
+        const resetSpinner = document.getElementById('reset-spinner');
+        const form = document.getElementById('login-form');
+
+        function emailFieldEnter(event) {
+            if (event.key === "Enter") {
+                event.preventDefault(); // Prevent the form from doing a default submission
+                if (nextBtnDiv.classList.contains("hidden")) {
+                    signupBtn.click();
+                } else {
+                    nextBtn.click();
+                }
+            }
+        }
+
+        function emailCheckState() {
+            passwordSection.classList.remove('section-expand');
+            signupSection.classList.remove('section-expand');
+            nextBtnDiv.classList.remove('hidden');
+            emailInput.removeEventListener('input', emailCheckState);
+            emailInput.addEventListener('keydown', emailFieldEnter);
+        }
+
+        function signupState() {
+            passwordSection.classList.remove('section-expand');
+            signupSection.classList.add('section-expand');
+            nextBtnDiv.classList.add('hidden');
+            emailInput.addEventListener('input', emailCheckState);
+            emailInput.addEventListener('keydown', emailFieldEnter);
+        }
+        
+        function signinState() {
+            nextBtnDiv.classList.add("hidden");
+            passwordSection.classList.add("section-expand");
+            signupSection.classList.remove("section-expand");
+            passwordField.focus();
+            emailInput.removeEventListener('keydown', emailFieldEnter);
+            emailInput.addEventListener('input', emailCheckState);
+        }
+        {% if invalidCredential %}signinState();{% else %}emailCheckState();{% endif %}
+
+        // From Django docs
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    // Does this cookie string begin with the name we want?
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+        
+        nextBtn.addEventListener('click', function() {
+            if (!emailInput.reportValidity()) return;
+            nextSpinner.classList.remove("hidden");
+            const email = emailInput.value;
+
+            fetch('/login/check-email/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'X-CSRFToken': getCookie('csrftoken') // Standard Django CSRF utility
+                },
+                body: `email=${email}`
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.exists) {
+                    signinState();
+                    if (passwordField.value) {
+                        loginSpinner.classList.remove('hidden');
+                        setTimeout(() => {
+                                form.submit();
+                            }, 100);
+                    }
+                } else {
+                    signupState();
+                }
+                nextSpinner.classList.add("hidden");
+            });
+        });
+
+        signupBtn.addEventListener('click', function() {
+            if (!emailInput.reportValidity()) return;
+            signupSpinner.classList.remove("hidden");
+            const email = emailInput.value;
+
+            fetch('/signup', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'X-CSRFToken': getCookie('csrftoken') // Standard Django CSRF utility
+                },
+                body: `email=${email}`
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    if (data.msg) {
+                        document.getElementById('messages-div').insertAdjacentHTML('beforeend', data.msg);
+                        initFlowbite(); // So newly injected alerts can close
+                    }
+                }
+                signupSpinner.classList.add("hidden");
+            });
+        });
+
+        resetBtn.addEventListener('click', function() {
+            if (!emailInput.reportValidity()) return;
+            resetSpinner.classList.remove("hidden");
+            const email = emailInput.value;
+
+            fetch('/login/reset-password', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'X-CSRFToken': getCookie('csrftoken') // Standard Django CSRF utility
+                },
+                body: `email=${email}`
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    if (data.msg) {
+                        document.getElementById('messages-div').insertAdjacentHTML('beforeend', data.msg);
+                        initFlowbite(); // So newly injected alerts can close
+                    }
+                }
+                document.getElementById("close-modal-btn").click();;
+                resetSpinner.classList.add("hidden");
+            });
+        });
+    </script>
 {% endblock content %}
