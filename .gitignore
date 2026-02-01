@@ -27,5 +27,7 @@ celerybeat-schedule-shm
 # Folder used in docker compose to store rabbitmq data
 rabbitmq_data
 
-.vscode
+.vscode/*
+!.vscode/tasks.json
+!.vscode/extensions.json
 .idea
