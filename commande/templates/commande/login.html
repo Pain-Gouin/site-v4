@@ -196,21 +196,22 @@
     <style>
     .section-collapse {
         opacity: .1;
-        pointer-events: none;
         transition: opacity 0.4s ease, max-height 0.4s ease, margin 0.4s ease;
         margin-bottom: 0;
+        transform: scale(0.5);
     }
 
     .section-hide {
         opacity: 0;
         max-height: 0;
+        margin-bottom: 0;
         transition: opacity 0.4s ease, max-height 0.4s ease, margin 0.4s ease;
     }
 
     .section-expand {
         opacity: 1;
         max-height: 500px;
-        margin-bottom: 1.25rem;
+        transform: scale(1);
         pointer-events: all;
     }
     </style>
