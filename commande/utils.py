@@ -5,11 +5,11 @@ from django.core.mail import get_connection, EmailMultiAlternatives
 from datetime import time, timedelta
 from django.utils import timezone
 from django.conf import settings
+from django.core.mail import send_mail
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode
 from django.template.loader import render_to_string
-from django.conf import settings
 
 # Configuration of html2text
 text_maker = HTML2Text()
@@ -100,6 +100,41 @@ def first_editable_day():
     else:
         return today + timedelta(1)
 
+def SendMailVerification(user, new_email, request):
+    from .models import User
+
+    # Temporarily set the email to generate the token
+    current_email = user.email
+    user.email = new_email
+    user_pk_bytes = force_bytes(User._meta.pk.value_to_string(user))
+    token = PasswordResetTokenGenerator().make_token(user)
+
+    receiver_email = new_email
+    template_name = "mail/verify_email_mail.html"
+    convert_to_html_content = render_to_string(
+        template_name=template_name,
+        context={
+            "request": request,
+            "uid": urlsafe_base64_encode(user_pk_bytes),
+            "email64": urlsafe_base64_encode(force_bytes(new_email)),
+            "token": token,
+            "user": user,
+        },
+    )
+
+    send_mail(
+        subject="Vérification de l'email",
+        message=html_to_text(convert_to_html_content),
+        from_email=settings.EMAIL_HOST_USER,
+        recipient_list=[
+            receiver_email,
+        ],
+        html_message=convert_to_html_content,
+        fail_silently=True,
+    )
+
+    # Reset user email
+    user.email = current_email
 
 def PrecreateUserFunction(user, request):
     return PrecreateUsersFunction([user], request)

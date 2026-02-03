@@ -23,7 +23,7 @@ from django.utils import timezone
 from django.db import transaction
 from django.views.decorators.http import require_POST
 from datetime import datetime, time, timedelta
-from .utils import html_to_text, login_required_with_message, PrecreateUserFunction, SendPrecreationMailFunction
+from .utils import html_to_text, login_required_with_message, PrecreateUserFunction, SendPrecreationMailFunction, SendMailVerification
 
 from . import forms
 
@@ -56,6 +56,9 @@ def recharge(request):
 
 
 def login_page(request):
+    if request.user.is_authenticated:
+        return redirect("update")
+
     invalidCredential = False
     form = forms.LoginForm()
     if request.method == "POST":
@@ -66,10 +69,16 @@ def login_page(request):
                 password=form.cleaned_data["password"],
             )
             if user is not None:
-                login(request, user)
-                request.session.pop("login_message", None)
-                request.session.pop("login_next", None)
-                return redirect(request.GET.get("next", index))
+                # Check if the email is verified
+                if user.email_verified:
+                    login(request, user)
+                    request.session.pop("login_message", None)
+                    request.session.pop("login_next", None)
+                    return redirect(request.GET.get("next", index))
+                else:
+                    SendMailVerification(user, user.email, request)
+                    messages.success(request, "Un lien vient de t'être envoyé afin de vérifier ton email.\nSi tu ne réussis pas à le vérifer, contact l'administrateur web.")
+
             else:
                 invalidCredential = True
 
@@ -143,6 +152,44 @@ def reset_password_ajax(request):
         'error': 'Adresse e-mail invalide.'
     }, status=400)
 
+def verify_email(request, uidb64, email64, token):
+    # Decode de l'uid et de l'email
+    try:
+        # urlsafe_base64_decode() decodes to bytestring
+        uid = urlsafe_base64_decode(uidb64).decode()
+        pk = User._meta.pk.to_python(uid)
+        user = User._default_manager.get(pk=pk)
+        new_email = urlsafe_base64_decode(email64).decode()
+    except (
+        TypeError,
+        ValueError,
+        OverflowError,
+        User.DoesNotExist,
+        ValidationError,
+    ):
+        user = None
+    
+    if user is None:
+        messages.error(request, "Lien non valide.")
+        return redirect(settings.LOGIN_URL)
+    
+    # On modifie temporairement l'email pour vérifier que le token est bien associé à ce nouvel email
+    user.email = new_email
+    # Vérification du token
+    if not PasswordResetTokenGenerator().check_token(user, token):
+        # Le token n'est pas valide car expiré ou modifié/inventé
+        messages.error(
+            request,
+            mark_safe(
+                "Ce lien a expiré ou n'est plus valide."
+            ),
+        )
+    else:
+        # Lien valide
+        user.email_verified = True
+        user.save()
+        messages.success(request, f"L'email '{user.email}' a bien été vérifié.")
+    return redirect(settings.LOGIN_URL)
 
 def logout_user(request):
     logout(request)
@@ -150,7 +197,6 @@ def logout_user(request):
 
 
 def finish_signup_page(request, uidb64, token):
-
     # Decode de l'uid
     try:
         # urlsafe_base64_decode() decodes to bytestring
@@ -178,7 +224,7 @@ def finish_signup_page(request, uidb64, token):
                 "Ce compte a déjà été activé, connecte-toi pour continuer.",
             )
         else:
-            # On suppose que le token n'est pas valide car expiré (ça pourrait être un token modifié/inventé)
+            # On suppose que le token n'est pas valide car expiré (ça pourrait également être un token modifié/inventé)
             SendPrecreationMailFunction(user, request)
             messages.warning(
                 request,

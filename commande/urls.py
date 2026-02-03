@@ -10,6 +10,7 @@ urlpatterns = [
     path("contact", views.contact, name="contact"),
     path("login", views.login_page, name="login"),
     path("login/check-email/", views.check_email, name="check-email"),
+    path("login/verify-email/<uidb64>/<email64>/<token>/", views.verify_email, name="verify-email"),
     path("login/reset-password", views.reset_password_ajax, name='password_reset_ajax'),
     path("logout", views.logout_user, name="logout"),
     path("signup", views.signup, name="signup"),
