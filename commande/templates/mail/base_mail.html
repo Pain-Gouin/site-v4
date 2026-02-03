@@ -38,7 +38,7 @@
   </mj-section>
   <mj-section background-color="white" padding-bottom="0">
     <mj-column>
-      <mj-text color="#9B9B9B" align="center" font-size="11px" padding="0">Si tu ne souhaites plus recevoir ces e-mails, tu peux te désincrire <a style="color: #9B9B9B" href="{% if request %}{{ request.scheme }}://{{ request.get_host }}{% else %}{{ protocol }}://{{ domain }}{% endif %}{% url 'update' %}">ici</a>.</mj-text>
+      <mj-text align="center" font-size="11px" padding="0">Si tu ne souhaites plus recevoir ces e-mails, tu peux te désincrire <a style="color: #9B9B9B" href="{% if request %}{{ request.scheme }}://{{ request.get_host }}{% else %}{{ protocol }}://{{ domain }}{% endif %}{% url 'update' %}">ici</a>.</mj-text>
     </mj-column>
   </mj-section>
 {% endblock footer %}
