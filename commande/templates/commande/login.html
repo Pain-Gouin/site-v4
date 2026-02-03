@@ -196,8 +196,7 @@
     <style>
     .section-collapse {
         opacity: .1;
-        max-height: 10px;
-        overflow: hidden;
+        pointer-events: none;
         transition: opacity 0.4s ease, max-height 0.4s ease, margin 0.4s ease;
         margin-bottom: 0;
     }
@@ -205,15 +204,14 @@
     .section-hide {
         opacity: 0;
         max-height: 0;
-        overflow: hidden;
         transition: opacity 0.4s ease, max-height 0.4s ease, margin 0.4s ease;
-        margin-bottom: 0;
     }
 
     .section-expand {
         opacity: 1;
         max-height: 500px;
         margin-bottom: 1.25rem;
+        pointer-events: all;
     }
     </style>
     <script>
