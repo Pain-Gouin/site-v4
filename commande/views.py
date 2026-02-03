@@ -279,7 +279,7 @@ def finish_signup_page(request, uidb64, token):
 @login_required
 def update_user_page(request):
     if request.method == "POST":
-        form = forms.UpdateForm(data=request.POST, instance=request.user)
+        form = forms.UpdateForm(data=request.POST, instance=request.user, request=request)
         if form.is_valid():
             form.save()
             messages.success(request, "Profile mise à jour.")
@@ -289,7 +289,7 @@ def update_user_page(request):
 
         return redirect("update")
 
-    form = forms.UpdateForm(instance=request.user)
+    form = forms.UpdateForm(instance=request.user, request=request)
 
     return render(request, "commande/update.html", context={"form": form})
 

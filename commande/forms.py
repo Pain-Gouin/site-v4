@@ -4,10 +4,10 @@ from django.contrib.auth.forms import UserCreationForm, UserChangeForm, SetPassw
 from django.contrib.auth import get_user_model
 from django.utils.translation import gettext_lazy as _
 from django.core.exceptions import ValidationError
-
+from django.contrib import messages
 from django.forms import BooleanField
 
-from commande.utils import first_editable_day
+from commande.utils import SendMailVerification, first_editable_day
 from commande.widgets import DateRangeField, MultiDateField
 
 from .models import Delivery
@@ -113,6 +113,11 @@ class FinishSignupForm(SetPasswordForm, forms.ModelForm):
 
 
 class UpdateForm(UserChangeForm):
+    def __init__(self, *args, **kwargs):
+        # Pop 'request' so it doesn't get passed to the parent UserChangeForm
+        self.request = kwargs.pop('request', None)
+        super().__init__(*args, **kwargs)
+
     class Meta(UserChangeForm.Meta):
         model = get_user_model()
         fields = (
@@ -124,6 +129,24 @@ class UpdateForm(UserChangeForm):
             "has_drivers_licence",
             "get_order_email",
         )
+    
+    def save(self, commit=True):
+        user = super().save(commit=False)
+        
+        # Check if the email field is in changed_data
+        if 'email' in self.changed_data:
+            new_email = self.cleaned_data.get('email')
+
+            # Revert the email on the instance so it doesn't save to the DB yet
+            old_email = self.instance.pk and get_user_model().objects.get(pk=self.instance.pk).email # The instance still has the old email until we save it
+            user.email = old_email
+            
+            SendMailVerification(user, new_email, self.request)
+            messages.success(self.request, "Un lien vient de t'être envoyé afin de finaliser le changement d'email.")
+
+        if commit:
+            user.save()
+        return user
 
 
 class ProductOrderForm(forms.Form):
