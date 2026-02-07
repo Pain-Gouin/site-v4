@@ -9,7 +9,7 @@ django-tailwind==4.4.2
 django-unfold==0.77.1
 django-widget-tweaks==1.5.1
 django-yubin==2.0.6
-gunicorn==24.1.1
+gunicorn==25.0.2
 html2text==2025.4.15
 mysqlclient==2.2.7
 whitenoise==6.11.0

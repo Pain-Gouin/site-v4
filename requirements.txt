@@ -20,7 +20,7 @@ django-unfold==0.77.1
 django-widget-tweaks==1.5.1
 django-yubin==2.0.6
 et_xmlfile==2.0.0
-gunicorn==24.1.1
+gunicorn==25.0.2
 html2text==2025.4.15
 kombu==5.6.2
 mail-parser==4.1.4
