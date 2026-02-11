@@ -326,13 +326,12 @@ class Order(models.Model):
     def update_transactions(self, request, save=True, reason="Annulation"):
         with transaction.atomic():
             current_price_paid = (
-                -self.transactions.aggregate(models.Sum("amount"))["amount__sum"] or 0
+                -self.transactions.aggregate(models.Sum("amount", default=0))["amount__sum"]
             )
             price_to_pay = (
                 self.orderproduct_set.filter(
                     delivery_status=OrderProduct.OrderProductStatusChoices.VALID
-                ).aggregate(models.Sum("total_price_sold"))["total_price_sold__sum"]
-                or 0
+                ).aggregate(models.Sum("total_price_sold", default=0))["total_price_sold__sum"]
             )
             diff = current_price_paid - price_to_pay
             if diff:
