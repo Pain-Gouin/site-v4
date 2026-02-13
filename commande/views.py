@@ -60,7 +60,6 @@ def login_page(request):
         return redirect("update")
 
     invalidCredential = False
-    form = forms.LoginForm()
     if request.method == "POST":
         form = forms.LoginForm(request.POST)
         if form.is_valid():
@@ -81,6 +80,8 @@ def login_page(request):
 
             else:
                 invalidCredential = True
+    else:
+        form = forms.LoginForm()
 
     login_redirect_msg = None
     if "login_message" in request.session:
@@ -228,9 +229,7 @@ def finish_signup_page(request, uidb64, token):
             SendPrecreationMailFunction(user, request)
             messages.warning(
                 request,
-                mark_safe(
-                    "Ce lien a expiré, un nouveau lien de création de compte vient de t'être envoyé par email."
-                ),
+                "Ce lien a expiré, un nouveau lien de création de compte vient de t'être envoyé par email.",
             )
         return redirect(settings.LOGIN_URL)
 

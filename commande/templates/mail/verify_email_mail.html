@@ -4,9 +4,7 @@
 {% block content %}
   <mj-section mj-class="color-quaternary">
   <mj-column>
-  <mj-text>Salut
-  {% if user.first_name %}{{ user.first_name }}{% endif %}
-  ,
+  <mj-text>Salut{% if user.first_name %} {{ user.first_name }}{% endif %},
   <br>
   pour vérifier cet e-mail, clique sur le bouton ci-dessous :</mj-text>
   </mj-column>
@@ -35,7 +33,7 @@
   </mj-section>
   <mj-section background-color="white" padding-bottom="0">
   <mj-column>
-  <mj-text color="#9B9B9B" align="center" font-size="11px" padding="0">Si tu ne réussis pas à vérifier ton email, tu peux <a href="{{ request.scheme }}://{{ request.get_host }}{% url 'contact' %}">contacter le responsable web</a>.</mj-text>
+  <mj-text color="#9B9B9B" align="center" font-size="11px" padding="0">Si tu ne réussis pas à vérifier ton email, tu peux <a href="{{ request.scheme }}://{{ request.get_host }}{% url 'contact' %}">demander de l'aide au responsable web</a>.</mj-text>
   </mj-column>
   </mj-section>
 {% endblock footer %}

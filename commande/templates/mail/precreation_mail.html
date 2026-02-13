@@ -4,9 +4,7 @@
 {% block content %}
   <mj-section mj-class="color-quaternary">
   <mj-column>
-  <mj-text>Salut
-  {% if user.first_name %}{{ user.first_name }}{% endif %}
-  ,
+  <mj-text>Salut{% if user.first_name %} {{ user.first_name }}{% endif %},
   <br>
   pour terminer la création de ton compte Pain'Gouin, clique sur le bouton ci-dessous :</mj-text>
   </mj-column>
