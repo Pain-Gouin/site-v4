@@ -11,6 +11,8 @@ from django.core.mail import send_mail
 from django.template import RequestContext
 from django.template.loader import render_to_string
 from django.utils.safestring import mark_safe
+from django.utils.encoding import force_bytes
+from django.utils.http import urlsafe_base64_encode
 from django.contrib.auth.views import PasswordResetView
 from django.contrib.messages.views import SuccessMessageMixin
 from django.urls import reverse_lazy, reverse
@@ -23,6 +25,8 @@ from django.utils import timezone
 from django.db import transaction
 from django.views.decorators.http import require_POST
 from datetime import datetime, time, timedelta
+
+from commande.tokens import VerifiedUserTokenGenerator
 from .utils import html_to_text, login_required_with_message, PrecreateUserFunction, SendPrecreationMailFunction, SendMailVerification
 
 from . import forms
@@ -52,8 +56,86 @@ def contact(request):
 
 @login_required_with_message("Authentifie toi avant d’accéder au rechargement")
 def recharge(request):
+    if not request.user.verified_genuine_user and not request.user.can_be_verified_genuine_user():
+        messages.warning(request, "Tu dois valider ton compte avant de pouvoir le recharger !")
+        return redirect(account_verification)
     return render(request, "commande/recharge.html")
 
+@login_required
+def account_verification(request):
+    if request.user.verified_genuine_user or request.user.can_be_verified_genuine_user():
+        messages.success(request, "Ton compte est déjà validé")
+        return redirect(index)
+    
+    if request.method == "POST":
+        form = forms.CheckGenuineUserForm(request.POST)
+
+        if form.is_valid():
+            user_pk_bytes = force_bytes(User._meta.pk.value_to_string(request.user))
+            token = VerifiedUserTokenGenerator().make_token(request.user)
+
+            email_html = render_to_string(
+                template_name="mail/verify_account_mail.html",
+                context={
+                    "request": request,
+                    "uid": urlsafe_base64_encode(user_pk_bytes),
+                    "token": token,
+                    "user": request.user,
+                },
+            )
+            send_mail(
+                subject="Vérification de ton compte Pain'Gouin",
+                message=html_to_text(email_html),
+                from_email=settings.EMAIL_HOST_USER,
+                recipient_list=[form.cleaned_data["email"]],
+                html_message=email_html,
+                fail_silently=True,
+            )
+            messages.success(request, "Un lien pour vérifier ton compte vient d'être envoyé à ta boîte mail Centrale")
+        
+        else:
+            messages.error(request, "E-mail non valide. Celui-ci doit se finir par: @centrale.centralelille.fr")
+    else:
+        form = forms.CheckGenuineUserForm()
+    return render(request, "commande/verify_user.html", context={"form": form})
+
+@login_required_with_message("Authentifie toi pour vérifier ton compte")
+def verify_account(request, uidb64, token):
+    # Decode de l'uid
+    try:
+        # urlsafe_base64_decode() decodes to bytestring
+        uid = urlsafe_base64_decode(uidb64).decode()
+        pk = User._meta.pk.to_python(uid)
+        user = User._default_manager.get(pk=pk)
+    except (
+        TypeError,
+        ValueError,
+        OverflowError,
+        User.DoesNotExist,
+        ValidationError,
+    ):
+        user = None
+
+    if user is None:
+        messages.error(request, "Lien non valide.")
+        return redirect(index)
+    if user != request.user:
+        messages.error(request, "Ce lien n'est pas pour le compte actuellement connecté.")
+        return redirect(index)
+    
+    if not VerifiedUserTokenGenerator().check_token(user, token):
+        if user.verified_genuine_user:
+            messages.warning(request, "Ce compte a déjà été validé.")
+            return redirect(index)
+        messages.error(request, "Ce lien n'est plus valide. Tu peux faire une nouvelle demande.")
+        return redirect(account_verification)
+    
+    # Lien valide
+    user.verified_genuine_user = True
+    user.save(update_fields=["verified_genuine_user"])
+    messages.success(request, "Compte vérifié avec succès.")
+
+    return redirect(recharge)
 
 def login_page(request):
     if request.user.is_authenticated:

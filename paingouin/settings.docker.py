@@ -63,6 +63,8 @@ if str_to_bool(os.getenv("ENFORCE_HTTPS", "1")):
 ADMINS = [("vale", "margerite.tonnere@gmail.com")]
 SERVER_EMAIL = "admin." + os.getenv("EMAIL_HOST_USER", "noreply@paingouin.rezoleo.fr")
 
+# Allowed verified genuine user emails
+VERIFIED_USER_EMAIL_DOMAINS = set(["centrale.centralelille.fr"])
 
 # Application definition
 

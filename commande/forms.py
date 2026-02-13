@@ -1,5 +1,6 @@
 # authentication/forms.py
 from django import forms
+from django.conf import settings
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm, SetPasswordForm
 from django.contrib.auth import get_user_model
 from django.utils.translation import gettext_lazy as _
@@ -7,7 +8,7 @@ from django.core.exceptions import ValidationError
 from django.contrib import messages
 from django.forms import BooleanField
 
-from commande.utils import SendMailVerification, first_editable_day
+from commande.utils import SendMailVerification, WhitelistEmailValidator, first_editable_day
 from commande.widgets import DateRangeField, MultiDateField
 
 from .models import Delivery
@@ -246,3 +247,6 @@ class CustomOrderProductExportForm(ExportForm):
         min_date=lambda: Delivery.objects.order_by("date").first().date,
         max_date=date.today,
     )
+
+class CheckGenuineUserForm(forms.Form):
+    email = forms.EmailField(validators=[WhitelistEmailValidator(whitelist=settings.VERIFIED_USER_EMAIL_DOMAINS)])

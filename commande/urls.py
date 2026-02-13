@@ -18,6 +18,8 @@ urlpatterns = [
     path("update", views.update_user_page, name="update"),
     path("commande", views.commande, name="commande"),
     path("recharge", views.recharge, name="recharge"),
+    path("account-verification", views.account_verification, name="account-verification"),
+    path("account-verification/<uidb64>/<token>/", views.verify_account, name="verify-account"),
     path("livreur", views.livreur, name="livreur"),
     path("historique", views.historique, name="historique"),
     path(

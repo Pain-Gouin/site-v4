@@ -12,6 +12,7 @@ from django.db.models import F
 from django.db.models.functions import Coalesce
 from django.utils.functional import cached_property
 from django.utils.translation import gettext_lazy as _
+from django.conf import settings
 
 from django.utils import timezone, formats
 
@@ -120,6 +121,17 @@ class User(AbstractBaseUser, PermissionsMixin):
                 self.save(update_fields=["balance_cache"])
                 return True
             return False
+    
+    def can_be_verified_genuine_user(self):
+        print(f"{self.transaction_set.exists()=}")
+        if self.verified_genuine_user: # Why have you called this function ?
+            return True
+        if self.transaction_set.exists() or (self.email_verified and self.email.split("@")[-1] in settings.VERIFIED_USER_EMAIL_DOMAINS):
+            self.verified_genuine_user = True
+            self.save(update_fields=["verified_genuine_user"])
+            return True
+        return False
+
 
     @staticmethod
     def sync_all_user_balances():

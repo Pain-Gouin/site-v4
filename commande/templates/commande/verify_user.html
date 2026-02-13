@@ -1,0 +1,32 @@
+{% extends "commande/base.html" %}
+{% load static %}
+{% load widget_tweaks %}
+{% block content %}
+    <h1 class="font-bebas text-center text-2xl md:text-4xl pt-10 pb-5 px-2">Vérification de ton compte</h1>
+    <div class="font-montserrat content-center pt-4 px-4">
+        <p class="text-lg sm:text-xl font-montserrat py-5 text-center font-medium">
+            Avant de pouvoir recharger ton compte Pain'Gouin par CB, celui-ci doit être vérifié.
+        </p>
+    </div>
+    <form class="max-w-lg mx-auto py-10 px-2" method="post">
+        {% csrf_token %}
+        <div class="mb-5">
+            <label for="id_email"
+                   class="block mb-2 text-sm font-medium text-gray-900 font-montserrat">
+                Adresse e-mail Centrale (@centrale.centralelille.fr) :
+            </label>
+            {% render_field form.email class="bg-gray-50 border mb-7 font-montserrat border-gray-300 text-secondary text-sm rounded-lg focus:ring-secondary focus:border-secondary block w-full p-2.5" autocomplete="username" %}
+            <div class="flex justify-center flex-row">
+                <button type="submit"
+                        class="transition-all transition-discrete w-96 bg-inherit border-primary text-primary font-montserrat rounded-lg inline-block box-border border-2 rounded-x1 hover:bg-primary hover:text-white duration-100 h-12 font-bold align-middle"
+                        id="next-btn">Envoyer un lien de validation</button>
+            </div>
+        </div>
+    </form>
+    <div class="font-montserrat content-center px-4">
+        <p class="text-base sm:text-base font-montserrat font-normal pb-5 text-center">
+            Si jamais tu ne peux pas vérifier ton compte de cette manière, tu peux également <a href="{% url 'contact' %}"
+    class="underline hover:text-primary transition duration-100">contacter un membre de l'association</a> pour qu'il valide manuellement ton compte.
+        </p>
+    </div>
+{% endblock content %}

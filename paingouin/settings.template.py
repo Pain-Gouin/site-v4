@@ -42,6 +42,8 @@ ADMINS = [("Example", "example@example.com")]
 SERVER_EMAIL = "paingouin@rezoleo.fr"
 ALLOWED_HOSTS = ["paingouindev.rezoleo.fr", "www.paingouindev.rezoleo.fr", "127.0.0.1"]
 
+# Allowed verified genuine user emails
+VERIFIED_USER_EMAIL_DOMAINS = set(["centrale.centralelille.fr"])
 
 # Application definition
 

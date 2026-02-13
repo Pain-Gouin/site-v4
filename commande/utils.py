@@ -10,6 +10,8 @@ from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode
 from django.template.loader import render_to_string
+from django.core.validators import EmailValidator
+from django.utils.deconstruct import deconstructible
 
 # Configuration of html2text
 text_maker = HTML2Text()
@@ -181,3 +183,17 @@ def SendPrecreationMailsFunction(users, request):
         )
 
     send_mass_html_mail(emails, fail_silently=True)
+
+@deconstructible
+class WhitelistEmailValidator(EmailValidator):
+    def validate_domain_part(self, domain_part):
+        if domain_part in self.whitelist:
+            return True
+        return False
+
+    def __eq__(self, other):
+        return isinstance(other, WhitelistEmailValidator) and super().__eq__(other)
+    
+    def __init__(self, whitelist, message = None, code = None):
+        self.whitelist = set(whitelist)
+        super().__init__(message, code)
