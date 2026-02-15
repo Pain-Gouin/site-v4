@@ -110,6 +110,7 @@ Une fois les informations modifiées, exécutez les commandes suivantes :
 ```console
 python manage.py makemigrations
 python manage.py migrate
+python manage.py createcachetable
 ```
 
 Vous venez de mettre en place les différentes tables dont le site (et Django) a besoin pour fonctionner.  

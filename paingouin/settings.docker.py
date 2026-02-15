@@ -19,6 +19,7 @@ from django.utils.translation import gettext_lazy as _
 from email.utils import formataddr
 from datetime import time
 from import_export.formats.base_formats import XLSX, CSV, ODS
+from decimal import Decimal
 
 DELIVERY_CUTOFF_TIME = time(6, 30)
 
@@ -27,6 +28,7 @@ GIT_COMMIT = os.environ.get('GIT_COMMIT_SHA', 'Develop')[:7]
 def str_to_bool(s):
     return str(s).lower() in ["true", "1", "yes"]
 
+PROD = str_to_bool(os.getenv("PROD", "0"))
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -65,6 +67,9 @@ SERVER_EMAIL = "admin." + os.getenv("EMAIL_HOST_USER", "noreply@paingouin.rezole
 
 # Allowed verified genuine user emails
 VERIFIED_USER_EMAIL_DOMAINS = set(["centrale.centralelille.fr"])
+
+MAX_TOPUP_AMOUNT = Decimal(99.00)
+MAX_BALANCE_ALLOWED = Decimal(150.00)
 
 # Application definition
 
@@ -279,6 +284,11 @@ UNFOLD = {
                         "link": reverse_lazy("admin:commande_transaction_changelist"),
                     },
                     {
+                        "title": _("HelloAsso Checkout"),
+                        "icon": "credit_card",
+                        "link": reverse_lazy("admin:commande_helloassocheckout_changelist"),
+                    },
+                    {
                         "title": _("Logs"),
                         "icon": "contract",
                         "link": reverse_lazy("admin:admin_logentry_changelist"),
@@ -420,3 +430,21 @@ CRISPY_ALLOWED_TEMPLATE_PACKS = ["unfold_crispy"]
 
 # For django-import-export
 IMPORT_EXPORT_FORMATS = [CSV, ODS, XLSX]
+
+# Used to cache oAuth token from HelloAsso API
+CACHES = {
+    "default": {
+        "BACKEND": "django.core.cache.backends.db.DatabaseCache",
+        "LOCATION": "django_cache",
+    }
+}
+
+if PROD:
+    HELLOASSO_TOKEN_URL = 'https://api.helloasso.com/oauth2/token'
+    HELLOASSO_API_URL = 'https://api.helloasso.com/v5'
+else:
+    HELLOASSO_TOKEN_URL = 'https://api.helloasso-sandbox.com/oauth2/token'
+    HELLOASSO_API_URL = 'https://api.helloasso-sandbox.com/v5'
+HELLOASSO_CLIENT_ID = os.getenv("HELLOASSO_CLIENT_ID", "")
+HELLOASSO_CLIENT_SECRET = os.getenv("HELLOASSO_CLIENT_SECRET", "")
+HELLOASSO_ORG_SLUG = os.getenv("HELLOASSO_ORG_SLUG", "pain-gouin")

@@ -27,6 +27,7 @@ from .models import (
     Delivery,
     OrderProduct,
     Transaction,
+    HelloAssoCheckout,
 )
 from django.http import HttpRequest
 from django.shortcuts import render
@@ -774,6 +775,61 @@ class DeliveryAdmin(CustomModelAdmin):
                 "title": _("Création en masse de dates de livraisons"),
                 **self.admin_site.each_context(request),
             },
+        )
+
+
+@admin.register(HelloAssoCheckout)
+class HelloAssoCheckoutAdmin(CustomModelAdmin):
+    list_display = (
+        "amount",
+        "user",
+        "status",
+        "created_at",
+    )
+    list_filter = (
+        ("status", ChoicesDropdownFilter),
+        ("amount", AmountSliderNumericFilter),
+        ("user", AutocompleteSelectMultipleFilter),
+        "created_at",  # RangeDateTimeFilter does not work due to localisation : https://github.com/unfoldadmin/django-unfold/issues/1438
+    )
+    inlines = [TransactionInline]
+    readonly_fields = ["updated_at"]
+    autocomplete_fields = ["user"]
+    STAFF_CAN_CREATE = False
+
+    actions = ["refresh_data_action"]
+    actions_row = ["refresh_data_action_row"]
+    actions_detail = actions_row
+
+    @action(
+        description=_("Rafraichir les données"),
+        variant=ActionVariant.PRIMARY,
+    )
+    def refresh_data_action_row(self, request: HttpRequest, object_id: int, alone=True):
+        with transaction.atomic():
+            checkout = HelloAssoCheckout.objects.get(id=object_id)
+            checkout.refresh_from_api()
+            if alone:
+                messages.success(request, "Checkout bien rafraichit.")
+            else:
+                return 1
+        return redirect(
+            request.headers.get("referer")
+            or reverse_lazy("admin:commande_helloassocheckout_changelist")
+        )
+    
+    @admin.action(
+        description=_(
+            "Rafraichir les données (attention au rate limit de l'API !)"
+        )
+    )
+    def refresh_data_action(self, request: HttpRequest, queryset: QuerySet):
+        for checkout in queryset:
+            checkout.refresh_from_api()
+        tot = len(queryset)
+        messages.success(
+            request,
+            f"{tot} checkout(s) bien rafraichit(s)."
         )
 
 

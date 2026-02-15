@@ -15,7 +15,7 @@
                    class="block mb-2 text-sm font-medium text-gray-900 font-montserrat">
                 Adresse e-mail Centrale (@centrale.centralelille.fr) :
             </label>
-            {% render_field form.email class="bg-gray-50 border mb-7 font-montserrat border-gray-300 text-secondary text-sm rounded-lg focus:ring-secondary focus:border-secondary block w-full p-2.5" autocomplete="username" %}
+            {% render_field form.email class="bg-gray-50 border mb-7 font-montserrat border-gray-300 text-secondary text-sm rounded-lg focus:ring-secondary focus:border-secondary block w-full p-2.5" autocomplete="email" %}
             <div class="flex justify-center flex-row">
                 <button type="submit"
                         class="transition-all transition-discrete w-96 bg-inherit border-primary text-primary font-montserrat rounded-lg inline-block box-border border-2 rounded-x1 hover:bg-primary hover:text-white duration-100 h-12 font-bold align-middle"
@@ -26,7 +26,13 @@
     <div class="font-montserrat content-center px-4">
         <p class="text-base sm:text-base font-montserrat font-normal pb-5 text-center">
             Si jamais tu ne peux pas vérifier ton compte de cette manière, tu peux également <a href="{% url 'contact' %}"
-    class="underline hover:text-primary transition duration-100">contacter un membre de l'association</a> pour qu'il valide manuellement ton compte.
+    class="underline hover:text-primary transition duration-100">contacter un membre de l'association</a> pour qu'il le valide manuellement.
+        </p>
+    </div>
+    <div class="font-montserrat content-center px-4 mt-10">
+        <p class="text-base sm:text-base font-montserrat font-normal pb-5 text-center">
+            Il est également possible de <a href="{% url 'recharge-lyf' %}"
+    class="underline hover:text-primary transition duration-100">recharger ton compte via Lyf</a>.
         </p>
     </div>
 {% endblock content %}

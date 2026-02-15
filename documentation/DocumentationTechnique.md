@@ -69,6 +69,8 @@ Les identifiants associés aux différents mails pouvant être utilisés par le 
      ┗ 📜README.md              // fichier README...
 
 ## Structure de la base de donnée
+**N'est plus à jour !**
+TODO
 
 La base de donnée de l'application commande est représentée de la manière suivante (image ci-dessous), pour voir comment les modèles sont interprétés par Django, vous pouvez vous référer au fichier commande/models.py qui répertorie les modèles utilisés par le site.
 ![SchémaDB](SchemaDB.png)
@@ -117,3 +119,9 @@ Un webmaster (superuser) peut tout faire, et donc tout casser. ATTENTION !
 
 Pour mettre quelqu'un admin, il faut être admin. Pour mettre quelqu'un superuser, il faut être superuser.  
 Il est également possible de faire cela depuis la phpmyadmin avec les codes qui sont sur le drive.
+
+## HelloAsso Checkout
+
+La documentation peut être trouvée [ici](https://dev.helloasso.com/docs/description).
+
+La documentation du SDK Python utilisé est [ici](https://github.com/HelloAsso/helloasso-python).

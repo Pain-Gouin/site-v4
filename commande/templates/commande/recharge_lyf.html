@@ -1,0 +1,83 @@
+{% extends "commande/base.html" %}
+{% load static %}
+{% block content %}
+    <div class="font-montserrat content-center pt-4 px-4">
+        <h1 class="text-center text-2xl md:text-4xl text-primary md:py-16 pt-5 pb-10 px-2">
+            Rechargement par
+            <img class="h-12 inline-block"
+                 src="{% static 'externe/Lyf - corail.svg' %}"
+                 alt="Lyf logo" />
+        </h1>
+        <div class="grid lg:grid-cols-2  place-items-center pb-10">
+            <div class="max-w-xl order-1 lg:order-1">
+                <h3 class="text-2xl md:text-4xl font-bebas pb-3 lg:pb-10 text-primary">1°) Installe et configure l'application Lyf</h3>
+                <p class="text-md md:text-xl font-montserrat pb-5">
+                    On utilise cette application pour faire des transferts à taux faibles.
+                </p>
+            </div>
+            <div class="order-2 lg:order-2 max-w-125">
+                <div class="grid grid-cols-2 items-center">
+                    <img class="inline-block p-4 row-span-2 lg:row-span-1 lg:col-span-2 w-full max-w-2xs m-auto"
+                         src="{% static 'externe/Lyf.icone.corail.png' %}"
+                         alt="logo application lyf">
+                    <a class="m-4 inline-block"
+                       href="https://play.google.com/store/apps/details?id=com.fivory.prod">
+                        <img class="w-full"
+                             src="{% static 'externe/GetItOnGooglePlay_Badge_Web_color_French.svg' %}"
+                             alt="Play Store badge">
+                    </a>
+                    <a class="m-4 inline-block"
+                       href="https://apps.apple.com/fr/app/id824967438">
+                        <img class="w-full"
+                             src="{% static 'externe/Download_on_the_App_Store_Badge_FR_RGB_blk_100517.svg' %}"
+                             alt="App Store badge">
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="grid lg:grid-cols-2  place-items-center pb-10">
+            <div class="order-2 lg:order-1 font-montserrat">
+                <p class="text-xl">Liens de contact :</p>
+                {% include "commande/contact_cards.html" %}
+            </div>
+            <div class="max-w-xl order-1 lg:order-2">
+                <h3 class="text-2xl md:text-4xl font-bebas pb-3 lg:pb-10 text-primary">
+                    2°) Contacte un membre du bureau de l'association
+                </h3>
+                <p class="text-md md:text-xl font-montserrat pb-5">
+                    Indique-lui ton numéro de téléphone, ainsi que le montant du rechargement que tu souhaites effectuer.
+                </p>
+                <p class="text-md md:text-xl font-montserrat pb-5">
+                    <b>Il vous faut alors vous coordonner</b> (à distance)
+                    <br>
+                    Il va initier un transfert Lyf : tu dois immédiatement confirmer celui-ci via l'application sur ton téléphone.
+                </p>
+            </div>
+        </div>
+        <div class="grid lg:grid-cols-2  place-items-center pb-10">
+            <div class="max-w-xl order-1 lg:order-1">
+                <h3 class="text-2xl md:text-4xl font-bebas pb-3 lg:pb-10 text-primary">
+                    3°) Confirmation du transfert et ajout des fonds
+                </h3>
+                <p class="text-md md:text-xl font-montserrat pb-5">
+                    Le membre contacté va te confirmer la réussite du virement, et ajouter les fonds à ton compte.
+                </p>
+                <p class="text-md md:text-xl font-montserrat pb-5">
+                    Il ne te reste plus qu'à <a class="underline hover:text-primary duration-500"
+    href="{% url 'commande' %}">passer commande</a>&nbsp;!
+                </p>
+            </div>
+            <div class="order-2 lg:order-2">
+                <div class="flex items-center">
+                    <img src="{% static 'illustration/PainGouinGrailleKontan.webp' %}"
+                         alt="Sac PainGouin"
+                         class="mx-auto max-h-96">
+                </div>
+            </div>
+        </div>
+        <p class="font-montserrat pb-5 text-center font-light text-lg mx-4">
+            Si tu ne souhaites plus, un jour, utiliser les services de l'association, tu as la possibilité de récupérer le solde restant sur ton compte en <a href="{% url 'contact' %}"
+    class="underline hover:text-primary transition duration-100">contactant&nbsp;le&nbsp;trésorier</a>.
+        </p>
+    </div>
+{% endblock content %}

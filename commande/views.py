@@ -1,4 +1,5 @@
-from django.db.models import Sum, Prefetch
+from decimal import Decimal
+from django.db.models import Sum, Prefetch, Value, CharField, When, Case
 from django.db.models.functions import Lower, Substr
 from django.forms import modelformset_factory, Select
 from django.shortcuts import render, redirect
@@ -16,7 +17,7 @@ from django.utils.http import urlsafe_base64_encode
 from django.contrib.auth.views import PasswordResetView
 from django.contrib.messages.views import SuccessMessageMixin
 from django.urls import reverse_lazy, reverse
-from django.http import HttpResponseServerError, JsonResponse
+from django.http import HttpResponseBadRequest, HttpResponseServerError, JsonResponse
 from django.utils.http import urlsafe_base64_decode
 from django.core.exceptions import ValidationError
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
@@ -24,10 +25,17 @@ from django.contrib.auth.forms import PasswordResetForm
 from django.utils import timezone
 from django.db import transaction
 from django.views.decorators.http import require_POST
+from django.views.decorators.csrf import csrf_exempt
 from datetime import datetime, time, timedelta
+from pprint import pformat
+import json
 
 from commande.tokens import VerifiedUserTokenGenerator
 from .utils import html_to_text, login_required_with_message, PrecreateUserFunction, SendPrecreationMailFunction, SendMailVerification
+
+import helloasso_python
+from .helloasso import get_api_client, log_api_exception
+from . import tasks
 
 from . import forms
 
@@ -38,6 +46,7 @@ from .models import (
     User,
     Transaction,
     OrderProduct,
+    HelloAssoCheckout
 )
 
 
@@ -56,10 +65,105 @@ def contact(request):
 
 @login_required_with_message("Authentifie toi avant d’accéder au rechargement")
 def recharge(request):
+    # Vérification que l'utilisateur est bien vérifié
     if not request.user.verified_genuine_user and not request.user.can_be_verified_genuine_user():
         messages.warning(request, "Tu dois valider ton compte avant de pouvoir le recharger !")
         return redirect(account_verification)
-    return render(request, "commande/recharge.html")
+    
+    if "error" in request.GET:
+        messages.error(request, f"Erreur HelloAsso: {request.GET["error"]}")
+    elif "checkoutIntentId" in request.GET:
+        messages.success(request, "Transaction effectuée avec succès, ton compte devrait être crédité d'ici quelques secondes")
+        checkout = HelloAssoCheckout.objects.get(checkout_intent_id=request.GET["checkoutIntentId"])
+        checkout.refresh_from_api()
+        return redirect("recharge")
+
+    amount = request.GET.get("amount")
+    min_amount = Decimal(.5)
+    max_amount = min(settings.MAX_TOPUP_AMOUNT, settings.MAX_BALANCE_ALLOWED-request.user.balance_cache)
+    if request.method == "POST":
+        form = forms.TopupForm(min_amount, max_amount, data=request.POST)
+        if form.is_valid():
+            if request.is_secure():
+                new_checkout = HelloAssoCheckout.objects.create(user=request.user, amount=form.cleaned_data['amount'])
+
+                with get_api_client() as api_client:
+                    api_instance = helloasso_python.CheckoutApi(api_client)
+                    organization_slug = settings.HELLOASSO_ORG_SLUG
+                    payer = helloasso_python.HelloAssoApiV5ModelsCartsCheckoutPayer(
+                        firstName = request.user.first_name,
+                        lastName = request.user.last_name,
+                        email = request.user.email
+                    )
+                    amount_int = int(new_checkout.amount*100)
+                    body = helloasso_python.HelloAssoApiV5ModelsCartsInitCheckoutBody(
+                        total_amount = amount_int,
+                        initial_amount = amount_int,
+                        item_name = f"Rechargement du compte paingouin de {new_checkout.amount}€",
+                        back_url = request.build_absolute_uri(reverse("recharge", query={"amount": new_checkout.amount})),
+                        error_url = request.build_absolute_uri(reverse("recharge", query={"amount": new_checkout.amount})),
+                        return_url = request.build_absolute_uri(reverse("recharge")),
+                        contains_donation = False,
+                        payer = payer,
+                        metadata={"website_tracked": True, "HelloAssoCheckoutPK": new_checkout.pk}
+                    )
+
+                    try:
+                        api_response = api_instance.organizations_organization_slug_checkout_intents_post(organization_slug, body)
+
+                        new_checkout.checkout_intent_id = api_response.id
+                        new_checkout.save()
+                        tasks.check_checkout_status.apply_async_on_commit((api_response.id,), countdown=60*60)
+
+                        return redirect(api_response.redirect_url)
+                    except helloasso_python.ApiException as e:
+                        messages.error(request, f"Erreur lors de l'appel API: {pformat(e)}")
+                        log_api_exception(e, api_instance.organizations_organization_slug_checkout_intents_post)
+                    
+            else:
+                messages.warning(request, "Formulaire correct, mais il n'est pas possible d'utiliser l'API en HTTP.")
+                
+        else:
+            messages.error(request, f"Saisie invalide. La somme doit être comprise entre {min_amount}€ et {max_amount}€.")
+    else:
+        form = forms.TopupForm(min_amount, max_amount, data={'amount': amount})
+
+    topup_types = [
+        Transaction.TransactionTypeChoices.LYF_TOPUP,
+        Transaction.TransactionTypeChoices.POS_TERMINAL_TOPUP,
+        Transaction.TransactionTypeChoices.CASH_TOPUP,
+    ]
+    transaction_type_cases = [
+        When(type=choice[0], then=Value(choice[1]))
+        for choice in Transaction.TransactionTypeChoices.choices
+    ]
+    helloasso_status_cases = [
+        When(status=choice[0], then=Value(choice[1]))
+        for choice in HelloAssoCheckout.HelloAssoCheckoutStatusChoices.choices
+    ]
+    transactions = Transaction.objects.filter(
+        user=request.user,
+        type__in=topup_types
+    ).annotate(
+        statusL=Value('Validé', output_field=CharField()),
+        typeL=Case(*transaction_type_cases, output_field=CharField()),
+    ).values('amount', 'typeL', 'statusL', 'created_at')
+
+    checkouts = HelloAssoCheckout.objects.filter(
+        user=request.user
+    ).annotate(
+        typeL=Value(Transaction.TransactionTypeChoices.HELLOASSO_CHECKOUT.label, output_field=CharField()),
+        statusL=Case(*helloasso_status_cases, output_field=CharField())
+    ).values('amount', 'typeL', 'statusL', 'created_at')
+
+    combined_topup_list = transactions.union(checkouts).order_by('-created_at')
+    
+    return render(request, "commande/recharge.html", context={"form": form, "min_amount": min_amount, "max_amount": max_amount, "combined_topup_list": combined_topup_list})
+
+@login_required_with_message("Authentifie toi avant d’accéder au rechargement")
+def recharge_lyf(request):
+    messages.info(request, mark_safe(f"Vous pouvez également recharger directement en ligne, en <a href='{reverse('recharge')}' class='underline'>payant par carte bancaire</a>"))
+    return render(request, "commande/recharge_lyf.html")
 
 @login_required
 def account_verification(request):
@@ -742,3 +846,27 @@ def del_order(request, order):
         messages.success(request, "Commande bien annulée.")
 
     return redirect("historique")
+
+
+@csrf_exempt
+@require_POST
+def helloasso_webhook_handler(request):
+    try:
+        body = json.loads(request.body)
+    except json.JSONDecodeError:
+        return HttpResponseBadRequest("Invalid JSON payload.")
+
+    event_type = body["eventType"]
+    data = body["data"]
+    metadata = body.get("metadata")
+
+    match event_type:
+        case "Order":
+            tasks.helloasso_order_notification.delay(data, metadata)
+        case "Payment":
+            tasks.helloasso_payment_notification.delay(data, metadata)
+        case _:
+            # Not implemented/not usefull
+            pass
+    
+    return JsonResponse({"status": "success"})

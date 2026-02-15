@@ -1,136 +1,129 @@
 {% extends "commande/base.html" %}
 {% load static %}
+{% load widget_tweaks %}
 {% block content %}
     <div class="font-montserrat content-center pt-4 px-4">
-        <p class="text-lg sm:text-xl font-montserrat py-5 text-center font-semibold">
-            Pour pouvoir passer des commandes sur le site, ton compte dois être alimenté.
-        </p>
-        <p class="text-sm sm:text-base font-montserrat pb-5 text-center font-light">
+        <h1 class="text-center text-2xl md:text-4xl text-primary md:py-16 pt-5 pb-10 px-2">
+            Rechargement de ton compte Pain'Gouin
+        </h1>
+        <form class="max-w-xl mx-auto py-10 px-2 text-lg text-center" method="post">
+            {% csrf_token %}
+            <label for="id_amount"
+                   class="block mb-2 font-medium text-gray-900 font-montserrat">Montant du rechargement :</label>
+            <div class="relative w-36 max-w-full mx-auto">
+                <div class="absolute inset-y-0 start-0 top-0 flex items-center ps-3.5 pointer-events-none">
+                    <svg class="w-4 h-4 text-gray-500 dark:text-gray-400"
+                         aria-hidden="true"
+                         xmlns="http://www.w3.org/2000/svg"
+                         fill="none"
+                         viewBox="0 0 20 16">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 2a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1M2 5h12a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1Zm8 5a2 2 0 1 1-4 0 2 2 0 0 1 4 0Z" />
+                    </svg>
+                </div>
+                {% render_field form.amount id="currency-input" class="block p-2.5 w-full z-20 ps-10 text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500" %}
+                <div class="absolute inset-y-0 end-5 top-0 pe-3.5 items-center flex font-montserrat font-semibold text-secondary">
+                    <p>€</p>
+                </div>
+            </div>
+            <span class="text-base">La somme doit être comprise entre {{ min_amount }} et {{ max_amount }} euros.</span>
+            <div class="flex flex-col items-center justify-center w-fit font-['Open_Sans',sans-serif] mx-auto mt-10">
+                <button type="submit"
+                        class="group flex items-stretch p-0 border-none bg-none rounded-lg focus:outline-none focus:ring-4 focus:ring-[#49d38a]/25 transition-all duration-300 cursor-pointer disabled:cursor-not-allowed">
+                    <div class="flex items-center justify-center bg-white border border-[#4c40cf] rounded-l-lg py-[10px] px-4 w-[62px] transition-all duration-300 group-hover:border-[#483dbe] group-focus:border-[#483dbe] group-disabled:border-[#d1d6de]">
+                        <img src="https://api.helloasso.com/v5/img/logo-ha.svg"
+                             alt="HelloAsso"
+                             class="w-full" />
+                    </div>
+                    <div class="flex items-center justify-between gap-[5px] bg-[#4c40cf] border border-[#4c40cf] rounded-r-lg py-0 px-4 text-white text-base font-extrabold transition-all duration-300 group-hover:bg-[#483dbe] group-hover:border-[#483dbe] group-focus:bg-[#483dbe] group-focus:border-[#483dbe] group-disabled:bg-[#d1d6de] group-disabled:text-[#505870] group-disabled:border-[#d1d6de]">
+                        <span>Payer avec</span>
+                        <svg width="73"
+                             height="14"
+                             viewBox="0 0 73 14"
+                             fill="currentColor"
+                             xmlns="http://www.w3.org/2000/svg">
+                            <path d="M72.9992 8.78692C72.9992 11.7371 71.242 13.6283 68.4005 13.6283C65.5964 13.6283 63.8018 11.9073 63.8018 8.74909C63.8018 5.79888 65.559 3.90771 68.4005 3.90771C71.2046 3.90771 72.9992 5.64759 72.9992 8.78692ZM67.2041 8.74909C67.2041 10.5457 67.5779 11.2265 68.4005 11.2265C69.223 11.2265 69.5969 10.5079 69.5969 8.78692C69.5969 6.99031 69.223 6.30949 68.4005 6.30949C67.5779 6.30949 67.1854 7.04705 67.2041 8.74909Z" />
+                            <path d="M62.978 5.08045L61.8003 6.89597C61.1647 6.47991 60.4356 6.25297 59.6692 6.23406C59.1084 6.23406 58.9214 6.40426 58.9214 6.65011C58.9214 6.9527 59.0149 7.08508 60.716 7.61461C62.4172 8.14413 63.3332 8.88169 63.3332 10.527C63.3332 12.3803 61.576 13.6474 59.1084 13.6474C57.5381 13.6474 56.0986 13.0801 55.1826 12.2101L56.7529 10.4514C57.3885 10.962 58.211 11.3402 59.0336 11.3402C59.6131 11.3402 59.9683 11.1511 59.9683 10.7918C59.9683 10.3568 59.7813 10.2622 58.2484 9.78945C56.5847 9.27883 55.65 8.31434 55.65 6.85814C55.65 5.23174 57.0333 3.92684 59.5383 3.92684C60.8656 3.90793 62.1555 4.36181 62.978 5.08045Z" />
+                            <path d="M54.7358 5.08045L53.5581 6.89597C52.9225 6.47991 52.1934 6.25297 51.427 6.23406C50.8662 6.23406 50.6792 6.40426 50.6792 6.65011C50.6792 6.9527 50.7727 7.08508 52.4738 7.61461C54.175 8.14413 55.091 8.88169 55.091 10.527C55.091 12.3803 53.3338 13.6474 50.8662 13.6474C49.2959 13.6474 47.8564 13.0801 46.9404 12.2101L48.5107 10.4514C49.1463 10.962 49.9689 11.3402 50.7914 11.3402C51.3709 11.3402 51.7261 11.1511 51.7261 10.7918C51.7261 10.3568 51.5391 10.2622 50.0062 9.78945C48.3238 9.27883 47.4078 8.31434 47.4078 6.85814C47.4078 5.23174 48.7911 3.92684 51.2961 3.92684C52.6234 3.90793 53.9133 4.36181 54.7358 5.08045Z" />
+                            <path d="M46.7721 11.4156L46.0991 13.5526C44.9401 13.477 44.1923 13.1555 43.6876 12.3045C43.0333 13.3068 42.0051 13.6283 40.9956 13.6283C39.201 13.6283 38.042 12.418 38.042 10.7537C38.042 8.74909 39.5375 7.65222 42.3603 7.65222H42.9959V7.42528C42.9959 6.51752 42.6968 6.27167 41.706 6.27167C40.9209 6.30949 40.1357 6.4797 39.4067 6.74446L38.6963 4.62636C39.8179 4.17248 41.0143 3.94554 42.2294 3.90771C45.0709 3.90771 46.23 5.00459 46.23 7.23616V10.3566C46.23 10.9996 46.3795 11.2643 46.7721 11.4156ZM43.0146 10.7348V9.39209H42.6594C41.7247 9.39209 41.2947 9.71359 41.2947 10.4133C41.2947 10.9239 41.5752 11.2643 42.0238 11.2643C42.4164 11.2643 42.7903 11.0563 43.0146 10.7348Z" />
+                            <path d="M37.5363 8.78692C37.5363 11.7371 35.7791 13.6283 32.9376 13.6283C30.1335 13.6283 28.3389 11.9073 28.3389 8.74909C28.3389 5.79888 30.0961 3.90771 32.9376 3.90771C35.7417 3.90771 37.5363 5.64759 37.5363 8.78692ZM31.7412 8.74909C31.7412 10.5457 32.1151 11.2265 32.9376 11.2265C33.7601 11.2265 34.134 10.5079 34.134 8.78692C34.134 6.99031 33.7601 6.30949 32.9376 6.30949C32.1151 6.30949 31.7225 7.04705 31.7412 8.74909Z" />
+                            <path d="M23.8154 10.6972V0.692948L27.1243 0.352539V10.527C27.1243 10.8296 27.2551 10.9809 27.5355 10.9809C27.6477 10.9809 27.7786 10.962 27.8907 10.9052L28.4889 13.2881C27.8907 13.4961 27.2738 13.6096 26.6569 13.5907C24.8249 13.6285 23.8154 12.5505 23.8154 10.6972Z" />
+                            <path d="M18.8057 10.6972V0.692948L22.1145 0.352539V10.527C22.1145 10.8296 22.2454 10.9809 22.5071 10.9809C22.6192 10.9809 22.7501 10.962 22.8623 10.9052L23.4418 13.2881C22.8436 13.4961 22.2267 13.6096 21.6098 13.5907C19.8151 13.6285 18.8057 12.5505 18.8057 10.6972Z" />
+                            <path d="M17.9071 9.71359H12.4859C12.6728 11.0185 13.3084 11.2454 14.2805 11.2454C14.9161 11.2454 15.533 10.9807 16.2994 10.4511L17.6454 12.2856C16.6172 13.1555 15.3087 13.6283 13.9627 13.6283C10.6912 13.6283 9.13965 11.5858 9.13965 8.78692C9.13965 6.13929 10.6352 3.90771 13.5888 3.90771C16.2247 3.90771 17.9632 5.60976 17.9632 8.63562C17.9819 8.93821 17.9445 9.39209 17.9071 9.71359ZM14.7291 7.70895C14.7105 6.80119 14.5235 6.04473 13.6823 6.04473C12.9719 6.04473 12.6167 6.46079 12.4859 7.84134H14.7291V7.70895Z" />
+                            <path d="M8.24307 6.61229V13.2692H4.93423V7.21746C4.93423 6.49882 4.7286 6.32862 4.4295 6.32862C4.07431 6.32862 3.70043 6.61229 3.30786 7.21746V13.2503H-0.000976562V0.692948L3.30786 0.352539V5.06154C4.07431 4.24834 4.82207 3.90793 5.83154 3.90793C7.32706 3.90793 8.24307 4.89133 8.24307 6.61229Z" />
+                        </svg>
+                    </div>
+                </button>
+                <div class="flex items-center justify-between gap-[5px] py-2 px-4 text-[12px] font-semibold text-[#2e2f5e]">
+                    <svg width="9"
+                         height="10"
+                         viewBox="0 0 11 12"
+                         fill="currentColor"
+                         xmlns="http://www.w3.org/2000/svg">
+                        <path d="M3.875 3V4.5H7.625V3C7.625 1.96875 6.78125 1.125 5.75 1.125C4.69531 1.125 3.875 1.96875 3.875 3ZM2.75 4.5V3C2.75 1.35938 4.08594 0 5.75 0C7.39062 0 8.75 1.35938 8.75 3V4.5H9.5C10.3203 4.5 11 5.17969 11 6V10.5C11 11.3438 10.3203 12 9.5 12H2C1.15625 12 0.5 11.3438 0.5 10.5V6C0.5 5.17969 1.15625 4.5 2 4.5H2.75ZM1.625 6V10.5C1.625 10.7109 1.78906 10.875 2 10.875H9.5C9.6875 10.875 9.875 10.7109 9.875 10.5V6C9.875 5.8125 9.6875 5.625 9.5 5.625H2C1.78906 5.625 1.625 5.8125 1.625 6Z" />
+                    </svg>
+                    <span>Paiement sécurisé</span>
+                    <div class="flex gap-1 shrink-0">
+                        <img src="https://helloassodocumentsprod.blob.core.windows.net/public-documents/bouton_payer_avec_helloasso/logo-visa.svg"
+                             alt="Visa"
+                             class="h-3" />
+                        <img src="https://helloassodocumentsprod.blob.core.windows.net/public-documents/bouton_payer_avec_helloasso/logo-mastercard.svg"
+                             alt="Mastercard"
+                             class="h-3" />
+                        <img src="https://helloassodocumentsprod.blob.core.windows.net/public-documents/bouton_payer_avec_helloasso/logo-cb.svg"
+                             alt="CB"
+                             class="h-3" />
+                        <img src="https://helloassodocumentsprod.blob.core.windows.net/public-documents/bouton_payer_avec_helloasso/logo-pci.svg"
+                             alt="PCI"
+                             class="h-3" />
+                    </div>
+                </div>
+            </div>
+            <div class="flex items-center p-4 mb-4 text-blue-800 rounded-lg bg-blue-50 dark:bg-gray-800 dark:text-blue-400"
+                 role="alert">
+                <svg class="shrink-0 inline w-4 h-4 me-3"
+                     aria-hidden="true"
+                     xmlns="http://www.w3.org/2000/svg"
+                     fill="currentColor"
+                     viewBox="0 0 20 20">
+                    <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z" />
+                </svg>
+                <span class="sr-only">Info</span>
+                <div>
+                    <span class="font-medium">Note:</span> Le modèle solidaire de HelloAsso nous permet de ne pas payer de commissions. Au moment du paiement, il te sera proposé une cotisation optionnelle à HelloAsso, que tu peux retirer.
+                </div>
+            </div>
+        </form>
+        <p class="font-montserrat pb-5 text-center font-light text-lg mx-4">
             Si tu ne souhaites plus, un jour, utiliser les services de l'association, tu as la possibilité de récupérer le solde restant sur ton compte en <a href="{% url 'contact' %}"
     class="underline hover:text-primary transition duration-100">contactant&nbsp;le&nbsp;trésorier</a>.
         </p>
-        <p class="text-lg sm:text-xl font-montserrat pt-5 text-center">Il existe deux moyens d'alimenter ton compte :</p>
     </div>
-    <div class="m-2 text-secondary">
-        <ul class="flex justify-center -mb-px mx-auto text-sm font-medium text-center items-center h-14"
-            id="default-styled-tab"
-            data-tabs-toggle="#default-styled-tab-content"
-            data-tabs-active-classes="text-white bg-secondary"
-            data-tabs-inactive-classes="text-secondary bg-white hover:bg-zinc-200"
-            role="tablist">
-            <li class="h-full" role="presentation">
-                <button class="h-full inline-flex font-montserrat items-center justify-center px-4 py-3 rounded-l-full duration-200  border-2 border-r-0 border-secondary"
-                        id="lyf-styled-tab"
-                        data-tabs-target="#styled-lyf"
-                        type="button"
-                        role="tab"
-                        aria-controls="Lyf"
-                        aria-selected="True">
-                    <p class="text-center">
-                        Rechargement par
-                        <img class="h-7 inline-block"
-                             src="{% static 'externe/Lyf - corail.svg' %}"
-                             alt="Lyf logo" />
-                    </p>
-                </button>
-            </li>
-            <li class="h-full" role="presentation">
-                <button class="h-full inline-flex font-montserrat items-center justify-center px-4 py-3 rounded-r-full duration-200  border-2 border-l-0 border-secondary"
-                        id="cb-styled-tab"
-                        data-tabs-target="#styled-cb"
-                        type="button"
-                        role="tab"
-                        aria-controls="cb"
-                        aria-selected="false">Rechargement en ligne</button>
-            </li>
-        </ul>
+    <div class="font-montserrat content-center px-4 mt-10">
+        <p class="text-base sm:text-base font-montserrat font-normal pb-5 text-center">
+            Il est également possible de <a href="{% url 'recharge-lyf' %}"
+    class="underline hover:text-primary transition duration-100">recharger ton compte via Lyf</a>.
+        </p>
     </div>
-    <div id="default-styled-tab-content"
-         class="flex items-center justify-center">
-        <div class="mx-2 max-w-6xl shadow-sm p-8 rounded-lg bg-white"
-             id="styled-lyf"
-             role="tabpanel"
-             aria-labelledby="lyf-tab">
-            <div class="grid lg:grid-cols-2  place-items-center pb-10">
-                <div class="max-w-xl order-1 lg:order-1">
-                    <h3 class="text-2xl sm:text-3xl font-bebas pb-3 lg:pb-10 text-primary">1°) Installe et configure l'application Lyf</h3>
-                    <p class="text-md sm:text-lg font-montserrat pb-5">
-                        On utilise cette application pour faire des transferts à taux faibles.
-                    </p>
-                </div>
-                <div class="order-2 lg:order-2 max-w-[500px]">
-                    <div class="grid lg:grid-cols-3 grid-cols-2 grid-rows-2 items-center">
-                        <img class="inline-block p-4 row-span-2"
-                             src="{% static 'externe/Lyf.icone.corail.png' %}"
-                             alt="logo application lyf">
-                        <a class="m-4 inline-block"
-                           href="https://play.google.com/store/apps/details?id=com.fivory.prod">
-                            <img class="w-full"
-                                 src="{% static 'externe/GetItOnGooglePlay_Badge_Web_color_French.svg' %}"
-                                 alt="Play Store badge">
-                        </a>
-                        <a class="m-4 inline-block"
-                           href="https://apps.apple.com/fr/app/id824967438">
-                            <img class="w-full"
-                                 src="{% static 'externe/Download_on_the_App_Store_Badge_FR_RGB_blk_100517.svg' %}"
-                                 alt="App Store badge">
-                        </a>
-                    </div>
-                </div>
-            </div>
-            <div class="grid lg:grid-cols-2  place-items-center pb-10">
-                <div class="order-2 lg:order-1 font-montserrat">
-                    Liens de contact :
-                    {% include "commande/contact_cards.html" %}
-                </div>
-                <div class="max-w-xl order-1 lg:order-2">
-                    <h3 class="text-2xl sm:text-3xl font-bebas pb-3 lg:pb-10 text-primary">
-                        2°) Contacte un membre du bureau de l'association
-                    </h3>
-                    <p class="text-md sm:text-lg font-montserrat pb-5">
-                        Indique-lui ton numéro de téléphone, ainsi que le montant du rechargement que tu souhaites effectuer.
-                    </p>
-                    <p class="text-md sm:text-lg font-montserrat pb-5">
-                        <b>Il vous faut alors vous coordonner</b> (à distance)
-                        <br>
-                        Il va initier un transfert Lyf : tu dois immédiatement confirmer celui-ci via l'application sur ton téléphone.
-                    </p>
-                </div>
-            </div>
-            <div class="grid lg:grid-cols-2  place-items-center pb-10">
-                <div class="max-w-xl order-1 lg:order-1">
-                    <h3 class="text-2xl sm:text-3xl font-bebas pb-3 lg:pb-10 text-primary">
-                        3°) Confirmation du transfert et ajout des fonds
-                    </h3>
-                    <p class="text-md sm:text-lg font-montserrat pb-5">
-                        Le membre contacté va te confirmer la réussite du virement, et ajouter les fonds à ton compte.
-                    </p>
-                    <p class="text-md sm:text-lg font-montserrat pb-5">
-                        Il ne te reste plus qu'à <a class="underline hover:text-primary duration-500"
-    href="{% url 'commande' %}">passer commande</a>&nbsp;!
-                    </p>
-                </div>
-                <div class="order-2 lg:order-2">
-                    <div class="flex items-center">
-                        <img src="{% static 'illustration/PainGouinGrailleKontan.webp' %}"
-                             alt="Sac PainGouin"
-                             class="mx-auto max-h-96">
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="mx-auto max-w-6xl shadow-sm p-8 rounded-lg bg-white"
-             id="styled-cb"
-             role="tabpanel"
-             aria-labelledby="cb-tab">
-            <p class="text-base text-center font-montserrat">
-                Il n'est pas encore possible de recharger son compte directement sur le site... Mais cela est prévu&nbsp;!
-                <br>
-                Si tu attends cela avec impatience, tu peux envoyer un message à Valentin GRÉGOIRE pour le motiver à s'en occuper&nbsp;😉
-            </p>
-            <img src="{% static 'illustration/PainGouinGrailleKontan.webp' %}"
-                 alt="Sac PainGouin"
-                 class="mx-auto max-h-44">
-        </div>
+    <div class="relative overflow-x-auto pb-10 pt-5 px-3">
+        <table class="text-sm text-left rtl:text-right text-secondary mx-auto">
+            <thead class="text-xs text-gray-700 uppercase bg-orangemoinsclair">
+                <tr>
+                    <th scope="col" class="px-6 py-3">Somme</th>
+                    <th scope="col" class="px-6 py-3">Type</th>
+                    <th scope="col" class="px-6 py-3">État</th>
+                    <th scope="col" class="px-6 py-3">Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for topup in combined_topup_list %}
+                    <tr class="bg-white border-b">
+                        <td class="px-6 py-4 font-medium text-secondary">{{ topup.amount }} €</td>
+                        <td class="px-6 py-4">{{ topup.typeL }}</td>
+                        <td class="px-6 py-4">{{ topup.statusL }}</td>
+                        <td class="px-6 py-4">{{ topup.created_at }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
     </div>
 {% endblock content %}

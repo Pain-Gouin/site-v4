@@ -21,6 +21,9 @@ from imagekit.processors import ResizeToFit
 
 from .utils import first_editable_day
 
+import helloasso_python
+from .helloasso import get_api_client, log_api_exception
+
 # Create your models here.
 
 
@@ -429,13 +432,142 @@ class OrderProduct(models.Model):
         verbose_name_plural = _("Produits commandés")
 
 
+class HelloAssoCheckout(models.Model):
+    class HelloAssoCheckoutStatusChoices(models.TextChoices):
+        INITIATED = "INIT", "Checkout initié"
+        PENDING = "PEND", "Checkout effectué, en attente de validation du paiement"
+        AUTHORIZED = "DONE", "Paiement valide, autorisé, et effectué"
+        CONTESTED = "CONT", "Paiement contesté par la banque"
+        REFUNDED = "REIM", "Paiement remboursé"
+        REFUSED = "REFU", "Paiement refusé par la banque"
+        OTHER = "OTHE", "Paiement dans un état incertain"
+
+    checkout_intent_id = models.PositiveIntegerField(unique=True, null=True, blank=True)
+    order_id = models.PositiveIntegerField(unique=True, null=True, blank=True)
+    payement_id = models.PositiveIntegerField(unique=True, null=True, blank=True)
+    amount = models.DecimalField(_("Somme"), max_digits=5, decimal_places=2, help_text="en euros")
+    user = models.ForeignKey(User, on_delete=models.PROTECT)
+
+    status = models.CharField(
+        choices=HelloAssoCheckoutStatusChoices,
+        max_length=4,
+        verbose_name="État du paiement",
+        default=HelloAssoCheckoutStatusChoices.INITIATED,
+    )
+
+    created_at = models.DateTimeField(default=timezone.now)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def refresh_from_api(self):
+        from .tasks import check_checkout_status
+        with transaction.atomic():
+            with get_api_client() as api_client:
+                api_instance = helloasso_python.CheckoutApi(api_client)
+                organization_slug = settings.HELLOASSO_ORG_SLUG
+                checkout_intent_id = self.checkout_intent_id
+                try:
+                    api_response = api_instance.organizations_organization_slug_checkout_intents_checkout_intent_id_get(organization_slug, checkout_intent_id)
+                    if not api_response.order:
+                        if timezone.now() - self.created_at > timezone.timedelta(minutes=45): # checkout intent can be considered cancelled
+                            self.delete() # Maybe we should verify no transactions are attached, but it is not suppose to be possible, and this would prevent deletion anyway
+                        else:
+                            self.status = HelloAssoCheckout.HelloAssoCheckoutStatusChoices.INITIATED
+                            self.save()
+                            check_checkout_status.apply_async_on_commit((self.checkout_intent_id,), countdown=60*60)
+                    else:
+                        self.parse_order(api_response.order, False)
+                        self.parse_payment(api_response.order.payments[0], False)
+                        self.update_transactions(False)
+                        self.save()
+                    return True
+
+                except helloasso_python.ApiException as e:
+                    log_api_exception(e, api_instance.organizations_organization_slug_checkout_intents_checkout_intent_id_get)
+                    return False
+
+    def update_transactions(self, save=True):
+        with transaction.atomic():
+            current_transaction_amount = (
+                self.transactions.aggregate(models.Sum("amount", default=0))["amount__sum"]
+            )
+            current_amount = self.amount if self.status == HelloAssoCheckout.HelloAssoCheckoutStatusChoices.AUTHORIZED else 0
+            diff = current_amount - current_transaction_amount
+
+            if diff:
+                new_transaction = Transaction.objects.create(
+                    user=self.user,
+                    amount=diff,
+                    type=Transaction.TransactionTypeChoices.HELLOASSO_CHECKOUT,
+                    note=self.status.label if self.status in (HelloAssoCheckout.HelloAssoCheckoutStatusChoices.AUTHORIZED, HelloAssoCheckout.HelloAssoCheckoutStatusChoices.REFUNDED, HelloAssoCheckout.HelloAssoCheckoutStatusChoices.CONTESTED) else "Régularisation d'une anomalie",
+                    initiator=self.user,
+                )
+                self.transactions.add(new_transaction)
+                if save:
+                    self.save()
+                return True
+            return False
+    
+    def parse_order(self, order: helloasso_python.HelloAssoApiV5ModelsStatisticsOrderDetail, save=True):
+        if order.checkout_intent_id and order.checkout_intent_id != self.checkout_intent_id:
+            error_msg = (
+                f"CRITICAL: Checkout Intent ID mismatch! "
+                f"Expected {self.checkout_intent_id}, but received {order.checkout_intent_id}. "
+                f"This could indicate a logic error or a spoofing attempt."
+            )
+            raise ValueError(error_msg)
+
+        if not self.order_id:
+            self.order_id = order.id
+        elif self.order_id != order.id:
+            error_msg = (
+                f"CRITICAL: Order ID mismatch! "
+                f"Expected {self.order_id}, but received {order.id}. "
+                f"This could indicate a logic error or a spoofing attempt."
+            )
+            raise ValueError(error_msg)
+
+        if save:
+            self.save()
+
+    def parse_payment(self, payment: helloasso_python.HelloAssoApiV5ModelsStatisticsOrderPayment, save=True):
+        if not self.payement_id:
+            self.payement_id = payment.id
+        elif self.payement_id != payment.id:
+            error_msg = (
+                f"CRITICAL: Payment ID mismatch! "
+                f"Expected {self.payement_id}, but received {payment.id}. "
+                f"This could indicate a logic error or a spoofing attempt."
+            )
+            raise ValueError(error_msg)
+        
+        match payment.state:
+            case helloasso_python.HelloAssoApiV5ModelsEnumsPaymentState.PENDING:
+                self.status = HelloAssoCheckout.HelloAssoCheckoutStatusChoices.PENDING
+            case helloasso_python.HelloAssoApiV5ModelsEnumsPaymentState.AUTHORIZED | helloasso_python.HelloAssoApiV5ModelsEnumsPaymentState.REFUNDING:
+                self.status = HelloAssoCheckout.HelloAssoCheckoutStatusChoices.AUTHORIZED
+            case helloasso_python.HelloAssoApiV5ModelsEnumsPaymentState.REFUSED:
+                self.status = HelloAssoCheckout.HelloAssoCheckoutStatusChoices.REFUSED
+            case helloasso_python.HelloAssoApiV5ModelsEnumsPaymentState.REFUNDED:
+                self.status = HelloAssoCheckout.HelloAssoCheckoutStatusChoices.REFUNDED
+            case helloasso_python.HelloAssoApiV5ModelsEnumsPaymentState.CONTESTED:
+                self.status = HelloAssoCheckout.HelloAssoCheckoutStatusChoices.CONTESTED
+            case _:
+                self.status = HelloAssoCheckout.HelloAssoCheckoutStatusChoices.OTHER
+
+        if save:
+            self.save()
+    
+    class Meta:
+        verbose_name = "HelloAsso Checkout"
+        ordering = ["-created_at"]
+
+
 class ImmutableQuerySet(models.QuerySet):
     def delete(self):
         raise PermissionDenied("Bulk deletion of transactions is protected.")
 
     def update(self, **kwargs):
         raise PermissionDenied("Bulk updating of transactions is protected.")
-
 
 class Transaction(models.Model):
     class TransactionTypeChoices(models.TextChoices):
@@ -444,6 +576,7 @@ class Transaction(models.Model):
         LYF_TOPUP = "LYF", "Rechargement via LYF"
         POS_TERMINAL_TOPUP = "POS", "Rechargement via TPE"
         CASH_TOPUP = "CASH", "Rechargement via Cash"
+        HELLOASSO_CHECKOUT = "HAC", "Rechargement via HelloAsso Checkout"
         OTHER = "OTHER", "Autre (à préciser !)"
 
     user = models.ForeignKey(User, on_delete=models.PROTECT, verbose_name="Utilisateur")
@@ -454,6 +587,14 @@ class Transaction(models.Model):
         blank=True,
         related_name="transactions",
         verbose_name="Commande associée",
+    )
+    helloasso_checkout = models.ForeignKey(
+        HelloAssoCheckout,
+        on_delete=models.PROTECT,
+        null=True,
+        blank=True,
+        related_name="transactions",
+        verbose_name="Rechargement associé",
     )
     amount = models.DecimalField(
         max_digits=8, decimal_places=2, verbose_name="Quantité"

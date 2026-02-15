@@ -1,4 +1,5 @@
 # authentication/forms.py
+from decimal import Decimal
 from django import forms
 from django.conf import settings
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm, SetPasswordForm
@@ -250,3 +251,10 @@ class CustomOrderProductExportForm(ExportForm):
 
 class CheckGenuineUserForm(forms.Form):
     email = forms.EmailField(validators=[WhitelistEmailValidator(whitelist=settings.VERIFIED_USER_EMAIL_DOMAINS)])
+
+class TopupForm(forms.Form):
+    amount = forms.DecimalField() # Redefined in __init__
+
+    def __init__(self, min_amount=.5, max_amount=99, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['amount'] = forms.DecimalField(min_value=min_amount, max_value=max_amount, decimal_places=2, max_digits=4)

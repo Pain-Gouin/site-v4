@@ -19,10 +19,13 @@ from django.utils.translation import gettext_lazy as _
 from email.utils import formataddr
 from datetime import time
 from import_export.formats.base_formats import XLSX, CSV, ODS
+from decimal import Decimal
 
 DELIVERY_CUTOFF_TIME = time(6, 30)
 
 GIT_COMMIT = 'Develop'
+
+PROD = False
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -44,6 +47,9 @@ ALLOWED_HOSTS = ["paingouindev.rezoleo.fr", "www.paingouindev.rezoleo.fr", "127.
 
 # Allowed verified genuine user emails
 VERIFIED_USER_EMAIL_DOMAINS = set(["centrale.centralelille.fr"])
+
+MAX_TOPUP_AMOUNT = Decimal(99.00)
+MAX_BALANCE_ALLOWED = Decimal(150.00)
 
 # Application definition
 
@@ -253,6 +259,11 @@ UNFOLD = {
                         "link": reverse_lazy("admin:commande_transaction_changelist"),
                     },
                     {
+                        "title": _("HelloAsso Checkout"),
+                        "icon": "credit_card",
+                        "link": reverse_lazy("admin:commande_helloassocheckout_changelist"),
+                    },
+                    {
                         "title": _("Logs"),
                         "icon": "contract",
                         "link": reverse_lazy("admin:admin_logentry_changelist"),
@@ -385,3 +396,21 @@ CRISPY_ALLOWED_TEMPLATE_PACKS = ["unfold_crispy"]
 
 # For django-import-export
 IMPORT_EXPORT_FORMATS = [CSV, ODS, XLSX]
+
+# Used to cache oAuth token from HelloAsso API
+CACHES = {
+    "default": {
+        "BACKEND": "django.core.cache.backends.db.DatabaseCache",
+        "LOCATION": "django_cache",
+    }
+}
+
+if PROD:
+    HELLOASSO_TOKEN_URL = 'https://api.helloasso.com/oauth2/token'
+    HELLOASSO_API_URL = 'https://api.helloasso.com/v5'
+else:
+    HELLOASSO_TOKEN_URL = 'https://api.helloasso-sandbox.com/oauth2/token'
+    HELLOASSO_API_URL = 'https://api.helloasso-sandbox.com/v5'
+HELLOASSO_CLIENT_ID = 'ahem'
+HELLOASSO_CLIENT_SECRET = 'ahem'
+HELLOASSO_ORG_SLUG = 'pain-gouin'
