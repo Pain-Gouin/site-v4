@@ -24,7 +24,7 @@ Il faut :
 - Mettre à jour la liste des personnes à contacter pour recharger son compte via Lyf. Cela se fait [ici](https://github.com/Pain-Gouin/site-v4/blob/master/commande/templates/commande/contact_cards.html), en éditant le fichier depuis l'interface web. Pour obtenir les url, récupérer l'id utilisateur depuis l'url du profil Facebook, et rajouter `https://m.me/` au début.
 - Changer le contact des administrateurs qui vont recevoir un email en cas d'erreur serveur, en modifiant la variable `ADMINS` dans le fichier `settings.docker.py` ([ici](https://github.com/Pain-Gouin/site-v4/blob/master/paingouin/settings.docker.py))
 - Déployer les changements, en poussant les modifications sur la branche de production. Pour ce faire, aller [ici](https://github.com/Pain-Gouin/site-v4/compare/prod...master), cliquer sur `Create pull request`, puis confirmer la création du pull request.
-- Mettre à jour les droits d'accès : tous le bureau doit avoir la permission _is_staff_ qui permet d'accéder au panel administrateur et gérer les produits/soldes/commandes. Les _webmaster_ doivent en plus avoir la permission "is_superuser" pour avoir accès à l'entièreté de la base de donnée et des logs (Attention ! Cela donne le pouvoir de tout casser !). (Cf. la [Documentation Technique](documentation/DocumentationTechnique.md#Permissions), dans la section `Permissions`.)
+- Mettre à jour les droits d'accès : tous le bureau doit avoir la permission _is_staff_ qui permet d'accéder au panel administrateur et gérer les produits/soldes/commandes. Les _webmaster_ doivent en plus avoir la permission "is_superuser" pour avoir accès à l'entièreté de la base de donnée et des logs (Attention ! Cela donne le pouvoir de tout casser !). (Cf. la [Documentation Technique](docs/DocumentationTechnique.md#Permissions), dans la section `Permissions`.)
 
 Il ne vous reste plus qu'à confirmer le Pull request, ce qui mettra à jour la branche `prod`. Les changements devraient alors automatiquement être mise à jour sur le site en production, après **Insérer ici la durée quand ce sera opérationnel**. (Cela n'est pas encore mise en place, il faut donc demander à un membre de Rézoléo de manuellement repull et restart le conteneur sur leurs serveurs)
 
@@ -75,7 +75,7 @@ Afin d'utiliser TailwindCSS, il faut installer NodeJS (22 au moment d'écrire ce
 
 #### Test de l'envoi d'emails
 
-Cf. la [Documentation Technique](documentation/DocumentationTechnique.md#email), dans la section `email`.
+Cf. la [Documentation Technique](docs/DocumentationTechnique.md#email), dans la section `email`.
 
 #### Démarrer le serveur local
 
@@ -129,7 +129,7 @@ python manage.py tailwind dev
 Le serveur est désormais lancé et vous n'avez qu'à cliquer sur le lien renvoyé dans la console par Django pour y accéder.
 
 > [!NOTE]
-> Pour savoir pourquoi cette commande est utilisée au lieu du traditionnel `python manage.py runserver`, rendez-vous dans la [Documentation Technique](documentation/DocumentationTechnique.md) à la section traitant de Tailwind.
+> Pour savoir pourquoi cette commande est utilisée au lieu du traditionnel `python manage.py runserver`, rendez-vous dans la [Documentation Technique](docs/DocumentationTechnique.md) à la section traitant de Tailwind.
 
 #### Créer un administrateur local sur le site
 
@@ -152,7 +152,7 @@ Le formateur **Black** est utilisé pour le code python, **djlint** pour les tem
 
 ## Déploiement
 
-Cf la [Documentation Technique](documentation/DocumentationTechnique.md)
+Cf la [Documentation Technique](docs/DocumentationTechnique.md)
 
 ## Axes d'amélioration du site
 

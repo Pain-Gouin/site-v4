@@ -69,12 +69,10 @@ Les identifiants associés aux différents mails pouvant être utilisés par le 
      ┗ 📜README.md              // fichier README...
 
 ## Structure de la base de donnée
-**N'est plus à jour !**
-TODO
 
 La base de donnée de l'application commande est représentée de la manière suivante (image ci-dessous), pour voir comment les modèles sont interprétés par Django, vous pouvez vous référer au fichier commande/models.py qui répertorie les modèles utilisés par le site.
 ![SchémaDB](SchemaDB.png)
-Ce schéma n'est pas une représentation réelle de toute la base de donnée, Django a ses propres tables et la table utilisateur dérive d'une table de base de Django. Si vous êtes curieux, vous pouvez directement voir la base de donnée via le panel PHPMyAdmin.
+Ce schéma n'est pas une représentation réelle de toute la base de donnée, Django a ses propres tables et la table utilisateur dérive d'une table de base de Django. Si vous êtes curieux, vous pouvez directement aller voir la base de donnée via le panel PHPMyAdmin.
 
 ## TailwindCSS
 

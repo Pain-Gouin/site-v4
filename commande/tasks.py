@@ -29,7 +29,6 @@ def helloasso_payment_notification(payement, metadata=None):
 def helloasso_order_notification(order, metadata=None):
     with transaction.atomic():
         if HelloAssoCheckout.objects.filter(order_id=order["id"]).exists():
-            checkout = HelloAssoCheckout.objects.get(order_id=order["id"])
             return False # Data from order is already present, prevent useless api call
         elif metadata and metadata.get("website_tracked"):
             checkout = HelloAssoCheckout.objects.get(id=metadata["HelloAssoCheckoutPK"])
