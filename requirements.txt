@@ -22,7 +22,7 @@ django-imagekit==6.0.0
 django-import-export==4.4.0
 django-mjml-template==1.0.0
 django-tailwind==4.4.2
-django-unfold==0.79.0
+django-unfold==0.80.2
 django-widget-tweaks==1.5.1
 django-yubin==2.0.6
 et_xmlfile==2.0.0
