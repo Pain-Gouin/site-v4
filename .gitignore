@@ -1,5 +1,10 @@
-# Django
-__pycache__
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
 
 # Environments (depending on chosen one by developer)
 .env
@@ -27,7 +32,17 @@ celerybeat-schedule-shm
 # Folder used in docker compose to store rabbitmq data
 rabbitmq_data
 
+# VisualStudioCode template
 .vscode/*
+!.vscode/settings.json
 !.vscode/tasks.json
+!.vscode/launch.json
 !.vscode/extensions.json
+*.code-workspace
+
+# Intellij idea
 .idea
+
+# Local History for devcontainer
+.devcontainer/bash_history
+
