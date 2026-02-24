@@ -13,7 +13,7 @@ pvenv
 
 # Settings
 .env
-compose.yaml
+**/compose.yaml
 
 # User upload folder
 media
