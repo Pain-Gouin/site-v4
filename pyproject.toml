@@ -1,0 +1,37 @@
+[project]
+name = "site-v4"
+version = "4.0.0"
+description = "Version 4 du site de l'association de vente de pain Pain'Gouin, utilisant le framework Django."
+readme = "README.md"
+license = { text = "Not open source" }
+authors = [
+  { name = "Valentin GRÉGOIRE", email = "gregoire.valentin@gmail.com" },
+  { name = "Mathis RIMBERT", email = "mathis.rimbert@centrale.centralelille.fr" },
+]
+requires-python = "==3.13.*"
+dependencies = [
+    "authlib==1.6.7",
+    "celery==5.6.2",
+    "django==5.2.11",
+    "django-crispy-forms==2.5",
+    "django-imagekit==6.0.0",
+    "django-import-export[ods,xlsx]==4.4.0",
+    "django-mjml-template==1.0.0",
+    "django-tailwind==4.4.2",
+    "django-unfold==0.79.0",
+    "django-widget-tweaks==1.5.1",
+    "django-yubin==2.0.6",
+    "gunicorn==25.0.3",
+    "helloasso-python==1.0.8",
+    "html2text==2025.4.15",
+    "mysqlclient==2.2.8",
+    "requests==2.32.5",
+    "whitenoise==6.11.0",
+]
+
+[dependency-groups]
+dev = [
+    "django-browser-reload>=1.21.0",
+    "djlint>=1.36.4",
+    "honcho>=2.0.0",
+]

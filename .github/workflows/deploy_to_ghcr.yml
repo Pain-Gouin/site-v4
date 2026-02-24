@@ -31,6 +31,15 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v6
 
+      - name: Read Python and Node versions
+        id: extract_versions
+        run: |
+          # Read file, trim whitespace/newlines, and set as output
+          PYTHON_VERSION=$(cat .python-version | xargs)
+          NODE_VERSION=$(cat .nvmrc | xargs)
+          echo "python_version=$PYTHON_VERSION" >> $GITHUB_OUTPUT
+          echo "node_version=$NODE_VERSION" >> $GITHUB_OUTPUT
+
       # Set up BuildKit Docker container builder to be able to build
       # multi-platform images and export cache
       # https://github.com/docker/setup-buildx-action
@@ -67,5 +76,7 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           build-args: |
             COMMIT_SHA=${{ github.sha }}
+            PYTHON_VERSION=${{ steps.extract_versions.outputs.python_version }}
+            NODE_MAJOR=${{ steps.extract_versions.outputs.node_version }}
           cache-from: type=gha
           cache-to: type=gha,mode=max

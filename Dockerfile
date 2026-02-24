@@ -1,65 +1,43 @@
-# Stage 1: Python build stage
-FROM python:3.12-bullseye AS builder_python
+ARG PYTHON_VERSION=3.13
+ARG APP_HOME=/app
+# wether to include dev dependencies
+ARG MINIMAL=1
 
-# Create the app directory
-RUN mkdir /app
+# Stage 1: Python and tailwind build stage
+FROM ghcr.io/astral-sh/uv:0.10-python${PYTHON_VERSION}-trixie AS builder
+
+ARG APP_HOME
+ARG NODE_MAJOR=24
+ARG MINIMAL
 
 # Set the working directory
-WORKDIR /app
+WORKDIR ${APP_HOME}
 
 # Set environment variables to optimize Python
-ENV PYTHONDONTWRITEBYTECODE=1
-ENV PYTHONUNBUFFERED=1
+ENV UV_COMPILE_BYTECODE=1 \
+    UV_LINK_MODE=copy \
+    UV_PYTHON_DOWNLOADS=0 \
+    UV_NO_DEV=${MINIMAL} \
+    MINIMAL=${MINIMAL}
 
-# Upgrade pip and install dependencies
-RUN pip install --upgrade pip 
+# Requirements are installed here to ensure they will be cached.
+RUN --mount=type=cache,target=/root/.cache/uv \
+    --mount=type=bind,source=uv.lock,target=uv.lock \
+    --mount=type=bind,source=pyproject.toml,target=pyproject.toml \
+    uv sync --locked --no-install-project
 
-# Copy the requirements file first (better caching)
-COPY requirements.txt /app/
+# Source the python env
+ENV PATH="${APP_HOME}/.venv/bin:$PATH"
 
-# Install Python dependencies
-RUN pip install --no-cache-dir -r requirements.txt
-
-# Stage 2: Tailwind build stage
-FROM python:3.12-slim-bullseye AS builder_tailwind
-
-# Create a non-privileged user that the app will run under.
-# See https://docs.docker.com/go/dockerfile-user-best-practices/
-ARG UID=10001
-RUN adduser \
-  --disabled-password \
-  --gecos "" \
-  --home "/home/appuser" \
-  --shell "/sbin/nologin" \
-  --uid "${UID}" \
-  appuser && \
-  mkdir /app && \
-  chown -R appuser /app
-
-# Set the working directory
-WORKDIR /app
-
-# Necessary for django-tailwind python package, as well as for mySQL package
-RUN apt-get update && apt-get install -y libmariadb3 curl \
-  && mkdir -p /etc/apt/keyrings \
-  && curl -fsSL https://deb.nodesource.com/setup_22.x | bash - \
+# Necessary for django-tailwind python package
+RUN mkdir -p /etc/apt/keyrings \
+  && curl -fsSL https://deb.nodesource.com/setup_${NODE_MAJOR}.x | bash - \
   && apt-get install nodejs -y \
   && rm -rf /var/lib/apt/lists/* /usr/share/doc /usr/share/man \
   && apt-get clean
 
 # Copy application code
-COPY --chown=appuser:appuser . .
-
-# Copy the Python dependencies from the python builder stage
-COPY --from=builder_python /usr/local/lib/python3.12/site-packages/ /usr/local/lib/python3.12/site-packages/
-COPY --from=builder_python /usr/local/bin/ /usr/local/bin/
-
-# Set environment variables to optimize Python
-ENV PYTHONDONTWRITEBYTECODE=1
-ENV PYTHONUNBUFFERED=1
-
-# Switch to non-root user
-USER appuser
+COPY . .
 
 # Set the correct settings file
 RUN mv paingouin/settings.docker.py paingouin/settings.py
@@ -71,11 +49,12 @@ RUN python manage.py tailwind build
 # Remove development files that are not needed anymore to save space
 RUN rm -rf theme/static_src
 
-# Stage 3: Production stage
-FROM python:3.12-slim-bullseye
+# Stage 2: Production stage
+FROM python:${PYTHON_VERSION}-slim-trixie
 
-ARG COMMIT_SHA 
-ENV GIT_COMMIT_SHA=$COMMIT_SHA
+ARG APP_HOME 
+ARG COMMIT_SHA \
+    MINIMAL
 
 # Create a non-privileged user that the app will run under.
 # See https://docs.docker.com/go/dockerfile-user-best-practices/
@@ -88,30 +67,32 @@ RUN adduser \
   --no-create-home \
   --uid "${UID}" \
   appuser && \
-  mkdir /app && \
-  chown -R appuser /app
+  mkdir ${APP_HOME} && \
+  chown -R appuser ${APP_HOME}
 
 # Set the working directory
-WORKDIR /app
+WORKDIR ${APP_HOME}
 
-# Necessary at runtime for mysqlclient python package, and django-tailwind python package
+# Necessary at runtime for mysqlclient python package
 RUN apt-get update && apt-get install -y libmariadb3 \
   && rm -rf /var/lib/apt/lists/* /usr/share/doc /usr/share/man \
   && apt-get clean
-
-# Copy the Python dependencies from the python builder stage
-COPY --from=builder_python /usr/local/lib/python3.12/site-packages/ /usr/local/lib/python3.12/site-packages/
-COPY --from=builder_python /usr/local/bin/ /usr/local/bin/
 
 # Set environment variables to optimize Python
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 
 # Copy application code
-COPY --from=builder_tailwind --chown=appuser:appuser /app/ .
+COPY --from=builder --chown=appuser:appuser ${APP_HOME}/ .
 
 # Switch to non-root user
 USER appuser
+
+# Source the python env
+ENV PATH="/app/.venv/bin:$PATH"
+
+ENV GIT_COMMIT_SHA=$COMMIT_SHA \
+    MINIMAL=$MINIMAL
 
 # Generate static files
 RUN python manage.py collectstatic --noinput
