@@ -12,7 +12,7 @@ wheels/
 pvenv
 
 # Settings
-paingouin/settings.py
+.env
 compose.yaml
 
 # User upload folder

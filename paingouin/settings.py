@@ -10,10 +10,10 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
-from django.templatetags.static import static
-from pathlib import Path
+import environ # using django-environ for env variables: https://django-environ.readthedocs.io/
 import os
 
+from django.templatetags.static import static
 from django.urls import reverse_lazy
 from django.utils.translation import gettext_lazy as _
 from email.utils import formataddr
@@ -21,42 +21,39 @@ from datetime import time
 from import_export.formats.base_formats import XLSX, CSV, ODS
 from decimal import Decimal
 
+env = environ.Env()
+
+# Set the project base directory
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+# Take environment variables from .env file
+environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
+
+DEBUG = env('DEBUG', bool, False)
+
 DELIVERY_CUTOFF_TIME = time(6, 30)
 
-GIT_COMMIT = os.environ.get('GIT_COMMIT_SHA', 'Develop')[:7]
+GIT_COMMIT = env('GIT_COMMIT_SHA', default='Develop')[:7]
 
-def str_to_bool(s):
-    return str(s).lower() in ["true", "1", "yes"]
+PROD = env("PROD", default=True)
 
-PROD = str_to_bool(os.getenv("PROD", "0"))
-
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
-BASE_DIR = Path(__file__).resolve().parent.parent
-
-
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
-
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get(
+SECRET_KEY = env(
     "DJANGO_SECRET_KEY",
-    "django-insecure-=5sf8@fhdxzr8(c!%-5xx1!5x6x07$%vc^0rr&$4ljgh&v5!w%",
+    default="django-insecure-=5sf8@fhdxzr8(c!%-5xx1!5x6x07$%vc^0rr&$4ljgh&v5!w%",
 )
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = str_to_bool(os.getenv("DEBUG", "0"))
-MINIMAL = str_to_bool(os.getenv("MINIMAL", "0")) # Wether only minimal dependencies for prod were included
+MINIMAL = env("MINIMAL", bool, True) # Wether only minimal dependencies for prod were included
 
-ALLOWED_HOSTS = os.environ.get(
-    "DJANGO_ALLOWED_HOSTS", "paingouin.rezoleo.fr,www.paingouin.rezoleo.fr"
-).split(",")
+ALLOWED_HOSTS = env("DJANGO_ALLOWED_HOSTS", list, ["paingouin.rezoleo.fr","www.paingouin.rezoleo.fr"])
 
-CSRF_TRUSTED_ORIGINS = os.environ.get(
-    "DJANGO_CSRF_TRUSTED_ORIGINS", "https://paingouin.rezoleo.fr"
-).split(",")
+CSRF_TRUSTED_ORIGINS = env(
+    "DJANGO_CSRF_TRUSTED_ORIGINS",
+    list,
+    ["https://paingouin.rezoleo.fr"]
+)
 
 # HTTPS Enforcing
-if str_to_bool(os.getenv("ENFORCE_HTTPS", "1")):
+if env("ENFORCE_HTTPS", bool, True):
     SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
     SECURE_SSL_REDIRECT = True
     SESSION_COOKIE_SECURE = True
@@ -64,7 +61,6 @@ if str_to_bool(os.getenv("ENFORCE_HTTPS", "1")):
 
 # Admins will reveive an email everytime a server error occurs
 ADMINS = [("vale", "margerite.tonnere@gmail.com")]
-SERVER_EMAIL = "admin." + os.getenv("EMAIL_HOST_USER", "noreply@paingouin.rezoleo.fr")
 
 # Allowed verified genuine user emails
 VERIFIED_USER_EMAIL_DOMAINS = set(["centrale.centralelille.fr"])
@@ -109,7 +105,9 @@ MIDDLEWARE = [
 
 if DEBUG and not MINIMAL:
     # Add django_browser_reload only in DEBUG mode
-    INSTALLED_APPS += ["django_browser_reload"]
+    INSTALLED_APPS += ["django_browser_reload",       
+        "django_watchfiles",
+    ]
     MIDDLEWARE += [
         "django_browser_reload.middleware.BrowserReloadMiddleware",
     ]
@@ -119,7 +117,7 @@ ROOT_URLCONF = "paingouin.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [BASE_DIR / "templates"],
+        "DIRS": [os.path.join(BASE_DIR, "templates")],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -141,12 +139,12 @@ WSGI_APPLICATION = "paingouin.wsgi.application"
 
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.{}".format(os.getenv("DATABASE_ENGINE", "mysql")),
-        "NAME": os.getenv("DATABASE_NAME", "paingouin"),
-        "HOST": os.getenv("DATABASE_HOST", "mysql.rezoleo.fr"),
-        "PORT": os.getenv("DATABASE_PORT", "3306"),
-        "USER": os.getenv("DATABASE_USERNAME", "paingouin"),
-        "PASSWORD": os.getenv("DATABASE_PASSWORD", "***REMOVED***"),
+        "ENGINE": "django.db.backends.mysql",
+        "NAME": env("DATABASE_NAME", default="paingouin"),
+        "HOST": env("DATABASE_HOST", default="mysql.rezoleo.fr"),
+        "PORT": env("DATABASE_PORT", default="3306"),
+        "USER": env("DATABASE_USERNAME", default="paingouin"),
+        "PASSWORD": env("DATABASE_PASSWORD", default=""),
         "OPTIONS": {
             "init_command": "SET foreign_key_checks = 0;",
         },
@@ -207,8 +205,6 @@ INTERNAL_IPS = [
     "127.0.0.1",
 ]
 
-STATIC_URL = "static/"
-
 AUTH_USER_MODEL = "commande.User"
 
 LOGIN_REDIRECT_URL = "/"
@@ -219,17 +215,18 @@ MEDIA_ROOT = os.path.join(BASE_DIR, "media").replace("\\", "/")
 
 EMAIL_BACKEND = "django_yubin.backends.QueuedEmailBackend"
 MAILER_USE_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
-EMAIL_USE_TLS = str_to_bool(os.getenv("EMAIL_USE_TLS", "0"))
-EMAIL_USE_SSL = str_to_bool(os.getenv("EMAIL_USE_SSL", "0"))
-EMAIL_HOST = os.getenv("EMAIL_HOST", "smtp.rezoleo.fr")
-EMAIL_PORT = int(os.getenv("EMAIL_PORT", "69"))
+EMAIL_USE_TLS = env("EMAIL_USE_TLS", bool, True)
+EMAIL_USE_SSL = env("EMAIL_USE_SSL", bool, True)
+EMAIL_HOST = env("EMAIL_HOST", default="smtp.rezoleo.fr")
+EMAIL_PORT = env("EMAIL_PORT", int, 1025)
 EMAIL_HOST_USER = formataddr(
     (
         "L'équipe Pain'Gouin",
-        os.getenv("EMAIL_HOST_USER", "noreply@paingouin.rezoleo.fr"),
+        env("EMAIL_HOST_USER", default="noreply@paingouin.rezoleo.fr"),
     )
 )
-EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD", "42")
+EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD", default="")
+SERVER_EMAIL = "admin." + env("EMAIL_HOST_USER", default="noreply@paingouin.rezoleo.fr") # Used for admin emails
 
 UNFOLD = {
     "SITE_TITLE": "Panel administrateur de Pain'Gouin",
@@ -413,15 +410,15 @@ STORAGES = {
 
 CELERY_BROKER_URL = (
     "amqp://"
-    + os.getenv("RABBITMQ_USER", "paingouin")
+    + env("RABBITMQ_USER", str, "paingouin")
     + ":"
-    + os.getenv("RABBITMQ_PASS", "xGmyRq8J5CSUT0fgD3m9iGgVs")
+    + env("RABBITMQ_PASS", str, "xGmyRq8J5CSUT0fgD3m9iGgVs")
     + "@"
-    + os.getenv("RABBITMQ_HOST", "rabbitmq")
+    + env("RABBITMQ_HOST", str, "rabbitmq")
     + ":"
-    + os.getenv("RABBITMQ_PORT", "5672")
+    + env("RABBITMQ_PORT", str, "5672")
     + "/"
-    + os.getenv("RABBITMQ_VHOST", "paingouinvhost")
+    + env("RABBITMQ_VHOST", str, "paingouinvhost")
 )
 
 CRISPY_TEMPLATE_PACK = "unfold_crispy"
@@ -445,6 +442,6 @@ if PROD:
 else:
     HELLOASSO_TOKEN_URL = 'https://api.helloasso-sandbox.com/oauth2/token'
     HELLOASSO_API_URL = 'https://api.helloasso-sandbox.com/v5'
-HELLOASSO_CLIENT_ID = os.getenv("HELLOASSO_CLIENT_ID", "")
-HELLOASSO_CLIENT_SECRET = os.getenv("HELLOASSO_CLIENT_SECRET", "")
-HELLOASSO_ORG_SLUG = os.getenv("HELLOASSO_ORG_SLUG", "pain-gouin")
+HELLOASSO_CLIENT_ID = env("HELLOASSO_CLIENT_ID", str, "")
+HELLOASSO_CLIENT_SECRET = env("HELLOASSO_CLIENT_SECRET", str, "")
+HELLOASSO_ORG_SLUG = env("HELLOASSO_ORG_SLUG", str, "pain-gouin")

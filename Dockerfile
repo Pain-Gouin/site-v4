@@ -39,9 +39,6 @@ RUN mkdir -p /etc/apt/keyrings \
 # Copy application code
 COPY . .
 
-# Set the correct settings file
-RUN mv paingouin/settings.docker.py paingouin/settings.py
-
 # Install and build tailwind
 RUN python manage.py tailwind install --no-package-lock
 RUN python manage.py tailwind build

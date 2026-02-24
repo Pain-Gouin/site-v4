@@ -26,6 +26,7 @@ pvenv
 **/charts
 **/docker-compose*
 **/compose.y*ml
+**/compose.**.y*ml
 **/Dockerfile*
 **/node_modules
 **/npm-debug.log
@@ -37,7 +38,6 @@ README.md
 README.Docker.md
 documentation/*
 media/
-paingouin/settings.py
 compose.yaml
 media
 assets
