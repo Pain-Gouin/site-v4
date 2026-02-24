@@ -16,7 +16,7 @@ services:
       DATABASE_NAME: paingouin
       DATABASE_USERNAME: root
       DATABASE_PASSWORD: mysql
-      DATABASE_HOST: 172.18.0.1
+      DATABASE_HOST: db
       DATABASE_PORT: 3306
       EMAIL_USE_TLS: False # for mailpit
       EMAIL_USE_SSL: False # for mailpit
@@ -34,7 +34,7 @@ services:
       HELLOASSO_ORG_SLUG: pain-gouin
     depends_on:
       - rabbitmq
-      - mailpit
+      - db
 
   celeryworker:
     <<: *django
@@ -43,7 +43,7 @@ services:
     entrypoint: celery -A paingouin worker --loglevel=INFO -B --concurrency=2
     depends_on:
       - rabbitmq
-      - mailpit
+      - db
 
   # brocker like redis, for celery
   rabbitmq:
