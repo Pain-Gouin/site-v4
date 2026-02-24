@@ -102,3 +102,5 @@ EXPOSE 8000
 
 RUN ["chmod", "+x", "docker-entrypoint.sh"]
 ENTRYPOINT ["./docker-entrypoint.sh"]
+
+LABEL org.opencontainers.image.description="Minimal django container for the PainGouin website"
