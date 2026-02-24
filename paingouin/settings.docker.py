@@ -45,6 +45,7 @@ SECRET_KEY = os.environ.get(
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = str_to_bool(os.getenv("DEBUG", "0"))
+MINIMAL = str_to_bool(os.getenv("MINIMAL", "0")) # Wether only minimal dependencies for prod were included
 
 ALLOWED_HOSTS = os.environ.get(
     "DJANGO_ALLOWED_HOSTS", "paingouin.rezoleo.fr,www.paingouin.rezoleo.fr"
@@ -94,9 +95,6 @@ INSTALLED_APPS = [
     "theme",
     "commande",
 ]
-if DEBUG:
-    # Add django_browser_reload only in DEBUG mode
-    INSTALLED_APPS += ["django_browser_reload"]
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
@@ -108,8 +106,10 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
-if DEBUG:
-    # Add django_browser_reload middleware only in DEBUG mode
+
+if DEBUG and not MINIMAL:
+    # Add django_browser_reload only in DEBUG mode
+    INSTALLED_APPS += ["django_browser_reload"]
     MIDDLEWARE += [
         "django_browser_reload.middleware.BrowserReloadMiddleware",
     ]
