@@ -21,7 +21,7 @@ dependencies = [
     "django-unfold==0.79.0",
     "django-widget-tweaks==1.5.1",
     "django-yubin==2.0.6",
-    "gunicorn==25.0.3",
+    "gunicorn==25.1.0",
     "helloasso-python==1.0.8",
     "html2text==2025.4.15",
     "mysqlclient==2.2.8",
