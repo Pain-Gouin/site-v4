@@ -49,7 +49,7 @@ RUN rm -rf theme/static_src
 # Stage 2: Production stage
 FROM python:${PYTHON_VERSION}-slim-trixie
 
-ARG APP_HOME 
+ARG APP_HOME
 ARG COMMIT_SHA \
     MINIMAL
 

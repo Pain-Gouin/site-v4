@@ -40,7 +40,7 @@
   },
   "remoteUser": "vscode",
   "workspaceFolder": "/app",
-  // This command creates the venv using the specific version uv just installed
+  // Those commands setup the dev env.
   "postCreateCommand": "cp -u .env.dist .env && uv sync && pre-commit install && uv run manage.py migrate && uv run manage.py createcachetable",
   "forwardPorts": [
     8000
