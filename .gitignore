@@ -5,6 +5,7 @@ build/
 dist/
 wheels/
 *.egg-info
+.ruff_cache
 
 # Environments (depending on chosen one by developer)
 .env
