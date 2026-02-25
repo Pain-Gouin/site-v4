@@ -20,12 +20,12 @@ from unfold.widgets import (
     UnfoldBooleanSwitchWidget,
 )
 
-from commande.utils import (
+from commande.utils.utils import (
     SendMailVerification,
     WhitelistEmailValidator,
     first_editable_day,
 )
-from commande.widgets import DateRangeField, MultiDateField
+from commande.utils.widgets import DateRangeField, MultiDateField
 
 from .models import Delivery
 

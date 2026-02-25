@@ -18,8 +18,8 @@ from django.utils.translation import gettext_lazy as _
 from imagekit.models import ImageSpecField
 from imagekit.processors import ResizeToFit
 
-from .helloasso import get_api_client, log_api_exception
-from .utils import first_editable_day
+from .utils.helloasso import get_api_client, log_api_exception
+from .utils.utils import first_editable_day
 
 # Create your models here.
 

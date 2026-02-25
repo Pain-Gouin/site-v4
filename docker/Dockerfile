@@ -97,7 +97,7 @@ RUN python manage.py collectstatic --noinput
 # Expose the application port
 EXPOSE 8000
 
-RUN ["chmod", "+x", "docker-entrypoint.sh"]
-ENTRYPOINT ["./docker-entrypoint.sh"]
+RUN ["chmod", "+x", "docker/docker-entrypoint.sh"]
+ENTRYPOINT ["docker/docker-entrypoint.sh"]
 
 LABEL org.opencontainers.image.description="Minimal django container for the PainGouin website"

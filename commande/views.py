@@ -28,10 +28,9 @@ from django.utils.safestring import mark_safe
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 
-from commande.tokens import VerifiedUserTokenGenerator
+from commande.utils.tokens import VerifiedUserTokenGenerator
 
 from . import forms, tasks
-from .helloasso import get_api_client, log_api_exception
 from .models import (
     Delivery,
     HelloAssoCheckout,
@@ -41,7 +40,8 @@ from .models import (
     Transaction,
     User,
 )
-from .utils import (
+from .utils.helloasso import get_api_client, log_api_exception
+from .utils.utils import (
     PrecreateUserFunction,
     SendMailVerification,
     SendPrecreationMailFunction,

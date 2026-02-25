@@ -44,7 +44,11 @@ from .models import (
     Transaction,
     User,
 )
-from .utils import PrecreateUserFunction, PrecreateUsersFunction, append_unique_in_order
+from .utils.utils import (
+    PrecreateUserFunction,
+    PrecreateUsersFunction,
+    append_unique_in_order,
+)
 
 
 class CustomModelAdmin(ModelAdmin):

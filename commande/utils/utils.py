@@ -103,7 +103,7 @@ def first_editable_day():
 
 
 def SendMailVerification(user, new_email, request):
-    from .models import User
+    from ..models import User
 
     # Temporarily set the email to generate the token
     current_email = user.email
@@ -158,7 +158,7 @@ def PrecreateUsersFunction(users, request):
 
 
 def SendPrecreationMailsFunction(users, request):
-    from .models import User
+    from ..models import User
 
     # Send pre-creation emails
     emails = []
