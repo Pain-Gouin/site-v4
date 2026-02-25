@@ -8,8 +8,6 @@ services:
       context: ../
       dockerfile: docker/Dockerfile.dev
     container_name: paingouin_dev_django
-    ports:
-      - 8000:8000 # app port
     volumes:
       - ../:/app/
     depends_on:
