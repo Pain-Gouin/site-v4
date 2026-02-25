@@ -37,7 +37,7 @@ services:
       - "8025:8025"
 
   db:
-    image: mariadb:12.0
+    image: mariadb:12.2
     container_name: paingouin_dev_mariadb
     environment:
       MYSQL_ROOT_PASSWORD: mysql
