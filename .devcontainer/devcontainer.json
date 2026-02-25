@@ -1,0 +1,44 @@
+// For format details, see https://containers.dev/implementors/json_reference/
+{
+  "name": "PainGouin Dev",
+  "dockerComposeFile": [
+    "../docker/compose.dev.yaml"
+  ],
+  "service": "django",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        // python
+        "ms-python.python",
+        "ms-python.vscode-pylance",
+        "charliermarsh.ruff",
+        // django
+        "batisteo.vscode-django",
+        "bradlc.vscode-tailwindcss"
+      ],
+      "settings": {
+        "editor.formatOnSave": true,
+        "[python]": {
+          "analysis.autoImportCompletions": true,
+          "analysis.typeCheckingMode": "basic",
+          "defaultInterpreterPath": "/app/.venv/bin/python",
+          "editor.codeActionsOnSave": {
+            "source.organizeImports": "always"
+          },
+          "editor.defaultFormatter": "charliermarsh.ruff",
+          "languageServer": "Pylance",
+          "linting.enabled": true,
+          "linting.mypyEnabled": true,
+          "linting.mypyPath": "/app/.venv/bin/mypy"
+        }
+      }
+    }
+  },
+  "remoteUser": "vscode",
+  "workspaceFolder": "/app",
+  // This command creates the venv using the specific version uv just installed
+  "postCreateCommand": "cp -u .env.dist .env && uv sync",
+  "forwardPorts": [
+    8000
+  ]
+}
