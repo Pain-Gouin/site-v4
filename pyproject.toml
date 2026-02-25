@@ -93,9 +93,7 @@ select = [
 ignore = [
     "S101", # Use of assert detected https://docs.astral.sh/ruff/rules/assert/
     "RUF012", # Mutable class attributes should be annotated with `typing.ClassVar`
-    # of types for comparison.
-    # Deactivated because it can make the code slow:
-    # https://github.com/astral-sh/ruff/issues/7871
+    "COM812", # https://docs.astral.sh/ruff/rules/missing-trailing-comma/#formatter-compatibility
 ]
 
 [project]

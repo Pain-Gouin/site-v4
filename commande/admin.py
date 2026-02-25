@@ -60,12 +60,12 @@ class CustomModelAdmin(ModelAdmin):
         None  # Fields that staff won't be able to see in the creation page
     )
     STAFF_CAN_CREATE = None  # Whether staff can create a new object. If not set uses the default permissions using group permissions.
-    sorted_fields: list[str] = (
-        []
-    )  # Sort order of fields (fields not specified will be shown after them)
-    additional_fields: list[str] = (
-        []
-    )  # Fields that would not otherwise be shown to superusers because they are not direct fields of the model
+    sorted_fields: list[
+        str
+    ] = []  # Sort order of fields (fields not specified will be shown after them)
+    additional_fields: list[
+        str
+    ] = []  # Fields that would not otherwise be shown to superusers because they are not direct fields of the model
     compressed_fields = True  # For Django Unfold display style
     warn_unsaved_form = True
     list_filter_submit = True
@@ -127,9 +127,9 @@ class CustomModelAdmin(ModelAdmin):
         """
         # Superusers can edit anything
         if request.user.is_superuser:
-            return list(super().get_readonly_fields(request, obj)) + [
-                "id"
-            ]  # Else we get an error, because we are showing it but the field cannot be edited.
+            return (
+                list(super().get_readonly_fields(request, obj)) + ["id"]
+            )  # Else we get an error, because we are showing it but the field cannot be edited.
 
         # Staff (is_staff=True but not superuser)
         if (self.STAFF_EDITABLE_FIELDS is not None) and request.user.is_staff:
@@ -490,6 +490,7 @@ class TransactionAdmin(CustomModelAdmin):
         Transaction.TransactionTypeChoices.CASH_TOPUP,
         Transaction.TransactionTypeChoices.OTHER,
     ]
+
     # To limit the manual types allowed when creating a transaction (only UI enforcement)
     def formfield_for_choice_field(self, db_field, request, **kwargs):
         if db_field.name == "type":
@@ -506,17 +507,19 @@ class TransactionAdmin(CustomModelAdmin):
     def get_form(self, request, obj=None, **kwargs):
         form = super().get_form(request, obj, **kwargs)
         if request.user.is_superuser:
-            form.base_fields['initiator'].initial = request.user.id
+            form.base_fields["initiator"].initial = request.user.id
         return form
 
     def save_model(self, request, obj, form, change):
         # To inject the initiator when creating a new transaction (Actual enforcement, even superusers)
         if not obj.pk:  # Only set on creation
             obj.initiator = request.user
-        
+
         if obj.type not in self.allowed_codes:
-            raise PermissionDenied("You cannot manually create this type of transaction.")
-        
+            raise PermissionDenied(
+                "You cannot manually create this type of transaction."
+            )
+
         super().save_model(request, obj, form, change)
 
 
@@ -546,9 +549,17 @@ class DeliveryAdmin(CustomModelAdmin):
     )
     STAFF_CAN_CREATE = True
     STAFF_CREATION_HIDDEN_FIELDS = ["is_active"]
-    actions = ["cancel_deliveries_action", "uncancel_deliveries_action", "activate_deliveries_action"]
+    actions = [
+        "cancel_deliveries_action",
+        "uncancel_deliveries_action",
+        "activate_deliveries_action",
+    ]
     actions_list = ["bulk_edit_action"]
-    actions_row = ["cancel_delivery_action_row", "uncancel_delivery_action_row", "activate_delivery_action_row"]
+    actions_row = [
+        "cancel_delivery_action_row",
+        "uncancel_delivery_action_row",
+        "activate_delivery_action_row",
+    ]
     actions_detail = actions_row
     inlines = [OrderInline]
 
@@ -579,23 +590,37 @@ class DeliveryAdmin(CustomModelAdmin):
             "Réactiver les dates (cette opération n'impacte pas les commandes déjà annulées)"
         )
     )
-    def activate_deliveries_action(self, request: HttpRequest, queryset: QuerySet, uncancel=False):
+    def activate_deliveries_action(
+        self, request: HttpRequest, queryset: QuerySet, uncancel=False
+    ):
         n = 0
         uncanceled_n = 0
         for delivery in queryset:
-            cn, cuncanceled = self.activate_delivery_action_row(request, delivery.id, uncancel, False)
+            cn, cuncanceled = self.activate_delivery_action_row(
+                request, delivery.id, uncancel, False
+            )
             n += cn
             uncanceled_n += cuncanceled
         tot = len(queryset)
         if n == tot:
             messages.success(
                 request,
-                f"{n} livraison(s) bien réactivée(s)" + (f" et {uncanceled_n} commande(s) désannulée(s)." if uncancel else " (cette opération n'impacte pas les commandes déjà annulées)."),
+                f"{n} livraison(s) bien réactivée(s)"
+                + (
+                    f" et {uncanceled_n} commande(s) désannulée(s)."
+                    if uncancel
+                    else " (cette opération n'impacte pas les commandes déjà annulées)."
+                ),
             )
         elif n > 0:
             messages.warning(
                 request,
-                f"{n}/{tot} livraison(s) réactivée(s)" + (f" et {uncanceled_n} commande(s) désannulée(s)." if uncancel else " (cette opération n'impacte pas les commandes déjà annulées)."),
+                f"{n}/{tot} livraison(s) réactivée(s)"
+                + (
+                    f" et {uncanceled_n} commande(s) désannulée(s)."
+                    if uncancel
+                    else " (cette opération n'impacte pas les commandes déjà annulées)."
+                ),
             )
         else:
             messages.error(
@@ -607,7 +632,9 @@ class DeliveryAdmin(CustomModelAdmin):
         variant=ActionVariant.DANGER,
         permissions=["cancel_delivery_action_row"],
     )
-    def cancel_delivery_action_row(self, request: HttpRequest, object_id: int, alone=True):
+    def cancel_delivery_action_row(
+        self, request: HttpRequest, object_id: int, alone=True
+    ):
         with transaction.atomic():
             deliv = Delivery.objects.get(id=object_id)
             if deliv.deactivate(request):
@@ -641,7 +668,9 @@ class DeliveryAdmin(CustomModelAdmin):
         variant=ActionVariant.SUCCESS,
         permissions=["activate_delivery_action_row"],
     )
-    def uncancel_delivery_action_row(self, request: HttpRequest, object_id: int, alone=True):
+    def uncancel_delivery_action_row(
+        self, request: HttpRequest, object_id: int, alone=True
+    ):
         return self.activate_delivery_action_row(request, object_id, True)
 
     @action(
@@ -651,7 +680,9 @@ class DeliveryAdmin(CustomModelAdmin):
         variant=ActionVariant.SUCCESS,
         permissions=["activate_delivery_action_row"],
     )
-    def activate_delivery_action_row(self, request: HttpRequest, object_id: int, uncancel=False, alone=True):
+    def activate_delivery_action_row(
+        self, request: HttpRequest, object_id: int, uncancel=False, alone=True
+    ):
         deliv = Delivery.objects.get(id=object_id)
         if not deliv.is_active:
             with transaction.atomic():
@@ -668,14 +699,23 @@ class DeliveryAdmin(CustomModelAdmin):
                     for order in deliv.order_set.all():
                         if not order.is_cancelled:
                             for orderproduct in order.orderproduct_set.all():
-                                orderproduct.delivery_status = OrderProduct.OrderProductStatusChoices.VALID
+                                orderproduct.delivery_status = (
+                                    OrderProduct.OrderProductStatusChoices.VALID
+                                )
                                 orderproduct.save()
                                 uncanceled += 1
-                            order.update_transactions(request, save=True, reason="Désannulation")
+                            order.update_transactions(
+                                request, save=True, reason="Désannulation"
+                            )
             if alone:
                 messages.success(
                     request,
-                    "Livraison réactivée" + (f" et {uncanceled} commande(s) désannulée(s)." if uncancel else " (cette opération n'impacte pas les commandes déjà annulées)."),
+                    "Livraison réactivée"
+                    + (
+                        f" et {uncanceled} commande(s) désannulée(s)."
+                        if uncancel
+                        else " (cette opération n'impacte pas les commandes déjà annulées)."
+                    ),
                 )
             else:
                 return 1, uncanceled
@@ -757,12 +797,12 @@ class DeliveryAdmin(CustomModelAdmin):
 
             messages.success(
                 request,
-                f"{len(succesful_creation)+len(succesful_activation)} dates ont bien été créées/activées (cette opération n'impacte pas les commandes déjà annulées), et {len(succesful_deactivation)+succesful_deactivation_e} dates ont bien été désactivées.",
+                f"{len(succesful_creation) + len(succesful_activation)} dates ont bien été créées/activées (cette opération n'impacte pas les commandes déjà annulées), et {len(succesful_deactivation) + succesful_deactivation_e} dates ont bien été désactivées.",
             )
             if len(failed) > 0:
                 messages.error(
                     request,
-                    f"{len(failed)} dates n'ont pas été désactivés, car auraient nécessité d'annuler des commandes clients {*[deliv.date.strftime("%d/%m/%y") for deliv in failed],}.",
+                    f"{len(failed)} dates n'ont pas été désactivés, car auraient nécessité d'annuler des commandes clients {(*[deliv.date.strftime('%d/%m/%y') for deliv in failed],)}.",
                 )
             else:
                 return redirect(reverse_lazy("admin:commande_delivery_changelist"))
@@ -817,20 +857,15 @@ class HelloAssoCheckoutAdmin(CustomModelAdmin):
             request.headers.get("referer")
             or reverse_lazy("admin:commande_helloassocheckout_changelist")
         )
-    
+
     @admin.action(
-        description=_(
-            "Rafraichir les données (attention au rate limit de l'API !)"
-        )
+        description=_("Rafraichir les données (attention au rate limit de l'API !)")
     )
     def refresh_data_action(self, request: HttpRequest, queryset: QuerySet):
         for checkout in queryset:
             checkout.refresh_from_api()
         tot = len(queryset)
-        messages.success(
-            request,
-            f"{tot} checkout(s) bien rafraichit(s)."
-        )
+        messages.success(request, f"{tot} checkout(s) bien rafraichit(s).")
 
 
 @admin.register(LogEntry)

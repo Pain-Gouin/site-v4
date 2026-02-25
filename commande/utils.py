@@ -102,6 +102,7 @@ def first_editable_day():
     else:
         return today + timedelta(1)
 
+
 def SendMailVerification(user, new_email, request):
     from .models import User
 
@@ -138,11 +139,14 @@ def SendMailVerification(user, new_email, request):
     # Reset user email
     user.email = current_email
 
+
 def PrecreateUserFunction(user, request):
     return PrecreateUsersFunction([user], request)
 
+
 def SendPrecreationMailFunction(user, request):
     return SendPrecreationMailsFunction([user], request)
+
 
 def PrecreateUsersFunction(users, request):
     # Create users in DB
@@ -153,8 +157,10 @@ def PrecreateUsersFunction(users, request):
 
     SendPrecreationMailsFunction(users, request)
 
+
 def SendPrecreationMailsFunction(users, request):
     from .models import User
+
     # Send pre-creation emails
     emails = []
     template_name = "mail/precreation_mail.html"
@@ -184,6 +190,7 @@ def SendPrecreationMailsFunction(users, request):
 
     send_mass_html_mail(emails, fail_silently=True)
 
+
 @deconstructible
 class WhitelistEmailValidator(EmailValidator):
     def validate_domain_part(self, domain_part):
@@ -193,7 +200,7 @@ class WhitelistEmailValidator(EmailValidator):
 
     def __eq__(self, other):
         return isinstance(other, WhitelistEmailValidator) and super().__eq__(other)
-    
-    def __init__(self, whitelist, message = None, code = None):
+
+    def __init__(self, whitelist, message=None, code=None):
         self.whitelist = set(whitelist)
         super().__init__(message, code)
