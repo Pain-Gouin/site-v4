@@ -14,7 +14,8 @@
         "charliermarsh.ruff",
         // django
         "batisteo.vscode-django",
-        "bradlc.vscode-tailwindcss"
+        "bradlc.vscode-tailwindcss",
+        "monosans.djlint"
       ],
       "settings": {
         "editor.formatOnSave": true,
@@ -30,6 +31,9 @@
           "linting.enabled": true,
           "linting.mypyEnabled": true,
           "linting.mypyPath": "/app/.venv/bin/mypy"
+        },
+        "[html][django-html][handlebars][hbs][mustache][jinja][jinja-html][nj][njk][nunjucks][twig]": {
+          "editor.defaultFormatter": "monosans.djlint"
         }
       }
     }

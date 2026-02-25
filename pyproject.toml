@@ -1,3 +1,103 @@
+# ==== mypy ====
+[tool.mypy]
+plugins = ["mypy_django_plugin.main"]
+
+[tool.django-stubs]
+django_settings_module = "paingouin.settings"
+
+# ==== djLint ====
+[tool.djlint]
+blank_line_after_tag = "load,extends"
+close_void_tags = true
+format_css = true
+format_js = true
+# TODO: remove T002 when fixed https://github.com/djlint/djLint/issues/687
+ignore = "H006,H030,H031,T002"
+include = "H017,H035"
+indent = 2
+max_line_length = 119
+profile = "django"
+custom_html="mjml,mj-\\w+"
+
+[tool.djlint.css]
+indent_size = 2
+
+[tool.djlint.js]
+indent_size = 2
+
+# ==== ruff ====
+[tool.ruff]
+# Exclude a variety of commonly ignored directories.
+extend-exclude = [
+    "*/migrations/*.py",
+    "staticfiles/*",
+]
+
+[tool.ruff.lint]
+select = [
+    "F",
+    "E",
+    "W",
+    "C90",
+    "I",
+    "N",
+    "UP",
+    "YTT",
+    # "ANN", # flake8-annotations: we should support this in the future but 100+ errors atm
+    "ASYNC",
+    "S",
+    "BLE",
+    "FBT",
+    "B",
+    "A",
+    "COM",
+    "C4",
+    "DTZ",
+    "T10",
+    "DJ",
+    "EM",
+    "EXE",
+    "FA",
+    "ISC",
+    "ICN",
+    "G",
+    "INP",
+    "PIE",
+    "T20",
+    "PYI",
+    "PT",
+    "Q",
+    "RSE",
+    "RET",
+    "SLF",
+    "SLOT",
+    "SIM",
+    "TID",
+    "TC",
+    "INT",
+    # "ARG", # Unused function argument
+    "PTH",
+    "ERA",
+    "PD",
+    "PGH",
+    "PL",
+    "TRY",
+    "FLY",
+    # "NPY",
+    # "AIR",
+    "PERF",
+    # "FURB",
+    # "LOG",
+    "RUF",
+]
+ignore = [
+    "S101", # Use of assert detected https://docs.astral.sh/ruff/rules/assert/
+    "RUF012", # Mutable class attributes should be annotated with `typing.ClassVar`
+    # of types for comparison.
+    # Deactivated because it can make the code slow:
+    # https://github.com/astral-sh/ruff/issues/7871
+]
+
 [project]
 name = "site-v4"
 version = "4.0.0"
@@ -33,6 +133,7 @@ dependencies = [
 [dependency-groups]
 dev = [
     "django-browser-reload>=1.21.0",
+    "django-stubs[compatible-mypy]>=5.2.9",
     "django-watchfiles>=1.4.0",
     "djlint>=1.36.4",
     "honcho>=2.0.0",
