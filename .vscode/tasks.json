@@ -4,16 +4,34 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "label": "Update complete dependencies",
+            "label": "Launch webserver",
+            "icon": {
+                "id": "play",
+                "color": "terminal.ansiGreen"
+            },
             "type": "shell",
-            "command": "source .venv/bin/activate.fish && pip freeze | xargs pip uninstall -y && pip install -r requirements.minimal.txt && pip freeze > requirements.txt",
-            "problemMatcher": [],
+            "command": "uv run manage.py tailwind dev",
             "presentation": {
                 "echo": true,
                 "reveal": "always",
                 "focus": true,
                 "panel": "dedicated"
-            }
+            },
+        }
+        {
+            "label": "Lint/format all",
+            "icon": {
+                "id": "pass",
+                "color": "terminal.ansiBlue"
+            },
+            "type": "shell",
+            "command": "uv run pre-commit run --all-files",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": true,
+                "panel": "dedicated"
+            },
         }
     ]
 }

@@ -8,6 +8,7 @@
   "customizations": {
     "vscode": {
       "extensions": [
+        "actboy168.tasks",
         // python
         "ms-python.python",
         "ms-python.vscode-pylance",

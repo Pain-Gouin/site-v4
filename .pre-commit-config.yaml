@@ -17,10 +17,10 @@ repos:
       - id: check-case-conflict
       - id: detect-private-key
 
-  - repo: https://gitlab.com/bmares/check-json5
-    rev: v1.0.1
+  - repo: https://github.com/whtsky/pre-commit-pretty-format-json5
+    rev: "1.0.0"
     hooks:
-    - id: check-json5
+      - id: pretty-format-json5
 
   # Run the Ruff linter.
   - repo: https://github.com/astral-sh/ruff-pre-commit
