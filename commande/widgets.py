@@ -1,6 +1,7 @@
-from datetime import date, datetime
-from django import forms
 import json
+from datetime import date, datetime
+
+from django import forms
 
 
 class MultiDateCalendarWidget(forms.HiddenInput):
@@ -135,9 +136,7 @@ class DateRangeWidget(forms.widgets.MultiWidget):
         js = [
             forms.widgets.Script(
                 "externe/js/vendor/cally.0.9.0.js",
-                **{
-                    "type": "module",
-                },
+                type="module",
             ),
             "js/range-picker-bind.js",
         ]

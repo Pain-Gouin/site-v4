@@ -1,9 +1,10 @@
+from pprint import pformat
+
+from authlib.integrations.requests_client import OAuth2Session
+from django.conf import settings
 from django.core.cache import cache
 from django.core.mail import mail_admins
-from django.conf import settings
-from authlib.integrations.requests_client import OAuth2Session
 from helloasso_python import ApiClient, Configuration
-from pprint import pformat
 
 TOKEN_CACHE_KEY = "helloasso_token"
 

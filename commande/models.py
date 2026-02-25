@@ -1,28 +1,25 @@
 from decimal import Decimal
 
-from django.core.exceptions import PermissionDenied
-from django.db import models, transaction
+import helloasso_python
+from django.conf import settings
 from django.contrib.auth.models import (
     AbstractBaseUser,
-    PermissionsMixin,
     Group,
+    PermissionsMixin,
+    UserManager,
 )
-from django.contrib.auth.models import UserManager
+from django.core.exceptions import PermissionDenied
+from django.db import models, transaction
 from django.db.models import F
 from django.db.models.functions import Coalesce
+from django.utils import formats, timezone
 from django.utils.functional import cached_property
 from django.utils.translation import gettext_lazy as _
-from django.conf import settings
-
-from django.utils import timezone, formats
-
 from imagekit.models import ImageSpecField
 from imagekit.processors import ResizeToFit
 
-from .utils import first_editable_day
-
-import helloasso_python
 from .helloasso import get_api_client, log_api_exception
+from .utils import first_editable_day
 
 # Create your models here.
 

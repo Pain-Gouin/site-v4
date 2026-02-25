@@ -1,13 +1,24 @@
 # authentication/forms.py
-from decimal import Decimal
+import datetime
+from datetime import date
+
+from crispy_forms.helper import FormHelper
+from crispy_forms.layout import Fieldset, Layout
 from django import forms
 from django.conf import settings
-from django.contrib.auth.forms import UserCreationForm, UserChangeForm, SetPasswordForm
-from django.contrib.auth import get_user_model
-from django.utils.translation import gettext_lazy as _
-from django.core.exceptions import ValidationError
 from django.contrib import messages
+from django.contrib.auth import get_user_model
+from django.contrib.auth.forms import SetPasswordForm, UserChangeForm, UserCreationForm
+from django.core.exceptions import ValidationError
 from django.forms import BooleanField
+from django.utils.translation import gettext_lazy as _
+from unfold.contrib.import_export.forms import ExportForm
+from unfold.layout import Submit
+from unfold.widgets import (
+    UnfoldAdminEmailInputWidget,
+    UnfoldAdminTextInputWidget,
+    UnfoldBooleanSwitchWidget,
+)
 
 from commande.utils import (
     SendMailVerification,
@@ -17,21 +28,6 @@ from commande.utils import (
 from commande.widgets import DateRangeField, MultiDateField
 
 from .models import Delivery
-
-import datetime
-
-
-from unfold.widgets import (
-    UnfoldAdminEmailInputWidget,
-    UnfoldAdminTextInputWidget,
-    UnfoldBooleanSwitchWidget,
-)
-
-from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Layout, Fieldset
-from unfold.layout import Submit
-from unfold.contrib.import_export.forms import ExportForm
-from datetime import date
 
 
 class LoginForm(forms.Form):
@@ -62,16 +58,15 @@ class SignupForm(UserCreationForm):
                 # The user had been precreated, but it has not yet been finally created.
                 self.instance = existing_user
                 return email
-            else:
-                self._update_errors(
-                    ValidationError(
-                        {
-                            "email": self.instance.unique_error_message(
-                                self._meta.model, ["email"]
-                            )
-                        }
-                    )
+            self._update_errors(
+                ValidationError(
+                    {
+                        "email": self.instance.unique_error_message(
+                            self._meta.model, ["email"]
+                        )
+                    }
                 )
+            )
         else:
             return email
 

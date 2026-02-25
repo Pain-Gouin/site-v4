@@ -1,58 +1,52 @@
-from decimal import Decimal
-from django.db.models import Sum, Prefetch, Value, CharField, When, Case
-from django.db.models.functions import Lower, Substr
-from django.forms import modelformset_factory, Select
-from django.shortcuts import render, redirect
-from django.contrib.admin.models import LogEntry, CHANGE
-from django.contrib.auth import login, authenticate, logout
-from django.contrib.auth.decorators import login_required
-from django.contrib import messages
-from django.conf import settings
-from django.core.mail import send_mail
-from django.template import RequestContext
-from django.template.loader import render_to_string
-from django.utils.safestring import mark_safe
-from django.utils.encoding import force_bytes
-from django.utils.http import urlsafe_base64_encode
-from django.contrib.auth.views import PasswordResetView
-from django.contrib.messages.views import SuccessMessageMixin
-from django.urls import reverse_lazy, reverse
-from django.http import HttpResponseBadRequest, HttpResponseServerError, JsonResponse
-from django.utils.http import urlsafe_base64_decode
-from django.core.exceptions import ValidationError
-from django.contrib.auth.tokens import PasswordResetTokenGenerator
-from django.contrib.auth.forms import PasswordResetForm
-from django.utils import timezone
-from django.db import transaction
-from django.views.decorators.http import require_POST
-from django.views.decorators.csrf import csrf_exempt
-from datetime import datetime, time, timedelta
-from pprint import pformat
 import json
-
-from commande.tokens import VerifiedUserTokenGenerator
-from .utils import (
-    html_to_text,
-    login_required_with_message,
-    PrecreateUserFunction,
-    SendPrecreationMailFunction,
-    SendMailVerification,
-)
+from datetime import datetime, time, timedelta
+from decimal import Decimal
+from pprint import pformat
 
 import helloasso_python
+from django.conf import settings
+from django.contrib import messages
+from django.contrib.admin.models import CHANGE, LogEntry
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.forms import PasswordResetForm
+from django.contrib.auth.tokens import PasswordResetTokenGenerator
+from django.core.exceptions import ValidationError
+from django.core.mail import send_mail
+from django.db import transaction
+from django.db.models import Case, CharField, Prefetch, Sum, Value, When
+from django.db.models.functions import Lower, Substr
+from django.forms import Select, modelformset_factory
+from django.http import HttpResponseBadRequest, HttpResponseServerError, JsonResponse
+from django.shortcuts import redirect, render
+from django.template.loader import render_to_string
+from django.urls import reverse
+from django.utils import timezone
+from django.utils.encoding import force_bytes
+from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
+from django.utils.safestring import mark_safe
+from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_POST
+
+from commande.tokens import VerifiedUserTokenGenerator
+
+from . import forms, tasks
 from .helloasso import get_api_client, log_api_exception
-from . import tasks
-
-from . import forms
-
 from .models import (
-    ProductCategory,
-    Order,
     Delivery,
-    User,
-    Transaction,
-    OrderProduct,
     HelloAssoCheckout,
+    Order,
+    OrderProduct,
+    ProductCategory,
+    Transaction,
+    User,
+)
+from .utils import (
+    PrecreateUserFunction,
+    SendMailVerification,
+    SendPrecreationMailFunction,
+    html_to_text,
+    login_required_with_message,
 )
 
 
@@ -347,12 +341,11 @@ def login_page(request):
                     request.session.pop("login_message", None)
                     request.session.pop("login_next", None)
                     return redirect(request.GET.get("next", index))
-                else:
-                    SendMailVerification(user, user.email, request)
-                    messages.success(
-                        request,
-                        "Un lien vient de t'être envoyé afin de vérifier ton email.\nSi tu ne réussis pas à le vérifer, contact l'administrateur web.",
-                    )
+                SendMailVerification(user, user.email, request)
+                messages.success(
+                    request,
+                    "Un lien vient de t'être envoyé afin de vérifier ton email.\nSi tu ne réussis pas à le vérifer, contact l'administrateur web.",
+                )
 
             else:
                 invalidCredential = True
@@ -547,9 +540,8 @@ def finish_signup_page(request, uidb64, token):
             )
             messages.success(request, "Ton compte a bien été créé !")
             return redirect(settings.LOGIN_REDIRECT_URL)
-        else:
-            for key, value in form.errors.items():
-                messages.error(request, value)
+        for key, value in form.errors.items():
+            messages.error(request, value)
     else:
         form = forms.FinishSignupForm(user, instance=user)
 
@@ -937,7 +929,7 @@ def del_order(request, order):
     if query_order.client != request.user:
         messages.error(request, "Tu dois être connecté pour faire cela !")
         return redirect(settings.LOGIN_REDIRECT_URL)
-    elif not query_order.is_editable:
+    if not query_order.is_editable:
         messages.error(
             request,
             "La livraison est déjà en cours ou passée, il n'est plus possible de supprimer la commande.",

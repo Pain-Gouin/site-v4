@@ -1,47 +1,32 @@
 from django.contrib import admin, messages
-from django.contrib.admin.models import LogEntry, CHANGE
+from django.contrib.admin.models import CHANGE, LogEntry
+from django.contrib.auth.admin import GroupAdmin as BaseGroupAdmin
+from django.contrib.auth.models import Group
+from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
 from django.db import transaction
-from django.core.exceptions import PermissionDenied
+from django.db.models import QuerySet
+from django.forms import modelformset_factory
+from django.http import HttpRequest
+from django.shortcuts import redirect, render
+from django.urls import path, reverse_lazy
 from django.utils.safestring import mark_safe
+from django.utils.translation import gettext_lazy as _
 from django.views.generic import FormView
 from imagekit.admin import AdminThumbnail
-from unfold.admin import ModelAdmin, TabularInline
-from unfold.contrib.filters.admin import (
-    BooleanRadioFilter,
-    AutocompleteSelectMultipleFilter,
-    MultipleRelatedDropdownFilter,
-    ChoicesRadioFilter,
-    ChoicesDropdownFilter,
-    SliderNumericFilter,
-)
-from django.utils.translation import gettext_lazy as _
-from unfold.views import UnfoldModelAdminViewMixin
-from django.contrib.auth.admin import GroupAdmin as BaseGroupAdmin
-from django.urls import path, reverse_lazy
-from django.contrib.auth.models import Group
-from .models import (
-    User,
-    Product,
-    ProductCategory,
-    Order,
-    Delivery,
-    OrderProduct,
-    Transaction,
-    HelloAssoCheckout,
-)
-from django.http import HttpRequest
-from django.shortcuts import render
-from django.db.models import QuerySet
-from django.shortcuts import render, redirect
-from .utils import append_unique_in_order, PrecreateUsersFunction, PrecreateUserFunction
-from django.forms import modelformset_factory
-from unfold.decorators import action
-from unfold.enums import ActionVariant
 from import_export.admin import ExportMixin
 from import_export.resources import ModelResource
-
-from django.core.exceptions import ObjectDoesNotExist
-
+from unfold.admin import ModelAdmin, TabularInline
+from unfold.contrib.filters.admin import (
+    AutocompleteSelectMultipleFilter,
+    BooleanRadioFilter,
+    ChoicesDropdownFilter,
+    ChoicesRadioFilter,
+    MultipleRelatedDropdownFilter,
+    SliderNumericFilter,
+)
+from unfold.decorators import action
+from unfold.enums import ActionVariant
+from unfold.views import UnfoldModelAdminViewMixin
 
 from .forms import (
     CustomOrderProductExportForm,
@@ -49,6 +34,17 @@ from .forms import (
     PrecreateUsersFormHelper,
     bulkCreateDeliveriesForm,
 )
+from .models import (
+    Delivery,
+    HelloAssoCheckout,
+    Order,
+    OrderProduct,
+    Product,
+    ProductCategory,
+    Transaction,
+    User,
+)
+from .utils import PrecreateUserFunction, PrecreateUsersFunction, append_unique_in_order
 
 
 class CustomModelAdmin(ModelAdmin):
@@ -648,11 +644,10 @@ class DeliveryAdmin(CustomModelAdmin):
                     messages.success(request, "Livraison annulée avec succés.")
                 else:
                     return 1
+            elif alone:
+                messages.error(request, "La livraison était déjà annulée !")
             else:
-                if alone:
-                    messages.error(request, "La livraison était déjà annulée !")
-                else:
-                    return 0
+                return 0
         return redirect(
             request.headers.get("referer")
             or reverse_lazy("admin:commande_delivery_changelist")
@@ -719,11 +714,10 @@ class DeliveryAdmin(CustomModelAdmin):
                 )
             else:
                 return 1, uncanceled
+        elif alone:
+            messages.error(request, "La livraison était déjà active !")
         else:
-            if alone:
-                messages.error(request, "La livraison était déjà active !")
-            else:
-                return 0, 0
+            return 0, 0
         return redirect(
             request.headers.get("referer")
             or reverse_lazy("admin:commande_delivery_changelist")

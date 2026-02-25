@@ -1,17 +1,17 @@
-from html2text import HTML2Text
-from functools import wraps
-from django.contrib.auth.decorators import login_required
-from django.core.mail import get_connection, EmailMultiAlternatives
 from datetime import time, timedelta
-from django.utils import timezone
+from functools import wraps
+
 from django.conf import settings
-from django.core.mail import send_mail
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
+from django.core.mail import EmailMultiAlternatives, get_connection, send_mail
+from django.core.validators import EmailValidator
+from django.template.loader import render_to_string
+from django.utils import timezone
+from django.utils.deconstruct import deconstructible
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode
-from django.template.loader import render_to_string
-from django.core.validators import EmailValidator
-from django.utils.deconstruct import deconstructible
+from html2text import HTML2Text
 
 # Configuration of html2text
 text_maker = HTML2Text()
@@ -99,8 +99,7 @@ def first_editable_day():
 
     if current_time_local.time() < cutoff:
         return today
-    else:
-        return today + timedelta(1)
+    return today + timedelta(1)
 
 
 def SendMailVerification(user, new_email, request):

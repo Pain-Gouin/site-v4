@@ -10,16 +10,16 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
-import environ  # using django-environ for env variables: https://django-environ.readthedocs.io/
 import os
+from datetime import time
+from decimal import Decimal
+from email.utils import formataddr
 
+import environ  # using django-environ for env variables: https://django-environ.readthedocs.io/
 from django.templatetags.static import static
 from django.urls import reverse_lazy
 from django.utils.translation import gettext_lazy as _
-from email.utils import formataddr
-from datetime import time
-from import_export.formats.base_formats import XLSX, CSV, ODS
-from decimal import Decimal
+from import_export.formats.base_formats import CSV, ODS, XLSX
 
 env = environ.Env()
 
