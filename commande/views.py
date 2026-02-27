@@ -585,7 +585,7 @@ def commande(request):
     if request.user.is_authenticated and request.method == "POST":
         successful = commande_makeorder(request, category_dict)
         if successful:
-            redirect("commande")
+            return redirect("commande")
 
     if request.user.balance_cache == 0:
         messages.warning(
