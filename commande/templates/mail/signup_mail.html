@@ -1,27 +1,31 @@
 {% extends "mail/base_mail.html" %}
+
 {% load mjml %}
+
 {% mjml %}
 {% block content %}
   <mj-section mj-class="color-quaternary">
-  <mj-column>
-  <mj-text>
-  <h1>Ton compte Pain'Gouin a bien été créé !</h1>
-  <p>Salut {{ prenom }},</p>
-  <p>Ton compte Pain'Gouin associé à cet e-mail a bien été créé !</p>
-  <p>Tu peux désormais recharger ton compte et passer une commande.</p>
-  <p>Merci pour ton inscription.</p>
-  </mj-text>
-  </mj-column>
+    <mj-column>
+      <mj-text>
+        <h1>Ton compte Pain'Gouin a bien été créé !</h1>
+        <p>Salut {{ prenom }},</p>
+        <p>Ton compte Pain'Gouin associé à cet e-mail a bien été créé !</p>
+        <p>Tu peux désormais recharger ton compte et passer une commande.</p>
+        <p>Merci pour ton inscription.</p>
+      </mj-text>
+    </mj-column>
   </mj-section>
 {% endblock content %}
 {% block footer %}
   <!-- Au revoir -->
   <mj-section mj-class="color-quaternary">
-  <mj-column>
-  <mj-text>Bonne journée,
-  <br>
-  l'équipe Pain'Gouin</mj-text>
-  </mj-column>
+    <mj-column>
+      <mj-text>
+        Bonne journée,
+        <br>
+        l'équipe Pain'Gouin
+      </mj-text>
+    </mj-column>
   </mj-section>
 {% endblock footer %}
 {% endmjml %}

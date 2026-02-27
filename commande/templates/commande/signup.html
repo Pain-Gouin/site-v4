@@ -1,99 +1,101 @@
 {% extends "commande/base.html" %}
+
 {% load static %}
 {% load widget_tweaks %}
+
 {% block content %}
-    <h1 class="text-3xl text-center font-bebas py-10 text-secondary px-2">Création de votre compte Pain'Gouin</h1>
-    <form class="max-w-lg mx-auto pt-5 pb-10 px-2" method="post">
-        {% if form.errors %}
-            <div id="alert-1"
-                 class="flex items-center p-4 mb-4 text-yellow-800 border border-yellow-400 rounded-lg bg-yellow-50"
-                 role="alert">
-                <svg class="shrink-0 w-4 h-4"
-                     aria-hidden="true"
-                     xmlns="http://www.w3.org/2000/svg"
-                     fill="currentColor"
-                     viewBox="0 0 20 20">
-                    <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z" />
-                </svg>
-                <span class="sr-only">Info</span>
-                <div class="ms-3 text-sm font-medium">
-                    {% for key, value in form.errors.items %}{{ value }}{% endfor %}
-                </div>
-                <button type="button"
-                        class="ms-auto -mx-1.5 -my-1.5 bg-yellow-50 text-yellow-500 rounded-lg focus:ring-2 focus:ring-yellow-400 p-1.5 hover:bg-yellow-200 inline-flex items-center justify-center h-8 w-8 dark:bg-gray-800 dark:text-yellow-400 dark:hover:bg-gray-700"
-                        data-dismiss-target="#alert-1"
-                        aria-label="Close">
-                    <span class="sr-only">Close</span>
-                    <svg class="w-3 h-3"
-                         aria-hidden="true"
-                         xmlns="http://www.w3.org/2000/svg"
-                         fill="none"
-                         viewBox="0 0 14 14">
-                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
-                    </svg>
-                </button>
-            </div>
-        {% endif %}
-        {% csrf_token %}
-        <div class="mb-5">
-            <label for="email"
-                   class="block mb-2 text-sm font-medium text-gray-900 font-montserrat">Mail&nbsp;:</label>
-            {% render_field form.email class="bg-gray-50 border font-montserrat border-gray-300 text-secondary text-sm rounded-lg focus:ring-secondary focus:border-secondary block w-full p-2.5" %}
+  <h1 class="text-3xl text-center font-bebas py-10 text-secondary px-2">Création de votre compte Pain'Gouin</h1>
+  <form class="max-w-lg mx-auto pt-5 pb-10 px-2" method="post">
+    {% if form.errors %}
+      <div id="alert-1"
+           class="flex items-center p-4 mb-4 text-yellow-800 border border-yellow-400 rounded-lg bg-yellow-50"
+           role="alert">
+        <svg class="shrink-0 w-4 h-4"
+             aria-hidden="true"
+             xmlns="http://www.w3.org/2000/svg"
+             fill="currentColor"
+             viewBox="0 0 20 20">
+          <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z" />
+        </svg>
+        <span class="sr-only">Info</span>
+        <div class="ms-3 text-sm font-medium">
+          {% for key, value in form.errors.items %}{{ value }}{% endfor %}
         </div>
-        <div class="mb-5">
-            <div class="mb-5">
-                <label for="id_password1"
-                       class="block mb-2 text-sm font-medium text-gray-900 font-montserrat">Mot de passe&nbsp;:</label>
-                {% render_field form.password1 class="bg-gray-50 border font-montserrat border-gray-300 text-secondary text-sm rounded-lg focus:ring-secondary focus:border-secondary block w-full p-2.5" %}
-            </div>
-            <div class="mb-5">
-                <label for="id_password2"
-                       class="block mb-2 text-sm font-medium text-gray-900 font-montserrat">
-                    Confirmer le mot de passe&nbsp;:
-                </label>
-                {% render_field form.password2 class="bg-gray-50 border font-montserrat border-gray-300 text-secondary text-sm rounded-lg focus:ring-secondary focus:border-secondary block w-full p-2.5" %}
-            </div>
-            <div class="mb-5">
-                <label for="id_first_name"
-                       class="block mb-2 text-sm font-medium text-gray-900 font-montserrat">Prénom&nbsp;:</label>
-                {% render_field form.first_name class="bg-gray-50 border font-montserrat border-gray-300 text-secondary text-sm rounded-lg focus:ring-secondary focus:border-secondary block w-full p-2.5" %}
-            </div>
-            <div class="mb-5">
-                <label for="id_last_name"
-                       class="block mb-2 text-sm font-medium text-gray-900 font-montserrat">Nom&nbsp;:</label>
-                {% render_field form.last_name class="bg-gray-50 border font-montserrat border-gray-300 text-secondary text-sm rounded-lg focus:ring-secondary focus:border-secondary block w-full p-2.5" %}
-            </div>
-            <div class="mb-5">
-                <label for="id_room"
-                       class="block mb-2 text-sm font-medium text-gray-900 font-montserrat">Chambre&nbsp;:</label>
-                {% render_field form.room class="bg-gray-50 border font-montserrat border-gray-300 text-secondary text-sm rounded-lg focus:ring-secondary focus:border-secondary block w-full p-2.5" %}
-            </div>
-            <div class="mb-5">
-                <label for="id_phone"
-                       class="block mb-2 text-sm font-medium text-gray-900 font-montserrat">Téléphone&nbsp;:</label>
-                {% render_field form.phone class="bg-gray-50 border font-montserrat border-gray-300 text-secondary text-sm rounded-lg focus:ring-secondary focus:border-secondary block w-full p-2.5" %}
-            </div>
-            <div class="mb-5">
-                <label for="id_has_drivers_licence"
-                       class="block mb-2 text-sm font-medium text-gray-900 font-montserrat">
-                    <span class="float-left mr-2">As-tu le permis&nbsp;?</span>
-                    {% render_field form.has_drivers_licence class="mb-4 float-left bg-white border border-gray-300 font-montserrat text-secondary text-sm rounded-lg focus:ring-secondary focus:border-secondary block p-2.5" %}
-                </label>
-            </div>
-            <div class="flex justify-center flex-row w-full">
-                <button type="submit"
-                        class="w-96 bg-inherit border-primary text-primary font-montserrat rounded-lg inline-block box-border border-2 rounded-x1 hover:bg-primary hover:text-white duration-1000 h-12 font-bold align-middle">
-                    S'inscrire
-                </button>
-            </div>
-        </div>
-        <div class="flex justify-center flex-row py-10">
-            <a href="{% url 'login' %}" class="w-96">
-                <button type="button"
-                        class="h-12 w-full bg-inherit border-primary text-primary font-montserrat rounded-lg inline-block box-border border-2 rounded-x1 hover:bg-primary hover:text-white duration-100 font-bold align-middle">
-                    Déjà inscrit&nbsp;? Se&nbsp;connecter
-                </button>
-            </a>
-        </div>
-    </form>
+        <button type="button"
+                class="ms-auto -mx-1.5 -my-1.5 bg-yellow-50 text-yellow-500 rounded-lg focus:ring-2 focus:ring-yellow-400 p-1.5 hover:bg-yellow-200 inline-flex items-center justify-center h-8 w-8 dark:bg-gray-800 dark:text-yellow-400 dark:hover:bg-gray-700"
+                data-dismiss-target="#alert-1"
+                aria-label="Close">
+          <span class="sr-only">Close</span>
+          <svg class="w-3 h-3"
+               aria-hidden="true"
+               xmlns="http://www.w3.org/2000/svg"
+               fill="none"
+               viewBox="0 0 14 14">
+            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
+          </svg>
+        </button>
+      </div>
+    {% endif %}
+    {% csrf_token %}
+    <div class="mb-5">
+      <label for="email"
+             class="block mb-2 text-sm font-medium text-gray-900 font-montserrat">Mail&nbsp;:</label>
+      {% render_field form.email class="bg-gray-50 border font-montserrat border-gray-300 text-secondary text-sm rounded-lg focus:ring-secondary focus:border-secondary block w-full p-2.5" %}
+    </div>
+    <div class="mb-5">
+      <div class="mb-5">
+        <label for="id_password1"
+               class="block mb-2 text-sm font-medium text-gray-900 font-montserrat">Mot de passe&nbsp;:</label>
+        {% render_field form.password1 class="bg-gray-50 border font-montserrat border-gray-300 text-secondary text-sm rounded-lg focus:ring-secondary focus:border-secondary block w-full p-2.5" %}
+      </div>
+      <div class="mb-5">
+        <label for="id_password2"
+               class="block mb-2 text-sm font-medium text-gray-900 font-montserrat">
+          Confirmer le mot de passe&nbsp;:
+        </label>
+        {% render_field form.password2 class="bg-gray-50 border font-montserrat border-gray-300 text-secondary text-sm rounded-lg focus:ring-secondary focus:border-secondary block w-full p-2.5" %}
+      </div>
+      <div class="mb-5">
+        <label for="id_first_name"
+               class="block mb-2 text-sm font-medium text-gray-900 font-montserrat">Prénom&nbsp;:</label>
+        {% render_field form.first_name class="bg-gray-50 border font-montserrat border-gray-300 text-secondary text-sm rounded-lg focus:ring-secondary focus:border-secondary block w-full p-2.5" %}
+      </div>
+      <div class="mb-5">
+        <label for="id_last_name"
+               class="block mb-2 text-sm font-medium text-gray-900 font-montserrat">Nom&nbsp;:</label>
+        {% render_field form.last_name class="bg-gray-50 border font-montserrat border-gray-300 text-secondary text-sm rounded-lg focus:ring-secondary focus:border-secondary block w-full p-2.5" %}
+      </div>
+      <div class="mb-5">
+        <label for="id_room"
+               class="block mb-2 text-sm font-medium text-gray-900 font-montserrat">Chambre&nbsp;:</label>
+        {% render_field form.room class="bg-gray-50 border font-montserrat border-gray-300 text-secondary text-sm rounded-lg focus:ring-secondary focus:border-secondary block w-full p-2.5" %}
+      </div>
+      <div class="mb-5">
+        <label for="id_phone"
+               class="block mb-2 text-sm font-medium text-gray-900 font-montserrat">Téléphone&nbsp;:</label>
+        {% render_field form.phone class="bg-gray-50 border font-montserrat border-gray-300 text-secondary text-sm rounded-lg focus:ring-secondary focus:border-secondary block w-full p-2.5" %}
+      </div>
+      <div class="mb-5">
+        <label for="id_has_drivers_licence"
+               class="block mb-2 text-sm font-medium text-gray-900 font-montserrat">
+          <span class="float-left mr-2">As-tu le permis&nbsp;?</span>
+          {% render_field form.has_drivers_licence class="mb-4 float-left bg-white border border-gray-300 font-montserrat text-secondary text-sm rounded-lg focus:ring-secondary focus:border-secondary block p-2.5" %}
+        </label>
+      </div>
+      <div class="flex justify-center flex-row w-full">
+        <button type="submit"
+                class="w-96 bg-inherit border-primary text-primary font-montserrat rounded-lg inline-block box-border border-2 rounded-x1 hover:bg-primary hover:text-white duration-1000 h-12 font-bold align-middle">
+          S'inscrire
+        </button>
+      </div>
+    </div>
+    <div class="flex justify-center flex-row py-10">
+      <a href="{% url 'login' %}" class="w-96">
+        <button type="button"
+                class="h-12 w-full bg-inherit border-primary text-primary font-montserrat rounded-lg inline-block box-border border-2 rounded-x1 hover:bg-primary hover:text-white duration-100 font-bold align-middle">
+          Déjà inscrit&nbsp;? Se&nbsp;connecter
+        </button>
+      </a>
+    </div>
+  </form>
 {% endblock content %}

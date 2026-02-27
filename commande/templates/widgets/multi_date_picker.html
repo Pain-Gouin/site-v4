@@ -4,14 +4,14 @@
        {% include "django/forms/widgets/attrs.html" %}>
 <div id="{{ widget.attrs.id }}_div"></div>
 <script type="text/javascript">
-    (function($) {
-        $(document).ready(function() {
-            var options = {{ widget.options|safe }};
-            // Initialize the calendars picker
-            $('#{{ widget.attrs.id }}_div').multiDatesPicker($.extend(options, {
-                    altField: "#{{ widget.attrs.id }}",
-                    firstDay: 1
-                }));
-        });
-    })(jQuery || django.jQuery);
+  (function($) {
+    $(document).ready(function() {
+      var options = {{ widget.options|safe }};
+      // Initialize the calendars picker
+      $('#{{ widget.attrs.id }}_div').multiDatesPicker($.extend(options, {
+        altField: "#{{ widget.attrs.id }}",
+        firstDay: 1
+      }));
+    });
+  })(jQuery || django.jQuery);
 </script>

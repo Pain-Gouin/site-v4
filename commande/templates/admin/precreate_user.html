@@ -1,12 +1,14 @@
 {% extends "admin/base.html" %}
+
 {% load unfold %}
 {% load crispy_forms_tags %}
+
 {% block extrahead %}
-    {{ block.super }}
-    <script src="{% url 'admin:jsi18n' %}"></script>
-    {{ form.media }}
-{% endblock %}
+  {{ block.super }}
+  <script src="{% url 'admin:jsi18n' %}"></script>
+  {{ form.media }}
+{% endblock extrahead %}
 {% block content %}
-    {% tab_list "users" %}
-    <div class="flex flex-col gap-8 mb-8">{% crispy form "unfold_crispy" %}</div>
-{% endblock %}
+  {% tab_list "users" %}
+  <div class="flex flex-col gap-8 mb-8">{% crispy form "unfold_crispy" %}</div>
+{% endblock content %}

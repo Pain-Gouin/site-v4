@@ -1,16 +1,18 @@
 {% extends "commande/base.html" %}
+
 {% load static %}
+
 {% block content %}
-    <h1 class="text-center text-2xl sm:text-4xl text-primary py-12">Contacter l'association :</h1>
-    <div class="grid md:grid-cols-[1fr_350px] place-items-center pb-10">
-        <div class="text-lg sm:text-xl text-justify md:text-left font-montserrat md:max-w-xl p-4">
-            <p class="pb-5">
-                Notre canal de communication principal est un groupe Messenger, tu peux contacter l'un des membres du bureau pour être rajouté dessus.
-            </p>
-            <p class="pb-5">
-                Tu peux également directement contacter l'un des membres du bureau en fonction de la nature de ta requête.
-            </p>
-        </div>
-        <div class="w-full max-w-96 px-5">{% include "commande/contact_cards.html" %}</div>
+  <h1 class="text-center text-2xl sm:text-4xl text-primary py-12">Contacter l'association :</h1>
+  <div class="grid md:grid-cols-[1fr_350px] place-items-center pb-10">
+    <div class="text-lg sm:text-xl text-justify md:text-left font-montserrat md:max-w-xl p-4">
+      <p class="pb-5">
+        Notre canal de communication principal est un groupe Messenger, tu peux contacter l'un des membres du bureau pour être rajouté dessus.
+      </p>
+      <p class="pb-5">
+        Tu peux également directement contacter l'un des membres du bureau en fonction de la nature de ta requête.
+      </p>
     </div>
+    <div class="w-full max-w-96 px-5">{% include "commande/contact_cards.html" %}</div>
+  </div>
 {% endblock content %}
