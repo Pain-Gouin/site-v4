@@ -21,6 +21,10 @@ updates:
     directory: "/theme/static_src" # Location of package manifests
     schedule:
       interval: "weekly"
+    ignore:
+      - dependency-name: "flowbite"
+        versions:
+          - ">=4.0.0"
   - package-ecosystem: "docker"
     directory: "/docker/" # Location of package manifests
     schedule:
