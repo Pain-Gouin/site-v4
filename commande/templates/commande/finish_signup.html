@@ -1,13 +1,15 @@
 {% extends "commande/base.html" %}
+
 {% load static %}
 {% load widget_tweaks %}
+
 {% block content %}
   <style>
-  .required:after {
-    color: #e32;
-    content: ' *';
-    display:inline;
-  }
+    .required:after {
+      color: #e32;
+      content: ' *';
+      display: inline;
+    }
   </style>
   <h1 class="text-3xl text-center font-bebas py-10 text-secondary px-2">Finir la création de ton compte</h1>
   <form class="max-w-lg mx-auto pt-5 pb-10 px-2" method="post">
@@ -63,7 +65,7 @@
       <label class="inline-flex items-center cursor-pointer">
         {% render_field form.has_drivers_licence class="sr-only peer" %}
         <span class="me-3 text-sm font-medium text-gray-900 font-montserrat dark:text-gray-300">As-tu le permis&nbsp;?</span>
-        <div class="relative w-11 h-6 bg-gray-200 peer-focus:outline-hidden peer-focus:ring-2 peer-focus:ring-secondary dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:rtl:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-primary">
+        <div class="relative w-11 h-6 bg-gray-200 peer-focus:outline-hidden peer-focus:ring-2 peer-focus:ring-secondary dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:rtl:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:start-0.5 after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-primary">
         </div>
       </label>
     </div>

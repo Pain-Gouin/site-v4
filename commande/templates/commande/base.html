@@ -1,160 +1,178 @@
 {% load static %}
 {% load static tailwind_tags %}
+
 <!DOCTYPE html>
 <html lang="fr">
-    <head>
-        <link rel="preload" as="font" type="font/woff2" crossorigin href="{% static 'fonts/bebas-neue-v16-latin-regular.woff2' %}">
-        <link rel="preload" as="font" type="font/woff2" crossorigin href="{% static 'fonts/lobster-v32-latin-regular.woff2' %}">
-        <link rel="preload" as="font" type="font/woff2" crossorigin href="{% static 'fonts/Montserrat-Italic-VariableFont_wght.woff2' %}">
-        <link rel="preload" as="font" type="font/woff2" crossorigin href="{% static 'fonts/Montserrat-VariableFont_wght.woff2' %}">
-        <script src="{% static 'js/dist/flowbite.min.js' %}" defer></script>
-        <link rel="stylesheet" href="{% static 'style.css' %}">
-        <title>Pain'Gouin</title>
-        <link rel="icon"
-              type="image/png"
-              href="{% static 'favicon/favicon-96x96.png' %}"
-              sizes="96x96" />
-        <link rel="icon"
-              type="image/svg+xml"
-              href="{% static 'favicon/favicon.svg' %}" />
-        <link rel="shortcut icon" href="{% static 'favicon/favicon.ico' %}" />
-        <link rel="apple-touch-icon"
-              sizes="180x180"
-              href="{% static 'favicon/apple-touch-icon.png' %}" />
-        <meta name="apple-mobile-web-app-title" content="Pain'Gouin" />
-        <!-- <link rel="manifest" href="{% static 'favicon/site.webmanifest' %}" /> PWA not ready -->
-        {% tailwind_css %}
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-    </head>
-    <body class="bg-quaternary min-h-screen">
-        {% block header %}
-            <header>
-                <div class="shadow-md grid grid-cols-2 md:grid-cols-3 bg-white top-0 left-0 right-0 z-40 content-center items-stretch">
-                    <div class="lg:grid grid-cols-subgrid col-span-2 text-center mb-2">
-                        <div class="inline-block w-40 justify-self-end lg:justify-self-center align-middle">
-                            <a href="{% url 'index' %}">
-                                <img src="{% static 'logo/logo.webp' %}" height="265" width="265" alt="logo">
-                            </a>
-                        </div>
-                        <div class="inline-block lg:justify-self-center content-center align-middle mx-2">
-                            <a href="{% url 'index' %}">
-                                <p class="text-5xl font-bold tracking-wide font-lobster text-secondary">Pain'Gouin</p>
-                            </a>
-                        </div>
-                    </div>
-                    {% if user.is_authenticated %}
-                        <div class="font-montserrat text-base justify-self-center content-center col-span-2 md:col-auto max-w-96 w-3/4 min-w-fit items-center gap-7 text-center mx-1">
-                            Bienvenue {{ user.first_name }},
-                            <button id="dropdownInformationButton"
-                                    data-dropdown-toggle="dropdownInformation"
-                                    class="font-montserrat hover:text-primary duration-100 rounded-lg text-center inline-flex items-center text-base mb-2"
-                                    type="button">
-                                <b>ton solde est de {{ user.balance_cache }}€</b>
-                                <svg class="w-2.5 h-2.5 ms-1"
-                                     aria-hidden="true"
-                                     xmlns="http://www.w3.org/2000/svg"
-                                     fill="none"
-                                     viewBox="0 0 10 6">
-                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 4 4 4-4" />
-                                </svg>
-                            </button>
-                            <div id="dropdownInformation" class="z-10 hidden">
-                                <div class="bg-white divide-y divide-gray-100 rounded-lg shadow-sm xl:w-66 font-montserrat text-left mr-2">
-                                    <div class="text-base text-gray-900">
-                                        <a href="{% url 'update' %}"
-                                           class="rounded-t-lg block px-4 py-2 hover:bg-gray-200 hover:font-bold">
-                                            <span>{{ user.first_name }} {{ user.last_name }}</span>
-                                            <br />
-                                            <span class="font-medium">{{ user.email }}</span>
-                                        </a>
-                                    </div>
-                                    <ul class="text-base text-gray-700"
-                                        aria-labelledby="dropdownInformationButton">
-                                        <li>
-                                            <a href="{% url 'commande' %}"
-                                               class="block px-4 py-2 hover:bg-gray-200 hover:font-bold md:hidden">Passer une commande</a>
-                                        </li>
-                                        <li>
-                                            <a href="{% url 'historique' %}"
-                                               class="block px-4 py-2 hover:bg-gray-200 hover:font-bold">Voir mes commandes</a>
-                                        </li>
-                                        <li>
-                                            <a href="{% url 'recharge' %}"
-                                               class="block px-4 py-2 hover:bg-gray-200 hover:font-bold">Recharger mon compte</a>
-                                        </li>
-                                        {% if user.is_delivery_man %}
-                                            <li>
-                                                <a href="{% url 'livreur' %}"
-                                                   class="block px-4 py-2 hover:bg-gray-200 hover:font-bold">Espace livreur</a>
-                                            </li>
-                                        {% endif %}
-                                        {% if user.is_staff %}
-                                            <li>
-                                                <a href="{% url 'admin:login' %}"
-                                                   class="block px-4 py-2 hover:bg-gray-200 hover:font-bold">Panel administrateur</a>
-                                            </li>
-                                        {% endif %}
-                                    </ul>
-                                    <div>
-                                        <a href="{% url 'logout' %}"
-                                           class="rounded-b-lg block px-4 py-2 text-base text-gray-700 hover:text-red-700 hover:bg-red-300 hover:font-bold">Se déconnecter</a>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="hidden md:block justify-self-center content-center max-w-96 w-3/4 min-w-fit mx-auto">
-                                <a href="{% url 'commande' %}">
-                                    <button class="w-full py-2 px-4 mt-2 bg-inherit border-primary text-primary font-montserrat rounded-lg box-border border-2 rounded-x1 hover:bg-primary hover:text-white duration-100 font-bold align-middle">
-                                        Passer une commande !
-                                    </button>
-                                </a>
-                            </div>
-                        </div>
-                    {% else %}
-                        <div class="justify-self-center content-center col-span-2 md:col-auto max-w-96 w-3/4 min-w-fit mx-2">
-                            <a href="{% url 'login' %}">
-                                <button class="bg-inherit w-full py-4 px-2 border-primary text-primary font-montserrat rounded-lg inline-block box-border border-2 rounded-x1 hover:bg-primary hover:text-white duration-100 font-bold align-middle my-5">
-                                    Connecte-toi pour commander&nbsp;!
-                                </button>
-                            </a>
-                        </div>
+  <head>
+    <link rel="preload"
+          as="font"
+          type="font/woff2"
+          crossorigin
+          href="{% static 'fonts/bebas-neue-v16-latin-regular.woff2' %}">
+    <link rel="preload"
+          as="font"
+          type="font/woff2"
+          crossorigin
+          href="{% static 'fonts/lobster-v32-latin-regular.woff2' %}">
+    <link rel="preload"
+          as="font"
+          type="font/woff2"
+          crossorigin
+          href="{% static 'fonts/Montserrat-Italic-VariableFont_wght.woff2' %}">
+    <link rel="preload"
+          as="font"
+          type="font/woff2"
+          crossorigin
+          href="{% static 'fonts/Montserrat-VariableFont_wght.woff2' %}">
+    <script src="{% static 'js/dist/flowbite.min.js' %}" defer></script>
+    <link rel="stylesheet" href="{% static 'style.css' %}">
+    <title>Pain'Gouin</title>
+    <link rel="icon"
+          type="image/png"
+          href="{% static 'favicon/favicon-96x96.png' %}"
+          sizes="96x96" />
+    <link rel="icon"
+          type="image/svg+xml"
+          href="{% static 'favicon/favicon.svg' %}" />
+    <link rel="shortcut icon" href="{% static 'favicon/favicon.ico' %}" />
+    <link rel="apple-touch-icon"
+          sizes="180x180"
+          href="{% static 'favicon/apple-touch-icon.png' %}" />
+    <meta name="apple-mobile-web-app-title" content="Pain'Gouin" />
+    <!-- <link rel="manifest" href="{% static 'favicon/site.webmanifest' %}" /> PWA not ready -->
+    {% tailwind_css %}
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+  </head>
+  <body class="bg-quaternary min-h-screen">
+    {% block header %}
+      <header>
+        <div class="shadow-md grid grid-cols-2 md:grid-cols-3 bg-white top-0 left-0 right-0 z-40 content-center items-stretch">
+          <div class="lg:grid grid-cols-subgrid col-span-2 text-center mb-2">
+            <div class="inline-block w-40 justify-self-end lg:justify-self-center align-middle">
+              <a href="{% url 'index' %}">
+                <img src="{% static 'logo/logo.webp' %}"
+                     height="265"
+                     width="265"
+                     alt="logo">
+              </a>
+            </div>
+            <div class="inline-block lg:justify-self-center content-center align-middle mx-2">
+              <a href="{% url 'index' %}">
+                <p class="text-5xl font-bold tracking-wide font-lobster text-secondary">Pain'Gouin</p>
+              </a>
+            </div>
+          </div>
+          {% if user.is_authenticated %}
+            <div class="font-montserrat text-base justify-self-center content-center col-span-2 md:col-auto max-w-96 w-3/4 min-w-fit items-center gap-7 text-center mx-1">
+              Bienvenue {{ user.first_name }},
+              <button id="dropdownInformationButton"
+                      data-dropdown-toggle="dropdownInformation"
+                      class="font-montserrat hover:text-primary duration-100 rounded-lg text-center inline-flex items-center text-base mb-2"
+                      type="button">
+                <b>ton solde est de {{ user.balance_cache }}€</b>
+                <svg class="w-2.5 h-2.5 ms-1"
+                     aria-hidden="true"
+                     xmlns="http://www.w3.org/2000/svg"
+                     fill="none"
+                     viewBox="0 0 10 6">
+                  <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 4 4 4-4" />
+                </svg>
+              </button>
+              <div id="dropdownInformation" class="z-10 hidden">
+                <div class="bg-white divide-y divide-gray-100 rounded-lg shadow-sm xl:w-66 font-montserrat text-left mr-2">
+                  <div class="text-base text-gray-900">
+                    <a href="{% url 'update' %}"
+                       class="rounded-t-lg block px-4 py-2 hover:bg-gray-200 hover:font-bold">
+                      <span>{{ user.first_name }} {{ user.last_name }}</span>
+                      <br />
+                      <span class="font-medium">{{ user.email }}</span>
+                    </a>
+                  </div>
+                  <ul class="text-base text-gray-700"
+                      aria-labelledby="dropdownInformationButton">
+                    <li>
+                      <a href="{% url 'commande' %}"
+                         class="block px-4 py-2 hover:bg-gray-200 hover:font-bold md:hidden">Passer une commande</a>
+                    </li>
+                    <li>
+                      <a href="{% url 'historique' %}"
+                         class="block px-4 py-2 hover:bg-gray-200 hover:font-bold">Voir mes commandes</a>
+                    </li>
+                    <li>
+                      <a href="{% url 'recharge' %}"
+                         class="block px-4 py-2 hover:bg-gray-200 hover:font-bold">Recharger mon compte</a>
+                    </li>
+                    {% if user.is_delivery_man %}
+                      <li>
+                        <a href="{% url 'livreur' %}"
+                           class="block px-4 py-2 hover:bg-gray-200 hover:font-bold">Espace livreur</a>
+                      </li>
                     {% endif %}
+                    {% if user.is_staff %}
+                      <li>
+                        <a href="{% url 'admin:login' %}"
+                           class="block px-4 py-2 hover:bg-gray-200 hover:font-bold">Panel administrateur</a>
+                      </li>
+                    {% endif %}
+                  </ul>
+                  <div>
+                    <a href="{% url 'logout' %}"
+                       class="rounded-b-lg block px-4 py-2 text-base text-gray-700 hover:text-red-700 hover:bg-red-300 hover:font-bold">Se déconnecter</a>
+                  </div>
                 </div>
-                <div class="bg-white flex flex-col  items-center" id="messages-div">
-                    {% include "commande/messages.html" %}
-                </div>
-            </header>
-        {% endblock header %}
-        {% block content %}
-        {% endblock content %}
-        {% block footer %}
-            <footer class="bg-white rounded-lg drop-shadow-[0_0_3px_rgb(0,0,0,0.1)] dark:bg-gray-900 m-4 font-montserrat sticky top-[100vh]">
-                <div class="w-full max-w-(--breakpoint-xl) mx-auto p-4">
-                    <div class="sm:flex sm:items-center sm:justify-between">
-                        <a href="{% url 'index' %}"
-                           class="flex items-center mb-4 sm:mb-0 space-x-3 rtl:space-x-reverse">
-                            <img src="{% static 'logo/logo.webp' %}" height="64" width="64" alt="logo" />
-                            <span class="self-center text-2xl font-lobster whitespace-nowrap text-secondary dark:text-white font-bold">Pain'Gouin</span>
-                        </a>
-                        <ul class="flex flex-wrap items-center mb-6 text-sm font-semibold text-secondary sm:mb-0 dark:text-gray-400">
-                            <li>
-                                <a href="{% url 'index' %}" class="hover:underline me-4 md:me-6">À propos</a>
-                            </li>
-                            <li>
-                                <a href="{% url 'mentions' %}" class="hover:underline me-4 md:me-6">Mentions légales</a>
-                            </li>
-                            <li>
-                                <a href="{% url 'contact' %}" class="hover:underline">Nous contacter</a>
-                            </li>
-                        </ul>
-                    </div>
-                    <span class="block text-sm dark:text-gray-400">Association étudiante loi 1901 à <a href="https://centralelille.fr/"
+              </div>
+              <div class="hidden md:block justify-self-center content-center max-w-96 w-3/4 min-w-fit mx-auto">
+                <a href="{% url 'commande' %}">
+                  <button class="w-full py-2 px-4 mt-2 bg-inherit border-primary text-primary font-montserrat rounded-lg box-border border-2 rounded-x1 hover:bg-primary hover:text-white duration-100 font-bold align-middle">
+                    Passer une commande !
+                  </button>
+                </a>
+              </div>
+            </div>
+          {% else %}
+            <div class="justify-self-center content-center col-span-2 md:col-auto max-w-96 w-3/4 min-w-fit mx-2">
+              <a href="{% url 'login' %}">
+                <button class="bg-inherit w-full py-4 px-2 border-primary text-primary font-montserrat rounded-lg inline-block box-border border-2 rounded-x1 hover:bg-primary hover:text-white duration-100 font-bold align-middle my-5">
+                  Connecte-toi pour commander&nbsp;!
+                </button>
+              </a>
+            </div>
+          {% endif %}
+        </div>
+        <div class="bg-white flex flex-col  items-center" id="messages-div">{% include "commande/messages.html" %}</div>
+      </header>
+    {% endblock header %}
+    {% block content %}
+    {% endblock content %}
+    {% block footer %}
+      <footer class="bg-white rounded-lg drop-shadow-[0_0_3px_rgb(0,0,0,0.1)] dark:bg-gray-900 m-4 font-montserrat sticky top-[100vh]">
+        <div class="w-full max-w-(--breakpoint-xl) mx-auto p-4">
+          <div class="sm:flex sm:items-center sm:justify-between">
+            <a href="{% url 'index' %}"
+               class="flex items-center mb-4 sm:mb-0 space-x-3 rtl:space-x-reverse">
+              <img src="{% static 'logo/logo.webp' %}" height="64" width="64" alt="logo" />
+              <span class="self-center text-2xl font-lobster whitespace-nowrap text-secondary dark:text-white font-bold">Pain'Gouin</span>
+            </a>
+            <ul class="flex flex-wrap items-center mb-6 text-sm font-semibold text-secondary sm:mb-0 dark:text-gray-400">
+              <li>
+                <a href="{% url 'index' %}" class="hover:underline me-4 md:me-6">À propos</a>
+              </li>
+              <li>
+                <a href="{% url 'mentions' %}" class="hover:underline me-4 md:me-6">Mentions légales</a>
+              </li>
+              <li>
+                <a href="{% url 'contact' %}" class="hover:underline">Nous contacter</a>
+              </li>
+            </ul>
+          </div>
+          <span class="block text-sm dark:text-gray-400">Association étudiante loi 1901 à <a href="https://centralelille.fr/"
     class="hover:underline font-semibold">Centrale Lille Institut</a></span>
-                    <hr class="my-4 border-secondary sm:mx-auto dark:border-gray-700 lg:my-8">
-                    <span class="block text-sm text-secondary sm:text-center dark:text-gray-400">Réalisé par <a href="https://github.com/mrimbert"
+          <hr class="my-4 border-secondary sm:mx-auto dark:border-gray-700 lg:my-8">
+          <span class="block text-sm text-secondary sm:text-center dark:text-gray-400">Réalisé par <a href="https://github.com/mrimbert"
     class="hover:text-primary font-semibold duration-500">Mathis Rimbert</a> et <a href="https://github.com/vale075"
     class="hover:text-primary font-semibold duration-500">Valentin Grégoire</a></span>
-                </div>
-            </footer>
-        {% endblock footer %}
-    </body>
+        </div>
+      </footer>
+    {% endblock footer %}
+  </body>
 </html>

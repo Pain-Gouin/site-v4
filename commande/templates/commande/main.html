@@ -1,78 +1,89 @@
 {% extends "commande/base.html" %}
+
 {% load static %}
+
 {% block content %}
-    <link rel="preload" fetchpriority="high" as="image" href="{% static 'illustration/banner.jpg' %}">
-    <div style="background-image: url({% static 'illustration/banner.jpg' %})"
-         class="w-full bg-cover">
-        <div class="backdrop-blur-xs w-full md:h-[650px] md:grid grid-cols-1 grid-rows-2">
-            <div class="flex items-center justify-center w-full self-end md:py-5 pb-15 pt-24 md:px-10 px-2">
-                <p class="text-3xl sm:text-5xl font-bebas drop-shadow-[0_0_10px_#000] text-primary text-center">
-                    Du pain frais à la Rez tous les matins (ou&nbsp;presque...)
-                </p>
-            </div>
-            <div class="flex items-center justify-center w-full self-start pt-5 pb-10 px-2">
-                <a href="{% url 'commande' %}" class="max-w-[500px] w-full">
-                    <button class="w-full bg-primary border-primary drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)] text-white font-montserrat rounded-lg inline-block box-border border-2 rounded-x1 hover:bg-inherit hover:text-primary duration-1000 h-14 font-bold align-middle">
-                        Passer commande
-                    </button>
-                </a>
-            </div>
-        </div>
+  <link rel="preload"
+        fetchpriority="high"
+        as="image"
+        href="{% static 'illustration/banner.jpg' %}">
+  <div style="background-image: url({% static 'illustration/banner.jpg' %})"
+       class="w-full bg-cover">
+    <div class="backdrop-blur-xs w-full md:h-[650px] md:grid grid-cols-1 grid-rows-2">
+      <div class="flex items-center justify-center w-full self-end md:py-5 pb-15 pt-24 md:px-10 px-2">
+        <p class="text-3xl sm:text-5xl font-bebas drop-shadow-[0_0_10px_#000] text-primary text-center">
+          Du pain frais à la Rez tous les matins (ou&nbsp;presque...)
+        </p>
+      </div>
+      <div class="flex items-center justify-center w-full self-start pt-5 pb-10 px-2">
+        <a href="{% url 'commande' %}" class="max-w-[500px] w-full">
+          <button class="w-full bg-primary border-primary drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)] text-white font-montserrat rounded-lg inline-block box-border border-2 rounded-x1 hover:bg-inherit hover:text-primary duration-1000 h-14 font-bold align-middle">
+            Passer commande
+          </button>
+        </a>
+      </div>
     </div>
-    <h2 class="text-3xl sm:text-4xl text-center py-10 font-bebas wrap-normal">
-        Mais c'est génial&nbsp;!  Comment&nbsp;ça&nbsp;fonctionne&nbsp;?
-    </h2>
-    <div class="text-justify lg:text-left text-lg sm:text-xl px-2 ">
-        <div class="grid lg:grid-cols-2  place-items-center pb-10 auto-rows-max">
-            <img src="{% static 'illustration/PainGouinOrdi.webp' %}"
-                 alt="Commande PainGouin"
-                 class="w-3/4 lg:w-auto">
-            <div class="max-w-xl">
-                <h3 class="text-3xl sm:text-4xl font-bebas pb-3 lg:pb-10 text-primary">Il faut tout d'abord commander&nbsp;!</h3>
-                <p class="font-montserrat pb-5">
-                    Nous livrons <b class="text-secondary">tous les jours</b>, sauf le dimanche et les jours fériés. Passe ta commande depuis ton téléphone ou ton ordinateur et indique simplement le jour de livraison souhaité.
-                    <br />
-                    Tu peux commander jusqu'à <b class="text-secondary">{{ DELIVERY_CUTOFF_TIME|time:"G\hi" }} le jour même</b> — idéal pour les petites faims de fin de soirée &#128521;
-                </p>
-                <p class="text-xl font-montserrat">
-                    <b class="text-secondary">Pour recharger ton compte,</b> <a href="{% url 'recharge' %}"
+  </div>
+  <h2 class="text-3xl sm:text-4xl text-center py-10 font-bebas wrap-normal">
+    Mais c'est génial&nbsp;!  Comment&nbsp;ça&nbsp;fonctionne&nbsp;?
+  </h2>
+  <div class="text-justify lg:text-left text-lg sm:text-xl px-2 ">
+    <div class="grid lg:grid-cols-2  place-items-center pb-10 auto-rows-max">
+      <img src="{% static 'illustration/PainGouinOrdi.webp' %}"
+           width="1044"
+           height="796"
+           alt="Commande PainGouin"
+           class="w-3/4 lg:w-auto">
+      <div class="max-w-xl">
+        <h3 class="text-3xl sm:text-4xl font-bebas pb-3 lg:pb-10 text-primary">Il faut tout d'abord commander&nbsp;!</h3>
+        <p class="font-montserrat pb-5">
+          Nous livrons <b class="text-secondary">tous les jours</b>, sauf le dimanche et les jours fériés. Passe ta commande depuis ton téléphone ou ton ordinateur et indique simplement le jour de livraison souhaité.
+          <br />
+          Tu peux commander jusqu'à <b class="text-secondary">{{ DELIVERY_CUTOFF_TIME|time:"G\hi" }} le jour même</b> — idéal pour les petites faims de fin de soirée 😉
+        </p>
+        <p class="text-xl font-montserrat">
+          <b class="text-secondary">Pour recharger ton compte,</b> <a href="{% url 'recharge' %}"
     class="underline hover:text-primary transition duration-100">ça se passe ici</a>.
-                </p>
-            </div>
-        </div>
-        <div class="grid lg:grid-cols-2  place-items-center pb-10 auto-rows-max">
-            <div class="max-w-xl order-2 lg:order-1">
-                <h3 class="text-3xl sm:text-4xl font-bebas pb-3 lg:pb-10 text-primary">Et puis... c'est tout !</h3>
-                <p class="font-montserrat pb-5">
-                    Une fois commandée, ta livraison arrivera devant ta porte <b class="text-secondary">avant que tu ailles en cours</b> (il y a un peu de retard parfois, désolé si ça n'arrive pas à temps...)
-                </p>
-                <p class="font-montserrat">
-                    Pour faciliter la livraison et éviter que ton pain soit posé sur le sol, <b class="text-secondary">pense à accrocher un sac</b> à ta poignée de porte.
-                </p>
-            </div>
-            <img src="{% static 'illustration/PainGouinPorte.webp' %}"
-                 alt="Sac PainGouin"
-                 class="order-1 lg:order-2 h-[480px] lg:h-[580px]">
-        </div>
-        <div class="grid lg:grid-cols-2  place-items-center pb-10 auto-rows-max">
-            <div>
-                <img src="{% static 'illustration/PainGouinBoulangerie.webp' %}"
-                     alt="Boulangerie PainGouin">
-            </div>
-            <div class="max-w-xl">
-                <h3 class="text-3xl sm:text-4xl font-bebas pb-3 lg:pb-10 text-primary">Tu peux également livrer !</h3>
-                <p class="font-montserrat pb-5">
-                    Pour assurer le bon fonctionnement de l'association, tu peux <b class="text-secondary">devenir livreur</b>. Les livreurs vont à la boulangerie et amènent le pain et les viennoiseries à toute la résidence.
-                </p>
-                <p class="font-montserrat pb-5">
-                    Ne  t'en fais pas, tu ne livreras que <b class="text-secondary">quelquefois dans l'année</b> (en moyenne 5-6 fois).
-                </p>
-                <p class="font-montserrat">
-                    Si tu désires nous aider, n'hésite pas à <a href="{% url 'contact' %}"
-    class="underline hover:text-primary transition duration-100">contacter un membre de l'association</a> (et on te remercie !)
-                </p>
-            </div>
-        </div>
+        </p>
+      </div>
     </div>
-    <!-- version: {{ GIT_COMMIT }} -->
+    <div class="grid lg:grid-cols-2  place-items-center pb-10 auto-rows-max">
+      <div class="max-w-xl order-2 lg:order-1">
+        <h3 class="text-3xl sm:text-4xl font-bebas pb-3 lg:pb-10 text-primary">Et puis... c'est tout !</h3>
+        <p class="font-montserrat pb-5">
+          Une fois commandée, ta livraison arrivera devant ta porte <b class="text-secondary">avant que tu ailles en cours</b> (il y a un peu de retard parfois, désolé si ça n'arrive pas à temps...)
+        </p>
+        <p class="font-montserrat">
+          Pour faciliter la livraison et éviter que ton pain soit posé sur le sol, <b class="text-secondary">pense à accrocher un sac</b> à ta poignée de porte.
+        </p>
+      </div>
+      <img src="{% static 'illustration/PainGouinPorte.webp' %}"
+           alt="Sac PainGouin"
+           width="644"
+           height="838"
+           class="order-1 lg:order-2 h-[480px] lg:h-[580px]">
+    </div>
+    <div class="grid lg:grid-cols-2  place-items-center pb-10 auto-rows-max">
+      <div>
+        <img src="{% static 'illustration/PainGouinBoulangerie.webp' %}"
+             width="897"
+             height="692"
+             alt="Boulangerie PainGouin">
+      </div>
+      <div class="max-w-xl">
+        <h3 class="text-3xl sm:text-4xl font-bebas pb-3 lg:pb-10 text-primary">Tu peux également livrer !</h3>
+        <p class="font-montserrat pb-5">
+          Pour assurer le bon fonctionnement de l'association, tu peux <b class="text-secondary">devenir livreur</b>. Les livreurs vont à la boulangerie et amènent le pain et les viennoiseries à toute la résidence.
+        </p>
+        <p class="font-montserrat pb-5">
+          Ne  t'en fais pas, tu ne livreras que <b class="text-secondary">quelquefois dans l'année</b> (en moyenne 5-6 fois).
+        </p>
+        <p class="font-montserrat">
+          Si tu désires nous aider, n'hésite pas à <a href="{% url 'contact' %}"
+    class="underline hover:text-primary transition duration-100">contacter un membre de l'association</a> (et on te remercie !)
+        </p>
+      </div>
+    </div>
+  </div>
+  <!-- version: {{ GIT_COMMIT }} -->
 {% endblock content %}
