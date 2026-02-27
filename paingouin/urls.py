@@ -42,7 +42,9 @@ else:
             },
         ),
     ]
-# By serving media files via Django directly, we loose performance. But we cannot serve them with whitenoise, so serving them outside of Django would necessitate a nginx server.
+# By serving media files via Django directly, we loose performance. But we cannot serve
+# them with whitenoise, so serving them outside of Django would necessitate a nginx
+# server.
 
 if settings.DEBUG and not settings.MINIMAL:
     # Include django_browser_reload URLs only in DEBUG mode

@@ -10,10 +10,10 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
-import os
 from datetime import time
 from decimal import Decimal
 from email.utils import formataddr
+from pathlib import Path
 
 import environ  # using django-environ for env variables: https://django-environ.readthedocs.io/
 from django.templatetags.static import static
@@ -24,12 +24,12 @@ from import_export.formats.base_formats import CSV, ODS, XLSX
 env = environ.Env()
 
 # Set the project base directory
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+BASE_DIR = Path(__file__).parent.parent
 
 # Take environment variables from .env file
-environ.Env.read_env(os.path.join(BASE_DIR, ".env"))
+environ.Env.read_env(BASE_DIR / ".env")
 
-DEBUG = env("DEBUG", bool, False)
+DEBUG = env("DEBUG", bool, default=False)
 
 DELIVERY_CUTOFF_TIME = time(6, 30)
 
@@ -43,7 +43,7 @@ SECRET_KEY = env(
 )
 
 MINIMAL = env(
-    "MINIMAL", bool, True
+    "MINIMAL", bool, default=True
 )  # Wether only minimal dependencies for prod were included
 
 ALLOWED_HOSTS = env(
@@ -55,7 +55,7 @@ CSRF_TRUSTED_ORIGINS = env(
 )
 
 # HTTPS Enforcing
-if env("ENFORCE_HTTPS", bool, True):
+if env("ENFORCE_HTTPS", bool, default=True):
     SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
     SECURE_SSL_REDIRECT = True
     SESSION_COOKIE_SECURE = True
@@ -65,10 +65,11 @@ if env("ENFORCE_HTTPS", bool, True):
 ADMINS = [("vale", "margerite.tonnere@gmail.com")]
 
 # Allowed verified genuine user emails
-VERIFIED_USER_EMAIL_DOMAINS = set(["centrale.centralelille.fr"])
+VERIFIED_USER_EMAIL_DOMAINS = {"centrale.centralelille.fr"}
 
-MAX_TOPUP_AMOUNT = Decimal(99.00)
-MAX_BALANCE_ALLOWED = Decimal(150.00)
+MAX_TOPUP_AMOUNT = Decimal(99)
+MAX_BALANCE_ALLOWED = Decimal(150)
+LOW_BALANCE_WARNING_THRESHOLD = Decimal(2)
 
 # Application definition
 
@@ -120,7 +121,7 @@ ROOT_URLCONF = "paingouin.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [os.path.join(BASE_DIR, "templates")],
+        "DIRS": [BASE_DIR / "templates"],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -191,7 +192,7 @@ USE_TZ = True
 
 STATIC_URL = "static/"
 
-STATIC_ROOT = os.path.join(BASE_DIR, "assets")
+STATIC_ROOT = BASE_DIR / "assets"
 
 COMPRESS_ROOT = "paingouin/static/"
 
@@ -214,12 +215,12 @@ LOGIN_REDIRECT_URL = "/"
 LOGIN_URL = "login"
 
 MEDIA_URL = "/media/"
-MEDIA_ROOT = os.path.join(BASE_DIR, "media").replace("\\", "/")
+MEDIA_ROOT = BASE_DIR / "media"
 
 EMAIL_BACKEND = "django_yubin.backends.QueuedEmailBackend"
 MAILER_USE_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
-EMAIL_USE_TLS = env("EMAIL_USE_TLS", bool, True)
-EMAIL_USE_SSL = env("EMAIL_USE_SSL", bool, True)
+EMAIL_USE_TLS = env("EMAIL_USE_TLS", bool, default=True)
+EMAIL_USE_SSL = env("EMAIL_USE_SSL", bool, default=True)
 EMAIL_HOST = env("EMAIL_HOST", default="smtp.rezoleo.fr")
 EMAIL_PORT = env("EMAIL_PORT", int, 1025)
 EMAIL_HOST_USER = formataddr(
@@ -445,10 +446,10 @@ CACHES = {
 }
 
 if PROD:
-    HELLOASSO_TOKEN_URL = "https://api.helloasso.com/oauth2/token"
+    HELLOASSO_TOKEN_URL = "https://api.helloasso.com/oauth2/token"  # noqa: S105
     HELLOASSO_API_URL = "https://api.helloasso.com/v5"
 else:
-    HELLOASSO_TOKEN_URL = "https://api.helloasso-sandbox.com/oauth2/token"
+    HELLOASSO_TOKEN_URL = "https://api.helloasso-sandbox.com/oauth2/token"  # noqa: S105
     HELLOASSO_API_URL = "https://api.helloasso-sandbox.com/v5"
 HELLOASSO_CLIENT_ID = env("HELLOASSO_CLIENT_ID", str, "")
 HELLOASSO_CLIENT_SECRET = env("HELLOASSO_CLIENT_SECRET", str, "")

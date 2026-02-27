@@ -20,6 +20,10 @@
       ],
       "settings": {
         "editor.formatOnSave": true,
+        "editor.rulers": [
+          100,
+          120
+        ],
         "[python]": {
           "analysis.autoImportCompletions": true,
           "analysis.typeCheckingMode": "basic",

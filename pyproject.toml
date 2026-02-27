@@ -96,6 +96,9 @@ ignore = [
     "COM812", # https://docs.astral.sh/ruff/rules/missing-trailing-comma/#formatter-compatibility
 ]
 
+[tool.ruff.lint.pycodestyle]
+max-line-length = 120
+
 [project]
 name = "site-v4"
 version = "4.0.0"

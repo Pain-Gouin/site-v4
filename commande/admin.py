@@ -9,7 +9,7 @@ from django.forms import modelformset_factory
 from django.http import HttpRequest
 from django.shortcuts import redirect, render
 from django.urls import path, reverse_lazy
-from django.utils.safestring import mark_safe
+from django.utils.html import format_html
 from django.utils.translation import gettext_lazy as _
 from django.views.generic import FormView
 from imagekit.admin import AdminThumbnail
@@ -29,10 +29,10 @@ from unfold.enums import ActionVariant
 from unfold.views import UnfoldModelAdminViewMixin
 
 from .forms import (
+    BulkCreateDeliveriesForm,
     CustomOrderProductExportForm,
     PrecreateUserForm,
     PrecreateUsersFormHelper,
-    bulkCreateDeliveriesForm,
 )
 from .models import (
     Delivery,
@@ -45,27 +45,36 @@ from .models import (
     User,
 )
 from .utils.utils import (
-    PrecreateUserFunction,
-    PrecreateUsersFunction,
     append_unique_in_order,
+    precreate_user_function,
+    precreate_users_function,
 )
 
 
 class CustomModelAdmin(ModelAdmin):
     """A custom admin class that allows superusers to see and edit everything,"""
 
-    STAFF_EDITABLE_FIELDS = None  # Fields that staff can edit. If empty, can edit everything. If not empty, can only edit what is specified.
-    STAFF_HIDDEN_FIELDS = ["id"]  # Fields that staff won't be able to see
-    STAFF_CREATION_HIDDEN_FIELDS = (
-        None  # Fields that staff won't be able to see in the creation page
-    )
-    STAFF_CAN_CREATE = None  # Whether staff can create a new object. If not set uses the default permissions using group permissions.
-    sorted_fields: list[
-        str
-    ] = []  # Sort order of fields (fields not specified will be shown after them)
-    additional_fields: list[
-        str
-    ] = []  # Fields that would not otherwise be shown to superusers because they are not direct fields of the model
+    # Fields that staff can edit.
+    # If empty, can edit everything. If not empty, can only edit what is specified.
+    STAFF_EDITABLE_FIELDS = None
+
+    # Fields that staff won't be able to see.
+    STAFF_HIDDEN_FIELDS = ["id"]
+
+    # Fields that staff won't be able to see in the creation page.
+    STAFF_CREATION_HIDDEN_FIELDS = None
+
+    # Whether staff can create a new object.
+    # If not set uses the default permissions using group permissions.
+    STAFF_CAN_CREATE = None
+
+    # Sort order of fields.
+    # Fields not specified will be shown after them.
+    sorted_fields: list[str] = []
+
+    # Fields that would not otherwise be shown to superusers because they are not direct fields of the model.
+    additional_fields: list[str] = []
+
     compressed_fields = True  # For Django Unfold display style
     warn_unsaved_form = True
     list_filter_submit = True
@@ -110,7 +119,7 @@ class CustomModelAdmin(ModelAdmin):
                             field
                             for field in append_unique_in_order(
                                 self.sorted_fields,
-                                [f.name for f in self.model._meta.fields],
+                                [f.name for f in self.model._meta.fields],  # noqa: SLF001 (Dont have a choice ?)
                                 self.additional_fields,
                             )
                             if field not in existant_fields
@@ -127,25 +136,29 @@ class CustomModelAdmin(ModelAdmin):
         """
         # Superusers can edit anything
         if request.user.is_superuser:
-            return (
-                list(super().get_readonly_fields(request, obj)) + ["id"]
-            )  # Else we get an error, because we are showing it but the field cannot be edited.
+            return [
+                *super().get_readonly_fields(request, obj),
+                ["id"],
+            ]  # Else we get an error, because we are showing it but the field cannot be edited.
 
         # Staff (is_staff=True but not superuser)
         if (self.STAFF_EDITABLE_FIELDS is not None) and request.user.is_staff:
             # Return list of fields that are NOT in the allowed list
             # This effectively makes everything else read-only
-            return append_unique_in_order(
-                super().get_readonly_fields(request, obj),
-                [
-                    f.name
-                    for f in self.model._meta.fields
-                    if (
-                        f.name not in self.STAFF_EDITABLE_FIELDS
-                        and f.name not in self.STAFF_HIDDEN_FIELDS
-                    )
-                ],
-            ) + ["id"]
+            return [
+                *append_unique_in_order(
+                    super().get_readonly_fields(request, obj),
+                    [
+                        f.name
+                        for f in self.model._meta.fields  # noqa: SLF001 (Dont have a choice ?)
+                        if (
+                            f.name not in self.STAFF_EDITABLE_FIELDS
+                            and f.name not in self.STAFF_HIDDEN_FIELDS
+                        )
+                    ],
+                ),
+                "id",
+            ]
 
         return super().get_readonly_fields(request, obj)
 
@@ -231,10 +244,11 @@ class UserAdmin(CustomModelAdmin):
                     change_message="Synchronisation du solde en cache",
                 )
         if n:
-            if n == 1:
-                error_msg = "1 solde a du être mis à jour."
-            else:
-                error_msg = f"{n} soldes ont du être mis à jour."
+            error_msg = (
+                "1 solde a du être mis à jour."
+                if n == 1
+                else f"{n} soldes ont du être mis à jour."
+            )
             messages.error(request, error_msg)
         else:
             messages.success(request, "Tous les soldes sont déjà à jour.")
@@ -336,10 +350,6 @@ class TransactionInline(TabularInline):
 @admin.register(Order)
 class OrderAdmin(CustomModelAdmin):
     list_display = ("client", "delivery", "room", "is_cancelled", "created_at")
-    list_filter = (
-        ("is_cancelled", BooleanRadioFilter),
-        ("delivery", AutocompleteSelectMultipleFilter),
-    )
     inlines = [OrderProductInline, TransactionInline]
     actions_list = ["update_transactions_action"]
     readonly_fields = ["updated_at", "created_at"]
@@ -372,10 +382,11 @@ class OrderAdmin(CustomModelAdmin):
                     change_message="Mise à jour des transactions",
                 )
         if n:
-            if n == 1:
-                error_msg = "1 transaction a du être créée."
-            else:
-                error_msg = f"{n} transactions ont du être créées."
+            error_msg = (
+                "1 transaction a du être créée."
+                if n == 1
+                else f"{n} transactions ont du être créées."
+            )
             messages.error(request, error_msg)
         else:
             messages.success(request, "Toutes les transactions sont déjà à jour.")
@@ -477,8 +488,10 @@ class TransactionAdmin(CustomModelAdmin):
     autocomplete_fields = ["user", "initiator", "order"]
 
     def amount_(self, obj):
-        return mark_safe(
-            f'<div style="text-align: right; color:{"red" if obj.amount < 0 else "green"}; font-weight: bold;">{obj.amount}€</div>'
+        return format_html(
+            '<div style="text-align: right; color:{}; font-weight: bold;">{}€</div>',
+            "red" if obj.amount < 0 else "green",
+            obj.amount,
         )
 
     amount_.admin_order_field = "amount"
@@ -516,9 +529,8 @@ class TransactionAdmin(CustomModelAdmin):
             obj.initiator = request.user
 
         if obj.type not in self.allowed_codes:
-            raise PermissionDenied(
-                "You cannot manually create this type of transaction."
-            )
+            msg = "You cannot manually create this type of transaction."
+            raise PermissionDenied(msg)
 
         super().save_model(request, obj, form, change)
 
@@ -583,7 +595,7 @@ class DeliveryAdmin(CustomModelAdmin):
 
     @admin.action(description=_("Désannuler les dates"))
     def uncancel_deliveries_action(self, request: HttpRequest, queryset: QuerySet):
-        return self.activate_deliveries_action(request, queryset, True)
+        return self.activate_deliveries_action(request, queryset, uncancel=True)
 
     @admin.action(
         description=_(
@@ -591,13 +603,13 @@ class DeliveryAdmin(CustomModelAdmin):
         )
     )
     def activate_deliveries_action(
-        self, request: HttpRequest, queryset: QuerySet, uncancel=False
+        self, request: HttpRequest, queryset: QuerySet, *, uncancel=False
     ):
         n = 0
         uncanceled_n = 0
         for delivery in queryset:
             cn, cuncanceled = self.activate_delivery_action_row(
-                request, delivery.id, uncancel, False
+                request, delivery.id, uncancel=uncancel, alone=False
             )
             n += cn
             uncanceled_n += cuncanceled
@@ -633,7 +645,7 @@ class DeliveryAdmin(CustomModelAdmin):
         permissions=["cancel_delivery_action_row"],
     )
     def cancel_delivery_action_row(
-        self, request: HttpRequest, object_id: int, alone=True
+        self, request: HttpRequest, object_id: int, *, alone=True
     ):
         with transaction.atomic():
             deliv = Delivery.objects.get(id=object_id)
@@ -668,9 +680,11 @@ class DeliveryAdmin(CustomModelAdmin):
         permissions=["activate_delivery_action_row"],
     )
     def uncancel_delivery_action_row(
-        self, request: HttpRequest, object_id: int, alone=True
+        self, request: HttpRequest, object_id: int, *, alone=True
     ):
-        return self.activate_delivery_action_row(request, object_id, True)
+        return self.activate_delivery_action_row(
+            request, object_id, uncancel=True, alone=alone
+        )
 
     @action(
         description=_(
@@ -680,7 +694,7 @@ class DeliveryAdmin(CustomModelAdmin):
         permissions=["activate_delivery_action_row"],
     )
     def activate_delivery_action_row(
-        self, request: HttpRequest, object_id: int, uncancel=False, alone=True
+        self, request: HttpRequest, object_id: int, *, uncancel=False, alone=True
     ):
         deliv = Delivery.objects.get(id=object_id)
         if not deliv.is_active:
@@ -738,7 +752,7 @@ class DeliveryAdmin(CustomModelAdmin):
         url_path="bulk-edit-action",
     )
     def bulk_edit_action(self, request: HttpRequest):
-        form = bulkCreateDeliveriesForm(request.POST or None)
+        form = BulkCreateDeliveriesForm(request.POST or None)
 
         if request.method == "POST" and form.is_valid():
             form_dates = form.cleaned_data["dates"]
@@ -795,12 +809,15 @@ class DeliveryAdmin(CustomModelAdmin):
 
             messages.success(
                 request,
-                f"{len(succesful_creation) + len(succesful_activation)} dates ont bien été créées/activées (cette opération n'impacte pas les commandes déjà annulées), et {len(succesful_deactivation) + succesful_deactivation_e} dates ont bien été désactivées.",
+                f"{len(succesful_creation) + len(succesful_activation)} dates ont bien été créées/activées "
+                "(cette opération n'impacte pas les commandes déjà annulées), "
+                f"et {len(succesful_deactivation) + succesful_deactivation_e} dates ont bien été désactivées.",
             )
             if len(failed) > 0:
                 messages.error(
                     request,
-                    f"{len(failed)} dates n'ont pas été désactivés, car auraient nécessité d'annuler des commandes clients {(*[deliv.date.strftime('%d/%m/%y') for deliv in failed],)}.",
+                    f"{len(failed)} dates n'ont pas été désactivés, car auraient nécessité "
+                    f"d'annuler des commandes clients: {(*[deliv.date.strftime('%d/%m/%y') for deliv in failed],)}.",
                 )
             else:
                 return redirect(reverse_lazy("admin:commande_delivery_changelist"))
@@ -843,7 +860,9 @@ class HelloAssoCheckoutAdmin(CustomModelAdmin):
         description=_("Rafraichir les données"),
         variant=ActionVariant.PRIMARY,
     )
-    def refresh_data_action_row(self, request: HttpRequest, object_id: int, alone=True):
+    def refresh_data_action_row(
+        self, request: HttpRequest, object_id: int, *, alone=True
+    ):
         with transaction.atomic():
             checkout = HelloAssoCheckout.objects.get(id=object_id)
             checkout.refresh_from_api()
@@ -897,10 +916,11 @@ class LogEntryAdmin(CustomModelAdmin):
 
     # Make the action flag (Add/Change/Delete) readable with colors
     def action_flag_(self, obj):
-        flags = {1: "Green", 2: "Blue", 3: "Red"}  # Add, Change, Deletion
-        colors = {1: "green", 2: "#2471a3", 3: "red"}
-        return mark_safe(
-            f'<b style="color:{colors[obj.action_flag]}">{obj.get_action_flag_display()}</b>'
+        colors = {1: "green", 2: "#2471a3", 3: "red"}  # Add, Change, Deletion
+        return format_html(
+            '<b style="color:{}">{}</b>',
+            colors[obj.action_flag],
+            obj.get_action_flag_display(),
         )
 
 
@@ -915,7 +935,7 @@ class PrecreateUserView(UnfoldModelAdminViewMixin, FormView):
 
         # Create user in DB
         user = form.save(commit=False)
-        PrecreateUserFunction(user, self.request)
+        precreate_user_function(user, self.request)
 
         messages.success(self.request, "Utilisateur bien pré-créé")
         return super().form_valid(form)
@@ -955,7 +975,7 @@ class PrecreateUsersView(UnfoldModelAdminViewMixin, FormView):
                 # keep invalid or empty forms for re-rendering
                 invalid_forms_indices.append(i)
 
-        PrecreateUsersFunction(valid_users, self.request)
+        precreate_users_function(valid_users, self.request)
 
         if valid_users:
             messages.success(
@@ -969,16 +989,18 @@ class PrecreateUsersView(UnfoldModelAdminViewMixin, FormView):
             )
 
             # Rebuild formset with only invalid forms
-            Formset = self.get_form_class(extra=len(invalid_forms_indices))
+            Formset = self.get_form_class(extra=len(invalid_forms_indices))  # noqa: N806 (returns a class)
             # Pass in data from the original request to preserve errors
             new_formset = Formset(
                 data=self.request.POST,
                 queryset=User.objects.none(),
             )
-            # Delete all non invalid forms
-            for i, form in reversed(list(enumerate(new_formset.forms))):
-                if i not in invalid_forms_indices:
-                    del new_formset.forms[i]
+            # Keep only invalid forms
+            new_formset.forms = [
+                form
+                for i, form in enumerate(new_formset.forms)
+                if i in invalid_forms_indices
+            ]
 
             return self.render_to_response(self.get_context_data(form=new_formset))
 

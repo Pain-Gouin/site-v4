@@ -38,9 +38,10 @@ def login_required_with_message(
         def _wrapped_view(request, *args, **kwargs):
             if not request.user.is_authenticated:
                 request.session["login_message"] = message
-                request.session["login_next"] = (
-                    None  # Stored to be able to invalidate message in case the querystring changes and not this session variable. Will be set in the view.
-                )
+
+                # Stored to be able to invalidate message in case the querystring changes and not
+                # this session variable. Will be set in the view.
+                request.session["login_next"] = None
             # apply normal login_required check
             return login_required(view_func)(request, *args, **kwargs)
 
@@ -50,7 +51,7 @@ def login_required_with_message(
 
 
 def send_mass_html_mail(
-    datatuple, fail_silently=False, user=None, password=None, connection=None
+    datatuple, *, fail_silently=False, user=None, password=None, connection=None
 ):
     """
     Given a datatuple of (subject, text_content, html_content, from_email,
@@ -81,8 +82,8 @@ def append_unique_in_order(list1, list2, *lists):
     new_list = list(list1[:])  # to not modify original list
 
     # 2. Iterate through list_b, maintaining the original order.
-    for l in (list2,) + lists:
-        for item in l:
+    for listn in (list2, *lists):
+        for item in listn:
             # Check if the item is NOT already in our set of existing elements
             if item not in existing_elements:
                 # 3. If it's new, append it to list_a and ADD it to the set.
@@ -102,13 +103,12 @@ def first_editable_day():
     return today + timedelta(1)
 
 
-def SendMailVerification(user, new_email, request):
-    from ..models import User
+def send_mail_verification(user, new_email, request):
 
     # Temporarily set the email to generate the token
     current_email = user.email
     user.email = new_email
-    user_pk_bytes = force_bytes(User._meta.pk.value_to_string(user))
+    user_pk_bytes = force_bytes(user.pk)
     token = PasswordResetTokenGenerator().make_token(user)
 
     receiver_email = new_email
@@ -139,32 +139,32 @@ def SendMailVerification(user, new_email, request):
     user.email = current_email
 
 
-def PrecreateUserFunction(user, request):
-    return PrecreateUsersFunction([user], request)
+def precreate_user_function(user, request):
+    return precreate_users_function([user], request)
 
 
-def SendPrecreationMailFunction(user, request):
-    return SendPrecreationMailsFunction([user], request)
+def send_precreation_mail_function(user, request):
+    return send_precreation_mails_function([user], request)
 
 
-def PrecreateUsersFunction(users, request):
+def precreate_users_function(users, request):
     # Create users in DB
     for user in users:
         user.date_joined = None  # To indicate that the user hasn't yet joined
         user.is_active = False
         user.save()
 
-    SendPrecreationMailsFunction(users, request)
+    send_precreation_mails_function(users, request)
 
 
-def SendPrecreationMailsFunction(users, request):
-    from ..models import User
-
-    # Send pre-creation emails
+def send_precreation_mails_function(users, request):
+    """
+    Send account pre-creation emails
+    """
     emails = []
     template_name = "mail/precreation_mail.html"
     for user in users:
-        user_pk_bytes = force_bytes(User._meta.pk.value_to_string(user))
+        user_pk_bytes = force_bytes(user.pk)
         token = PasswordResetTokenGenerator().make_token(user)
         convert_to_html_content = render_to_string(
             template_name=template_name,
@@ -191,15 +191,13 @@ def SendPrecreationMailsFunction(users, request):
 
 
 @deconstructible
-class WhitelistEmailValidator(EmailValidator):
-    def validate_domain_part(self, domain_part):
-        if domain_part in self.whitelist:
-            return True
-        return False
+class WhitelistEmailValidator(EmailValidator):  # noqa: PLW1641 (it is not defined in EmailValidator either)
+    def __init__(self, whitelist, message=None, code=None):
+        self.whitelist = set(whitelist)
+        super().__init__(message, code)
 
     def __eq__(self, other):
         return isinstance(other, WhitelistEmailValidator) and super().__eq__(other)
 
-    def __init__(self, whitelist, message=None, code=None):
-        self.whitelist = set(whitelist)
-        super().__init__(message, code)
+    def validate_domain_part(self, domain_part):
+        return domain_part in self.whitelist

@@ -33,8 +33,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         blank=True,
         null=True,
         help_text=_(
-            "Date de la dernière connexion de l'utilisateur. "
-            "Si vide, alors le compte n'a pas encore été activé."
+            "Date de la dernière connexion de l'utilisateur. Si vide, alors le compte n'a pas encore été activé."
         ),
     )
     first_name = models.CharField(_("first name"), max_length=150, blank=True)
@@ -48,8 +47,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         _("active"),
         default=True,
         help_text=_(
-            "Designates whether this user should be treated as active. "
-            "Unselect this instead of deleting accounts."
+            "Designates whether this user should be treated as active. Unselect this instead of deleting accounts."
         ),
     )
     email_verified = models.BooleanField(
@@ -86,11 +84,12 @@ class User(AbstractBaseUser, PermissionsMixin):
         "Chambre",
         max_length=10,
         blank=False,
-        null=True,
-        help_text="Désigne la chambre de l'utilisateur. Permet de préremplir la chambre de livraison lors d'une commande",
+        default="",
+        help_text="Désigne la chambre de l'utilisateur. "
+        "Permet de préremplir la chambre de livraison lors d'une commande",
     )
     phone = models.CharField(
-        "Numéro de téléphone", max_length=20, blank=False, null=True
+        "Numéro de téléphone", max_length=20, blank=False, default=""
     )
     created_at = models.DateTimeField(default=timezone.now, verbose_name=_("Créé le"))
     balance_cache = models.DecimalField(
@@ -98,7 +97,8 @@ class User(AbstractBaseUser, PermissionsMixin):
         max_digits=8,
         decimal_places=2,
         default=0,
-        help_text="Cache pour stocker le potentiel solde actuel de l'utilisateur. La table des transactions fait foix !",
+        help_text="Cache pour stocker le potentiel solde actuel de l'utilisateur. "
+        "La table des transactions fait foix !",
     )
 
     @cached_property
@@ -106,10 +106,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         """
         Returns the created_at date of the most recent order made by this user.
         """
-        latest_order = self.order_set.aggregate(max_date=models.Max("created_at"))[
-            "max_date"
-        ]
-        return latest_order
+        return self.order_set.aggregate(max_date=models.Max("created_at"))["max_date"]
 
     def sync_balance_cache(self):
         with transaction.atomic():
@@ -123,7 +120,6 @@ class User(AbstractBaseUser, PermissionsMixin):
             return False
 
     def can_be_verified_genuine_user(self):
-        print(f"{self.transaction_set.exists()=}")
         if self.verified_genuine_user:  # Why have you called this function ?
             return True
         if self.transaction_set.exists() or (
@@ -196,16 +192,12 @@ class ProductCategory(models.Model):
     )
 
     class Meta:
-        verbose_name_plural = "product categories"
+        verbose_name = _("Catégorie produit")
+        verbose_name_plural = _("Catégories produit")
         ordering = ["sort"]
 
     def __str__(self) -> str:
         return self.name
-
-    class Meta:
-        verbose_name = _("Catégorie produit")
-        verbose_name_plural = _("Catégories produit")
-        ordering = ["sort"]
 
 
 class Product(models.Model):
@@ -286,30 +278,30 @@ class Delivery(models.Model):
     )
     objects = DeliveryQuerySet.as_manager()
 
+    class Meta:
+        ordering = ["-date"]
+        verbose_name = _("Livraison")
+
+    def __str__(self) -> str:
+        return str(self.date)
+
     @property
     def is_editable(self):
         return self.is_active and self.date >= first_editable_day()
 
-    def deactivate(self, request, cancel_orders=True):
+    def deactivate(self, request, *, cancel_orders=True):
         if not self.is_active:
             return False  # delivery already deactivated
         with transaction.atomic():
             for order in self.order_set.all():
                 if cancel_orders:
-                    order.cancel(request, False)
+                    order.cancel(request, from_user=False)
                 elif not order.is_cancelled:
                     return False
 
             self.is_active = False
             self.save()
         return True
-
-    def __str__(self) -> str:
-        return str(self.date)
-
-    class Meta:
-        ordering = ["-date"]
-        verbose_name = _("Livraison")
 
 
 class Order(models.Model):
@@ -332,11 +324,21 @@ class Order(models.Model):
     created_at = models.DateTimeField(default=timezone.now)
     updated_at = models.DateTimeField(auto_now=True)
 
+    class Meta:
+        verbose_name = _("Commande")
+        ordering = ["-created_at"]
+
+    def __str__(self) -> str:
+        return (
+            f"Commande de {self.client} pour le {formats.date_format(self.delivery.date, 'D j M Y')} "
+            f"({formats.date_format(self.created_at, 'd/m/Y H:i:s')})"
+        )
+
     @property
     def is_editable(self):
         return self.delivery.is_editable
 
-    def update_transactions(self, request, save=True, reason="Annulation"):
+    def update_transactions(self, request, *, save=True, reason="Annulation"):
         with transaction.atomic():
             current_price_paid = -self.transactions.aggregate(
                 models.Sum("amount", default=0)
@@ -361,7 +363,7 @@ class Order(models.Model):
                 return True
             return False
 
-    def cancel(self, request, from_user=True):
+    def cancel(self, request, *, from_user=True):
         if self.is_cancelled:
             return  # already cancelled
         with transaction.atomic():
@@ -370,15 +372,8 @@ class Order(models.Model):
                 updated_at=timezone.now(),  # Manually update timestamp, as auto_now=True is bypassed by update()
             )
             self.is_cancelled = from_user  # If not from the user, than should not be marked cancelled by the user.
-            self.update_transactions(request, False)
+            self.update_transactions(request, save=False)
             self.save()
-
-    def __str__(self) -> str:
-        return f"Commande de {self.client} pour le {formats.date_format(self.delivery.date, 'D j M Y')} ({formats.date_format(self.created_at, 'd/m/Y H:i:s')})"
-
-    class Meta:
-        verbose_name = _("Commande")
-        ordering = ["-created_at"]
 
 
 class OrderProduct(models.Model):
@@ -411,11 +406,19 @@ class OrderProduct(models.Model):
         choices=OrderProductStatusChoices,
         max_length=7,
         verbose_name="État de livraison du produit",
-        help_text="Permet d'identifier si le produit n'a pas été récupéré à la boulangerie, ou a été récupéré mais pas livré à l'utilisateur",
+        help_text="Permet d'identifier si le produit n'a pas été récupéré à la boulangerie, "
+        "ou a été récupéré mais pas livré à l'utilisateur",
         default=OrderProductStatusChoices.VALID,
     )
 
     updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = _("Produit commandé")
+        verbose_name_plural = _("Produits commandés")
+
+    def __str__(self) -> str:
+        return f"{self.product.name} x{self.quantity}"
 
     def save(self, *args, **kwargs):
         # automatically calculate the price at time of saving
@@ -424,10 +427,6 @@ class OrderProduct(models.Model):
         if self.total_price_bought is None:
             self.total_price_bought = self.product.purchase_price * self.quantity
         super().save(*args, **kwargs)
-
-    class Meta:
-        verbose_name = _("Produit commandé")
-        verbose_name_plural = _("Produits commandés")
 
 
 class HelloAssoCheckout(models.Model):
@@ -458,44 +457,56 @@ class HelloAssoCheckout(models.Model):
     created_at = models.DateTimeField(default=timezone.now)
     updated_at = models.DateTimeField(auto_now=True)
 
+    class Meta:
+        verbose_name = "HelloAsso Checkout"
+        ordering = ["-created_at"]
+
+    def __str__(self) -> str:
+        return f"#{self.checkout_intent_id} pour {self.amount}€"
+
     def refresh_from_api(self):
-        from .tasks import check_checkout_status
+        from .tasks import (  # noqa: PLC0415 (To prevent circular import)
+            check_checkout_status,
+        )
 
-        with transaction.atomic():
-            with get_api_client() as api_client:
-                api_instance = helloasso_python.CheckoutApi(api_client)
-                organization_slug = settings.HELLOASSO_ORG_SLUG
-                checkout_intent_id = self.checkout_intent_id
-                try:
-                    api_response = api_instance.organizations_organization_slug_checkout_intents_checkout_intent_id_get(
-                        organization_slug, checkout_intent_id
-                    )
-                    if not api_response.order:
-                        if timezone.now() - self.created_at > timezone.timedelta(
-                            minutes=45
-                        ):  # checkout intent can be considered cancelled
-                            self.delete()  # Maybe we should verify no transactions are attached, but it is not suppose to be possible, and this would prevent deletion anyway
-                        else:
-                            self.status = HelloAssoCheckout.HelloAssoCheckoutStatusChoices.INITIATED
-                            self.save()
-                            check_checkout_status.apply_async_on_commit(
-                                (self.checkout_intent_id,), countdown=60 * 60
-                            )
+        with transaction.atomic(), get_api_client() as api_client:
+            api_instance = helloasso_python.CheckoutApi(api_client)
+            organization_slug = settings.HELLOASSO_ORG_SLUG
+            checkout_intent_id = self.checkout_intent_id
+            try:
+                api_response = api_instance.organizations_organization_slug_checkout_intents_checkout_intent_id_get(
+                    organization_slug, checkout_intent_id
+                )
+                if not api_response.order:
+                    if timezone.now() - self.created_at > timezone.timedelta(
+                        minutes=45
+                    ):  # checkout intent can be considered cancelled
+                        self.delete()
+                        # Maybe we should verify that no transactions are attached,
+                        # but it is not supposed to be possible, and this would prevent deletion anyway
                     else:
-                        self.parse_order(api_response.order, False)
-                        self.parse_payment(api_response.order.payments[0], False)
-                        self.update_transactions(False)
+                        self.status = (
+                            HelloAssoCheckout.HelloAssoCheckoutStatusChoices.INITIATED
+                        )
                         self.save()
-                    return True
+                        check_checkout_status.apply_async_on_commit(
+                            (self.checkout_intent_id,), countdown=60 * 60
+                        )
+                else:
+                    self.parse_order(api_response.order, save=False)
+                    self.parse_payment(api_response.order.payments[0], save=False)
+                    self.update_transactions(save=False)
+                    self.save()
+            except helloasso_python.ApiException as e:
+                log_api_exception(
+                    e,
+                    api_instance.organizations_organization_slug_checkout_intents_checkout_intent_id_get,
+                )
+                return False
+            else:
+                return True
 
-                except helloasso_python.ApiException as e:
-                    log_api_exception(
-                        e,
-                        api_instance.organizations_organization_slug_checkout_intents_checkout_intent_id_get,
-                    )
-                    return False
-
-    def update_transactions(self, save=True):
+    def update_transactions(self, *, save=True):
         with transaction.atomic():
             current_transaction_amount = self.transactions.aggregate(
                 models.Sum("amount", default=0)
@@ -532,6 +543,7 @@ class HelloAssoCheckout(models.Model):
     def parse_order(
         self,
         order: helloasso_python.HelloAssoApiV5ModelsStatisticsOrderDetail,
+        *,
         save=True,
     ):
         if (
@@ -561,6 +573,7 @@ class HelloAssoCheckout(models.Model):
     def parse_payment(
         self,
         payment: helloasso_python.HelloAssoApiV5ModelsStatisticsOrderPayment,
+        *,
         save=True,
     ):
         if not self.payement_id:
@@ -595,17 +608,15 @@ class HelloAssoCheckout(models.Model):
         if save:
             self.save()
 
-    class Meta:
-        verbose_name = "HelloAsso Checkout"
-        ordering = ["-created_at"]
-
 
 class ImmutableQuerySet(models.QuerySet):
     def delete(self):
-        raise PermissionDenied("Bulk deletion of transactions is protected.")
+        msg = "Bulk deletion of transactions is protected."
+        raise PermissionDenied(msg)
 
     def update(self, **kwargs):
-        raise PermissionDenied("Bulk updating of transactions is protected.")
+        msg = "Bulk updating of transactions is protected."
+        raise PermissionDenied(msg)
 
 
 class Transaction(models.Model):
@@ -645,7 +656,8 @@ class Transaction(models.Model):
         verbose_name="Initiateur de la transaction",
         related_name="initiated_transactions",
         on_delete=models.PROTECT,
-        help_text="Désigne la personne à l'origine de la transaction. Peut être l'utilisateur lui-même, par exemple lors d'une commande, ou bien un administrateur.",
+        help_text="Désigne la personne à l'origine de la transaction. Peut être l'utilisateur "
+        "lui-même, par exemple lors d'une commande, ou bien un administrateur.",
     )
     created_at = models.DateTimeField(
         default=timezone.now, verbose_name=_("Effectuée le")
@@ -653,9 +665,16 @@ class Transaction(models.Model):
 
     objects = ImmutableQuerySet.as_manager()
 
+    class Meta:
+        ordering = ["-created_at"]
+
+    def __str__(self) -> str:
+        return f"{self.amount}€ pour {self.initiator}"
+
     def save(self, *args, **kwargs):
         if not self._state.adding:
-            raise PermissionDenied("Transactions cannot be modified once created.")
+            msg = "Transactions cannot be modified once created."
+            raise PermissionDenied(msg)
 
         # To keep user's balance cache in sync
         with transaction.atomic():
@@ -665,7 +684,5 @@ class Transaction(models.Model):
             )
 
     def delete(self, *args, **kwargs):
-        raise PermissionDenied("Transactions cannot be deleted.")
-
-    class Meta:
-        ordering = ["-created_at"]
+        msg = "Transactions cannot be deleted."
+        raise PermissionDenied(msg)
