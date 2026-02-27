@@ -1,8 +1,7 @@
-from django.urls import path
+from django.contrib.auth import views as auth_views
+from django.urls import path, reverse_lazy
 
 from . import views
-from django.contrib.auth import views as auth_views
-from django.urls import reverse_lazy
 
 urlpatterns = [
     path("", views.index, name="index"),
@@ -10,18 +9,32 @@ urlpatterns = [
     path("contact", views.contact, name="contact"),
     path("login", views.login_page, name="login"),
     path("login/check-email/", views.check_email, name="check-email"),
-    path("login/verify-email/<uidb64>/<email64>/<token>/", views.verify_email, name="verify-email"),
-    path("login/reset-password", views.reset_password_ajax, name='password_reset_ajax'),
+    path(
+        "login/verify-email/<uidb64>/<email64>/<token>/",
+        views.verify_email,
+        name="verify-email",
+    ),
+    path("login/reset-password", views.reset_password_ajax, name="password_reset_ajax"),
     path("logout", views.logout_user, name="logout"),
     path("signup", views.signup, name="signup"),
     path("signup/<uidb64>/<token>/", views.finish_signup_page, name="finish_signup"),
     path("update", views.update_user_page, name="update"),
     path("commande", views.commande, name="commande"),
     path("recharge", views.recharge, name="recharge"),
-    path("recharge/helloasso_webhook", views.helloasso_webhook_handler, name="helloasso-webhook-handler"),
+    path(
+        "recharge/helloasso_webhook",
+        views.helloasso_webhook_handler,
+        name="helloasso-webhook-handler",
+    ),
     path("recharge-lyf", views.recharge_lyf, name="recharge-lyf"),
-    path("account-verification", views.account_verification, name="account-verification"),
-    path("account-verification/<uidb64>/<token>/", views.verify_account, name="verify-account"),
+    path(
+        "account-verification", views.account_verification, name="account-verification"
+    ),
+    path(
+        "account-verification/<uidb64>/<token>/",
+        views.verify_account,
+        name="verify-account",
+    ),
     path("livreur", views.livreur, name="livreur"),
     path("historique", views.historique, name="historique"),
     path(

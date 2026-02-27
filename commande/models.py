@@ -1,28 +1,25 @@
 from decimal import Decimal
 
-from django.core.exceptions import PermissionDenied
-from django.db import models, transaction
+import helloasso_python
+from django.conf import settings
 from django.contrib.auth.models import (
     AbstractBaseUser,
-    PermissionsMixin,
     Group,
+    PermissionsMixin,
+    UserManager,
 )
-from django.contrib.auth.models import UserManager
+from django.core.exceptions import PermissionDenied
+from django.db import models, transaction
 from django.db.models import F
 from django.db.models.functions import Coalesce
+from django.utils import formats, timezone
 from django.utils.functional import cached_property
 from django.utils.translation import gettext_lazy as _
-from django.conf import settings
-
-from django.utils import timezone, formats
-
 from imagekit.models import ImageSpecField
 from imagekit.processors import ResizeToFit
 
-from .utils import first_editable_day
-
-import helloasso_python
-from .helloasso import get_api_client, log_api_exception
+from .utils.helloasso import get_api_client, log_api_exception
+from .utils.utils import first_editable_day
 
 # Create your models here.
 
@@ -124,17 +121,19 @@ class User(AbstractBaseUser, PermissionsMixin):
                 self.save(update_fields=["balance_cache"])
                 return True
             return False
-    
+
     def can_be_verified_genuine_user(self):
         print(f"{self.transaction_set.exists()=}")
-        if self.verified_genuine_user: # Why have you called this function ?
+        if self.verified_genuine_user:  # Why have you called this function ?
             return True
-        if self.transaction_set.exists() or (self.email_verified and self.email.split("@")[-1] in settings.VERIFIED_USER_EMAIL_DOMAINS):
+        if self.transaction_set.exists() or (
+            self.email_verified
+            and self.email.split("@")[-1] in settings.VERIFIED_USER_EMAIL_DOMAINS
+        ):
             self.verified_genuine_user = True
             self.save(update_fields=["verified_genuine_user"])
             return True
         return False
-
 
     @staticmethod
     def sync_all_user_balances():
@@ -173,13 +172,12 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     def save(self, *args, **kwargs):
         add_default_group = self._state.adding
-        
+
         super().save(*args, **kwargs)
 
         if add_default_group:
             group, _ = Group.objects.get_or_create(name="default")
             self.groups.add(group)
-
 
     def __str__(self):
         return f"{self.first_name} {self.last_name.upper()}"
@@ -340,14 +338,14 @@ class Order(models.Model):
 
     def update_transactions(self, request, save=True, reason="Annulation"):
         with transaction.atomic():
-            current_price_paid = (
-                -self.transactions.aggregate(models.Sum("amount", default=0))["amount__sum"]
-            )
-            price_to_pay = (
-                self.orderproduct_set.filter(
-                    delivery_status=OrderProduct.OrderProductStatusChoices.VALID
-                ).aggregate(models.Sum("total_price_sold", default=0))["total_price_sold__sum"]
-            )
+            current_price_paid = -self.transactions.aggregate(
+                models.Sum("amount", default=0)
+            )["amount__sum"]
+            price_to_pay = self.orderproduct_set.filter(
+                delivery_status=OrderProduct.OrderProductStatusChoices.VALID
+            ).aggregate(models.Sum("total_price_sold", default=0))[
+                "total_price_sold__sum"
+            ]
             diff = current_price_paid - price_to_pay
             if diff:
                 refund_transaction = Transaction.objects.create(
@@ -371,12 +369,12 @@ class Order(models.Model):
                 delivery_status=OrderProduct.OrderProductStatusChoices.CANCELLED,
                 updated_at=timezone.now(),  # Manually update timestamp, as auto_now=True is bypassed by update()
             )
-            self.is_cancelled = from_user # If not from the user, than should not be marked cancelled by the user.
+            self.is_cancelled = from_user  # If not from the user, than should not be marked cancelled by the user.
             self.update_transactions(request, False)
             self.save()
 
     def __str__(self) -> str:
-        return f"Commande de {self.client} pour le {formats.date_format(self.delivery.date, "D j M Y")} ({formats.date_format(self.created_at, "d/m/Y H:i:s")})"
+        return f"Commande de {self.client} pour le {formats.date_format(self.delivery.date, 'D j M Y')} ({formats.date_format(self.created_at, 'd/m/Y H:i:s')})"
 
     class Meta:
         verbose_name = _("Commande")
@@ -445,7 +443,9 @@ class HelloAssoCheckout(models.Model):
     checkout_intent_id = models.PositiveIntegerField(unique=True, null=True, blank=True)
     order_id = models.PositiveIntegerField(unique=True, null=True, blank=True)
     payement_id = models.PositiveIntegerField(unique=True, null=True, blank=True)
-    amount = models.DecimalField(_("Somme"), max_digits=5, decimal_places=2, help_text="en euros")
+    amount = models.DecimalField(
+        _("Somme"), max_digits=5, decimal_places=2, help_text="en euros"
+    )
     user = models.ForeignKey(User, on_delete=models.PROTECT)
 
     status = models.CharField(
@@ -460,20 +460,27 @@ class HelloAssoCheckout(models.Model):
 
     def refresh_from_api(self):
         from .tasks import check_checkout_status
+
         with transaction.atomic():
             with get_api_client() as api_client:
                 api_instance = helloasso_python.CheckoutApi(api_client)
                 organization_slug = settings.HELLOASSO_ORG_SLUG
                 checkout_intent_id = self.checkout_intent_id
                 try:
-                    api_response = api_instance.organizations_organization_slug_checkout_intents_checkout_intent_id_get(organization_slug, checkout_intent_id)
+                    api_response = api_instance.organizations_organization_slug_checkout_intents_checkout_intent_id_get(
+                        organization_slug, checkout_intent_id
+                    )
                     if not api_response.order:
-                        if timezone.now() - self.created_at > timezone.timedelta(minutes=45): # checkout intent can be considered cancelled
-                            self.delete() # Maybe we should verify no transactions are attached, but it is not suppose to be possible, and this would prevent deletion anyway
+                        if timezone.now() - self.created_at > timezone.timedelta(
+                            minutes=45
+                        ):  # checkout intent can be considered cancelled
+                            self.delete()  # Maybe we should verify no transactions are attached, but it is not suppose to be possible, and this would prevent deletion anyway
                         else:
                             self.status = HelloAssoCheckout.HelloAssoCheckoutStatusChoices.INITIATED
                             self.save()
-                            check_checkout_status.apply_async_on_commit((self.checkout_intent_id,), countdown=60*60)
+                            check_checkout_status.apply_async_on_commit(
+                                (self.checkout_intent_id,), countdown=60 * 60
+                            )
                     else:
                         self.parse_order(api_response.order, False)
                         self.parse_payment(api_response.order.payments[0], False)
@@ -482,15 +489,23 @@ class HelloAssoCheckout(models.Model):
                     return True
 
                 except helloasso_python.ApiException as e:
-                    log_api_exception(e, api_instance.organizations_organization_slug_checkout_intents_checkout_intent_id_get)
+                    log_api_exception(
+                        e,
+                        api_instance.organizations_organization_slug_checkout_intents_checkout_intent_id_get,
+                    )
                     return False
 
     def update_transactions(self, save=True):
         with transaction.atomic():
-            current_transaction_amount = (
-                self.transactions.aggregate(models.Sum("amount", default=0))["amount__sum"]
+            current_transaction_amount = self.transactions.aggregate(
+                models.Sum("amount", default=0)
+            )["amount__sum"]
+            current_amount = (
+                self.amount
+                if self.status
+                == HelloAssoCheckout.HelloAssoCheckoutStatusChoices.AUTHORIZED
+                else 0
             )
-            current_amount = self.amount if self.status == HelloAssoCheckout.HelloAssoCheckoutStatusChoices.AUTHORIZED else 0
             diff = current_amount - current_transaction_amount
 
             if diff:
@@ -498,7 +513,14 @@ class HelloAssoCheckout(models.Model):
                     user=self.user,
                     amount=diff,
                     type=Transaction.TransactionTypeChoices.HELLOASSO_CHECKOUT,
-                    note=self.status.label if self.status in (HelloAssoCheckout.HelloAssoCheckoutStatusChoices.AUTHORIZED, HelloAssoCheckout.HelloAssoCheckoutStatusChoices.REFUNDED, HelloAssoCheckout.HelloAssoCheckoutStatusChoices.CONTESTED) else "Régularisation d'une anomalie",
+                    note=self.status.label
+                    if self.status
+                    in (
+                        HelloAssoCheckout.HelloAssoCheckoutStatusChoices.AUTHORIZED,
+                        HelloAssoCheckout.HelloAssoCheckoutStatusChoices.REFUNDED,
+                        HelloAssoCheckout.HelloAssoCheckoutStatusChoices.CONTESTED,
+                    )
+                    else "Régularisation d'une anomalie",
                     initiator=self.user,
                 )
                 self.transactions.add(new_transaction)
@@ -506,9 +528,16 @@ class HelloAssoCheckout(models.Model):
                     self.save()
                 return True
             return False
-    
-    def parse_order(self, order: helloasso_python.HelloAssoApiV5ModelsStatisticsOrderDetail, save=True):
-        if order.checkout_intent_id and order.checkout_intent_id != self.checkout_intent_id:
+
+    def parse_order(
+        self,
+        order: helloasso_python.HelloAssoApiV5ModelsStatisticsOrderDetail,
+        save=True,
+    ):
+        if (
+            order.checkout_intent_id
+            and order.checkout_intent_id != self.checkout_intent_id
+        ):
             error_msg = (
                 f"CRITICAL: Checkout Intent ID mismatch! "
                 f"Expected {self.checkout_intent_id}, but received {order.checkout_intent_id}. "
@@ -529,7 +558,11 @@ class HelloAssoCheckout(models.Model):
         if save:
             self.save()
 
-    def parse_payment(self, payment: helloasso_python.HelloAssoApiV5ModelsStatisticsOrderPayment, save=True):
+    def parse_payment(
+        self,
+        payment: helloasso_python.HelloAssoApiV5ModelsStatisticsOrderPayment,
+        save=True,
+    ):
         if not self.payement_id:
             self.payement_id = payment.id
         elif self.payement_id != payment.id:
@@ -539,12 +572,17 @@ class HelloAssoCheckout(models.Model):
                 f"This could indicate a logic error or a spoofing attempt."
             )
             raise ValueError(error_msg)
-        
+
         match payment.state:
             case helloasso_python.HelloAssoApiV5ModelsEnumsPaymentState.PENDING:
                 self.status = HelloAssoCheckout.HelloAssoCheckoutStatusChoices.PENDING
-            case helloasso_python.HelloAssoApiV5ModelsEnumsPaymentState.AUTHORIZED | helloasso_python.HelloAssoApiV5ModelsEnumsPaymentState.REFUNDING:
-                self.status = HelloAssoCheckout.HelloAssoCheckoutStatusChoices.AUTHORIZED
+            case (
+                helloasso_python.HelloAssoApiV5ModelsEnumsPaymentState.AUTHORIZED
+                | helloasso_python.HelloAssoApiV5ModelsEnumsPaymentState.REFUNDING
+            ):
+                self.status = (
+                    HelloAssoCheckout.HelloAssoCheckoutStatusChoices.AUTHORIZED
+                )
             case helloasso_python.HelloAssoApiV5ModelsEnumsPaymentState.REFUSED:
                 self.status = HelloAssoCheckout.HelloAssoCheckoutStatusChoices.REFUSED
             case helloasso_python.HelloAssoApiV5ModelsEnumsPaymentState.REFUNDED:
@@ -556,7 +594,7 @@ class HelloAssoCheckout(models.Model):
 
         if save:
             self.save()
-    
+
     class Meta:
         verbose_name = "HelloAsso Checkout"
         ordering = ["-created_at"]
@@ -568,6 +606,7 @@ class ImmutableQuerySet(models.QuerySet):
 
     def update(self, **kwargs):
         raise PermissionDenied("Bulk updating of transactions is protected.")
+
 
 class Transaction(models.Model):
     class TransactionTypeChoices(models.TextChoices):

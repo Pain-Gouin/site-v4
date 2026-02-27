@@ -21,3 +21,15 @@ updates:
     directory: "/theme/static_src" # Location of package manifests
     schedule:
       interval: "weekly"
+  - package-ecosystem: "docker"
+    directory: "/docker/" # Location of package manifests
+    schedule:
+      interval: "weekly"
+  - package-ecosystem: "docker-compose"
+    directory: "/docker/" # Location of package manifests
+    schedule:
+      interval: "weekly"
+  - package-ecosystem: "devcontainers" # See documentation for possible values
+    directory: "/"
+    schedule:
+      interval: weekly

@@ -1,0 +1,40 @@
+FROM buildpack-deps:trixie
+
+WORKDIR /app
+
+# 1. Install uv (Python Manager)
+COPY --from=ghcr.io/astral-sh/uv:0.10 /uv /uvx /bin/
+
+# 2. Install fnm (Node Manager)
+RUN curl -fsSL https://fnm.vercel.app/install | bash -s -- --install-dir /usr/local/bin --skip-shell
+
+# 3. System dependencies for Django/MariaDB
+RUN apt-get update && apt-get install -y \
+    libmariadb-dev \
+    build-essential \
+    && rm -rf /var/lib/apt/lists/*
+
+ARG USERNAME=vscode
+ARG USER_UID=1000
+ARG USER_GID=$USER_UID
+
+# Create the user
+RUN groupadd --gid $USER_GID $USERNAME \
+    && useradd --uid $USER_UID --gid $USER_GID --shell /bin/bash -m $USERNAME \
+    && apt-get update \
+    && apt-get install -y sudo \
+    && echo $USERNAME ALL=\(root\) NOPASSWD:ALL > /etc/sudoers.d/$USERNAME \
+    && chmod 0440 /etc/sudoers.d/$USERNAME
+
+USER $USERNAME
+
+# 4. Initialize fnm in the shell
+RUN echo 'eval "$(fnm env --use-on-cd)"' >> ~/.bashrc \
+    && echo 'eval "$(fnm env --use-on-cd)"' >> ~/.zshrc
+
+COPY .nvmrc /app/
+COPY .python-version /app/
+
+# Pre-install default versions so the container is ready to go
+RUN uv python install \
+    && fnm install

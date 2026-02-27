@@ -49,7 +49,7 @@ RUN rm -rf theme/static_src
 # Stage 2: Production stage
 FROM python:${PYTHON_VERSION}-slim-trixie
 
-ARG APP_HOME 
+ARG APP_HOME
 ARG COMMIT_SHA \
     MINIMAL
 
@@ -97,7 +97,7 @@ RUN python manage.py collectstatic --noinput
 # Expose the application port
 EXPOSE 8000
 
-RUN ["chmod", "+x", "docker-entrypoint.sh"]
-ENTRYPOINT ["./docker-entrypoint.sh"]
+RUN ["chmod", "+x", "docker/docker-entrypoint.sh"]
+ENTRYPOINT ["docker/docker-entrypoint.sh"]
 
 LABEL org.opencontainers.image.description="Minimal django container for the PainGouin website"

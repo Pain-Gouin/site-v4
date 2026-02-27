@@ -1,7 +1,0 @@
-{
-    "recommendations": [
-        "batisteo.vscode-django",
-        "monosans.djlint",
-        "bradlc.vscode-tailwindcss"
-    ]
-}

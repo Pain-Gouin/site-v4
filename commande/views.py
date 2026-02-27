@@ -1,58 +1,65 @@
-from decimal import Decimal
-from django.db.models import Sum, Prefetch, Value, CharField, When, Case
-from django.db.models.functions import Lower, Substr
-from django.forms import modelformset_factory, Select
-from django.shortcuts import render, redirect
-from django.contrib.admin.models import LogEntry, CHANGE
-from django.contrib.auth import login, authenticate, logout
-from django.contrib.auth.decorators import login_required
-from django.contrib import messages
-from django.conf import settings
-from django.core.mail import send_mail
-from django.template import RequestContext
-from django.template.loader import render_to_string
-from django.utils.safestring import mark_safe
-from django.utils.encoding import force_bytes
-from django.utils.http import urlsafe_base64_encode
-from django.contrib.auth.views import PasswordResetView
-from django.contrib.messages.views import SuccessMessageMixin
-from django.urls import reverse_lazy, reverse
-from django.http import HttpResponseBadRequest, HttpResponseServerError, JsonResponse
-from django.utils.http import urlsafe_base64_decode
-from django.core.exceptions import ValidationError
-from django.contrib.auth.tokens import PasswordResetTokenGenerator
-from django.contrib.auth.forms import PasswordResetForm
-from django.utils import timezone
-from django.db import transaction
-from django.views.decorators.http import require_POST
-from django.views.decorators.csrf import csrf_exempt
-from datetime import datetime, time, timedelta
-from pprint import pformat
 import json
-
-from commande.tokens import VerifiedUserTokenGenerator
-from .utils import html_to_text, login_required_with_message, PrecreateUserFunction, SendPrecreationMailFunction, SendMailVerification
+from datetime import datetime, time, timedelta
+from decimal import Decimal
+from pprint import pformat
 
 import helloasso_python
-from .helloasso import get_api_client, log_api_exception
-from . import tasks
+from django.conf import settings
+from django.contrib import messages
+from django.contrib.admin.models import CHANGE, LogEntry
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.forms import PasswordResetForm
+from django.contrib.auth.tokens import PasswordResetTokenGenerator
+from django.core.exceptions import ValidationError
+from django.core.mail import send_mail
+from django.db import transaction
+from django.db.models import Case, CharField, Prefetch, Sum, Value, When
+from django.db.models.functions import Lower, Substr
+from django.forms import Select, modelformset_factory
+from django.http import HttpResponseBadRequest, HttpResponseServerError, JsonResponse
+from django.shortcuts import redirect, render
+from django.template.loader import render_to_string
+from django.urls import reverse
+from django.utils import timezone
+from django.utils.encoding import force_bytes
+from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
+from django.utils.safestring import mark_safe
+from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_POST
 
-from . import forms
+from commande.utils.tokens import VerifiedUserTokenGenerator
 
+from . import forms, tasks
 from .models import (
-    ProductCategory,
-    Order,
     Delivery,
-    User,
-    Transaction,
+    HelloAssoCheckout,
+    Order,
     OrderProduct,
-    HelloAssoCheckout
+    ProductCategory,
+    Transaction,
+    User,
+)
+from .utils.helloasso import get_api_client, log_api_exception
+from .utils.utils import (
+    PrecreateUserFunction,
+    SendMailVerification,
+    SendPrecreationMailFunction,
+    html_to_text,
+    login_required_with_message,
 )
 
 
 # Create your views here.
 def index(request):
-    return render(request, "commande/main.html", context={'DELIVERY_CUTOFF_TIME': settings.DELIVERY_CUTOFF_TIME, 'GIT_COMMIT': settings.GIT_COMMIT})
+    return render(
+        request,
+        "commande/main.html",
+        context={
+            "DELIVERY_CUTOFF_TIME": settings.DELIVERY_CUTOFF_TIME,
+            "GIT_COMMIT": settings.GIT_COMMIT,
+        },
+    )
 
 
 def mentions(request):
@@ -66,67 +73,104 @@ def contact(request):
 @login_required_with_message("Authentifie toi avant d’accéder au rechargement")
 def recharge(request):
     # Vérification que l'utilisateur est bien vérifié
-    if not request.user.verified_genuine_user and not request.user.can_be_verified_genuine_user():
-        messages.warning(request, "Tu dois valider ton compte avant de pouvoir le recharger !")
+    if (
+        not request.user.verified_genuine_user
+        and not request.user.can_be_verified_genuine_user()
+    ):
+        messages.warning(
+            request, "Tu dois valider ton compte avant de pouvoir le recharger !"
+        )
         return redirect(account_verification)
-    
+
     if "error" in request.GET:
-        messages.error(request, f"Erreur HelloAsso: {request.GET["error"]}")
+        messages.error(request, f"Erreur HelloAsso: {request.GET['error']}")
     elif "checkoutIntentId" in request.GET:
-        messages.success(request, "Transaction effectuée avec succès, ton compte devrait être crédité d'ici quelques secondes")
-        checkout = HelloAssoCheckout.objects.get(checkout_intent_id=request.GET["checkoutIntentId"])
+        messages.success(
+            request,
+            "Transaction effectuée avec succès, ton compte devrait être crédité d'ici quelques secondes",
+        )
+        checkout = HelloAssoCheckout.objects.get(
+            checkout_intent_id=request.GET["checkoutIntentId"]
+        )
         checkout.refresh_from_api()
         return redirect("recharge")
 
     amount = request.GET.get("amount")
-    min_amount = Decimal(.5)
-    max_amount = min(settings.MAX_TOPUP_AMOUNT, settings.MAX_BALANCE_ALLOWED-request.user.balance_cache)
+    min_amount = Decimal(0.5)
+    max_amount = min(
+        settings.MAX_TOPUP_AMOUNT,
+        settings.MAX_BALANCE_ALLOWED - request.user.balance_cache,
+    )
     if request.method == "POST":
         form = forms.TopupForm(min_amount, max_amount, data=request.POST)
         if form.is_valid():
             if request.is_secure():
-                new_checkout = HelloAssoCheckout.objects.create(user=request.user, amount=form.cleaned_data['amount'])
+                new_checkout = HelloAssoCheckout.objects.create(
+                    user=request.user, amount=form.cleaned_data["amount"]
+                )
 
                 with get_api_client() as api_client:
                     api_instance = helloasso_python.CheckoutApi(api_client)
                     organization_slug = settings.HELLOASSO_ORG_SLUG
                     payer = helloasso_python.HelloAssoApiV5ModelsCartsCheckoutPayer(
-                        firstName = request.user.first_name,
-                        lastName = request.user.last_name,
-                        email = request.user.email
+                        firstName=request.user.first_name,
+                        lastName=request.user.last_name,
+                        email=request.user.email,
                     )
-                    amount_int = int(new_checkout.amount*100)
+                    amount_int = int(new_checkout.amount * 100)
                     body = helloasso_python.HelloAssoApiV5ModelsCartsInitCheckoutBody(
-                        total_amount = amount_int,
-                        initial_amount = amount_int,
-                        item_name = f"Rechargement du compte paingouin de {new_checkout.amount}€",
-                        back_url = request.build_absolute_uri(reverse("recharge", query={"amount": new_checkout.amount})),
-                        error_url = request.build_absolute_uri(reverse("recharge", query={"amount": new_checkout.amount})),
-                        return_url = request.build_absolute_uri(reverse("recharge")),
-                        contains_donation = False,
-                        payer = payer,
-                        metadata={"website_tracked": True, "HelloAssoCheckoutPK": new_checkout.pk}
+                        total_amount=amount_int,
+                        initial_amount=amount_int,
+                        item_name=f"Rechargement du compte paingouin de {new_checkout.amount}€",
+                        back_url=request.build_absolute_uri(
+                            reverse("recharge", query={"amount": new_checkout.amount})
+                        ),
+                        error_url=request.build_absolute_uri(
+                            reverse("recharge", query={"amount": new_checkout.amount})
+                        ),
+                        return_url=request.build_absolute_uri(reverse("recharge")),
+                        contains_donation=False,
+                        payer=payer,
+                        metadata={
+                            "website_tracked": True,
+                            "HelloAssoCheckoutPK": new_checkout.pk,
+                        },
                     )
 
                     try:
-                        api_response = api_instance.organizations_organization_slug_checkout_intents_post(organization_slug, body)
+                        api_response = api_instance.organizations_organization_slug_checkout_intents_post(
+                            organization_slug, body
+                        )
 
                         new_checkout.checkout_intent_id = api_response.id
                         new_checkout.save()
-                        tasks.check_checkout_status.apply_async_on_commit((api_response.id,), countdown=60*60)
+                        tasks.check_checkout_status.apply_async_on_commit(
+                            (api_response.id,), countdown=60 * 60
+                        )
 
                         return redirect(api_response.redirect_url)
                     except helloasso_python.ApiException as e:
-                        messages.error(request, f"Erreur lors de l'appel API: {pformat(e)}")
-                        log_api_exception(e, api_instance.organizations_organization_slug_checkout_intents_post)
-                    
+                        messages.error(
+                            request, f"Erreur lors de l'appel API: {pformat(e)}"
+                        )
+                        log_api_exception(
+                            e,
+                            api_instance.organizations_organization_slug_checkout_intents_post,
+                        )
+
             else:
-                messages.warning(request, "Formulaire correct, mais il n'est pas possible d'utiliser l'API en HTTP.")
-                
+                messages.warning(
+                    request,
+                    "Formulaire correct, mais il n'est pas possible d'utiliser l'API en HTTP.",
+                )
+
         else:
-            messages.error(request, f"Saisie invalide. La somme doit être comprise entre {min_amount}€ et {max_amount}€.")
+            messages.error(
+                request,
+                f"Saisie invalide. La somme doit être comprise entre {min_amount}€ et {max_amount}€.",
+            )
     else:
-        form = forms.TopupForm(min_amount, max_amount, data={'amount': amount})
+        form = forms.TopupForm(min_amount, max_amount, data={"amount": amount})
 
     topup_types = [
         Transaction.TransactionTypeChoices.LYF_TOPUP,
@@ -141,36 +185,61 @@ def recharge(request):
         When(status=choice[0], then=Value(choice[1]))
         for choice in HelloAssoCheckout.HelloAssoCheckoutStatusChoices.choices
     ]
-    transactions = Transaction.objects.filter(
-        user=request.user,
-        type__in=topup_types
-    ).annotate(
-        statusL=Value('Validé', output_field=CharField()),
-        typeL=Case(*transaction_type_cases, output_field=CharField()),
-    ).values('amount', 'typeL', 'statusL', 'created_at')
+    transactions = (
+        Transaction.objects.filter(user=request.user, type__in=topup_types)
+        .annotate(
+            statusL=Value("Validé", output_field=CharField()),
+            typeL=Case(*transaction_type_cases, output_field=CharField()),
+        )
+        .values("amount", "typeL", "statusL", "created_at")
+    )
 
-    checkouts = HelloAssoCheckout.objects.filter(
-        user=request.user
-    ).annotate(
-        typeL=Value(Transaction.TransactionTypeChoices.HELLOASSO_CHECKOUT.label, output_field=CharField()),
-        statusL=Case(*helloasso_status_cases, output_field=CharField())
-    ).values('amount', 'typeL', 'statusL', 'created_at')
+    checkouts = (
+        HelloAssoCheckout.objects.filter(user=request.user)
+        .annotate(
+            typeL=Value(
+                Transaction.TransactionTypeChoices.HELLOASSO_CHECKOUT.label,
+                output_field=CharField(),
+            ),
+            statusL=Case(*helloasso_status_cases, output_field=CharField()),
+        )
+        .values("amount", "typeL", "statusL", "created_at")
+    )
 
-    combined_topup_list = transactions.union(checkouts).order_by('-created_at')
-    
-    return render(request, "commande/recharge.html", context={"form": form, "min_amount": min_amount, "max_amount": max_amount, "combined_topup_list": combined_topup_list})
+    combined_topup_list = transactions.union(checkouts).order_by("-created_at")
+
+    return render(
+        request,
+        "commande/recharge.html",
+        context={
+            "form": form,
+            "min_amount": min_amount,
+            "max_amount": max_amount,
+            "combined_topup_list": combined_topup_list,
+        },
+    )
+
 
 @login_required_with_message("Authentifie toi avant d’accéder au rechargement")
 def recharge_lyf(request):
-    messages.info(request, mark_safe(f"Vous pouvez également recharger directement en ligne, en <a href='{reverse('recharge')}' class='underline'>payant par carte bancaire</a>"))
+    messages.info(
+        request,
+        mark_safe(
+            f"Vous pouvez également recharger directement en ligne, en <a href='{reverse('recharge')}' class='underline'>payant par carte bancaire</a>"
+        ),
+    )
     return render(request, "commande/recharge_lyf.html")
+
 
 @login_required
 def account_verification(request):
-    if request.user.verified_genuine_user or request.user.can_be_verified_genuine_user():
+    if (
+        request.user.verified_genuine_user
+        or request.user.can_be_verified_genuine_user()
+    ):
         messages.success(request, "Ton compte est déjà validé")
         return redirect(index)
-    
+
     if request.method == "POST":
         form = forms.CheckGenuineUserForm(request.POST)
 
@@ -195,13 +264,20 @@ def account_verification(request):
                 html_message=email_html,
                 fail_silently=True,
             )
-            messages.success(request, "Un lien pour vérifier ton compte vient d'être envoyé à ta boîte mail Centrale")
-        
+            messages.success(
+                request,
+                "Un lien pour vérifier ton compte vient d'être envoyé à ta boîte mail Centrale",
+            )
+
         else:
-            messages.error(request, "E-mail non valide. Celui-ci doit se finir par: @centrale.centralelille.fr")
+            messages.error(
+                request,
+                "E-mail non valide. Celui-ci doit se finir par: @centrale.centralelille.fr",
+            )
     else:
         form = forms.CheckGenuineUserForm()
     return render(request, "commande/verify_user.html", context={"form": form})
+
 
 @login_required_with_message("Authentifie toi pour vérifier ton compte")
 def verify_account(request, uidb64, token):
@@ -224,22 +300,27 @@ def verify_account(request, uidb64, token):
         messages.error(request, "Lien non valide.")
         return redirect(index)
     if user != request.user:
-        messages.error(request, "Ce lien n'est pas pour le compte actuellement connecté.")
+        messages.error(
+            request, "Ce lien n'est pas pour le compte actuellement connecté."
+        )
         return redirect(index)
-    
+
     if not VerifiedUserTokenGenerator().check_token(user, token):
         if user.verified_genuine_user:
             messages.warning(request, "Ce compte a déjà été validé.")
             return redirect(index)
-        messages.error(request, "Ce lien n'est plus valide. Tu peux faire une nouvelle demande.")
+        messages.error(
+            request, "Ce lien n'est plus valide. Tu peux faire une nouvelle demande."
+        )
         return redirect(account_verification)
-    
+
     # Lien valide
     user.verified_genuine_user = True
     user.save(update_fields=["verified_genuine_user"])
     messages.success(request, "Compte vérifié avec succès.")
 
     return redirect(recharge)
+
 
 def login_page(request):
     if request.user.is_authenticated:
@@ -260,9 +341,11 @@ def login_page(request):
                     request.session.pop("login_message", None)
                     request.session.pop("login_next", None)
                     return redirect(request.GET.get("next", index))
-                else:
-                    SendMailVerification(user, user.email, request)
-                    messages.success(request, "Un lien vient de t'être envoyé afin de vérifier ton email.\nSi tu ne réussis pas à le vérifer, contact l'administrateur web.")
+                SendMailVerification(user, user.email, request)
+                messages.success(
+                    request,
+                    "Un lien vient de t'être envoyé afin de vérifier ton email.\nSi tu ne réussis pas à le vérifer, contact l'administrateur web.",
+                )
 
             else:
                 invalidCredential = True
@@ -277,9 +360,7 @@ def login_page(request):
             request.session["login_next"] = request.GET.get("next")
         if request.GET.get("next") is None or request.GET.get(
             "next"
-        ) != request.session.get(
-            "login_next"
-        ):  # Le msg n'est plus valide
+        ) != request.session.get("login_next"):  # Le msg n'est plus valide
             request.session.pop("login_message", None)
             request.session.pop("login_next", None)
         else:
@@ -295,49 +376,57 @@ def login_page(request):
         },
     )
 
+
 @require_POST
 def check_email(request):
-    email = request.POST.get('email')
+    email = request.POST.get("email")
     exists = User.objects.filter(email=email, is_active=True).exists()
-    return JsonResponse({'exists': exists})
+    return JsonResponse({"exists": exists})
+
 
 @require_POST
 def signup(request):
-    email = request.POST.get('email')
+    email = request.POST.get("email")
     user, created = User.objects.get_or_create(email=email)
 
     if not created and user.is_active:
-        return JsonResponse({'success': False, 'error': 'User already exists'}, status=400)
-    
-    PrecreateUserFunction(user, request)
-    messages.success(request, f"Un email avec un lien pour créer ton compte vient d'être envoyé à l'adresse {email}")
+        return JsonResponse(
+            {"success": False, "error": "User already exists"}, status=400
+        )
 
-    msg = render_to_string('commande/messages.html', request=request)
-    return JsonResponse({'success': True, 'msg': msg})
+    PrecreateUserFunction(user, request)
+    messages.success(
+        request,
+        f"Un email avec un lien pour créer ton compte vient d'être envoyé à l'adresse {email}",
+    )
+
+    msg = render_to_string("commande/messages.html", request=request)
+    return JsonResponse({"success": True, "msg": msg})
+
 
 @require_POST
 def reset_password_ajax(request):
     form = PasswordResetForm(request.POST)
-    
+
     if form.is_valid():
         form.save(
             request=request,
             use_https=request.is_secure(),
-            subject_template_name = "mail/password_reset_subject.txt",
+            subject_template_name="mail/password_reset_subject.txt",
             html_email_template_name="mail/password_reset_mail.html",
             from_email=settings.EMAIL_HOST_USER,
         )
-        
+
         messages.success(request, "Un lien de réinitialisation a été envoyé.")
-        msg_html = render_to_string('commande/messages.html', request=request)
-        
-        return JsonResponse({'success': True, 'msg': msg_html})
+        msg_html = render_to_string("commande/messages.html", request=request)
+
+        return JsonResponse({"success": True, "msg": msg_html})
 
     # If the form is invalid (e.g. bad email format)
-    return JsonResponse({
-        'success': False, 
-        'error': 'Adresse e-mail invalide.'
-    }, status=400)
+    return JsonResponse(
+        {"success": False, "error": "Adresse e-mail invalide."}, status=400
+    )
+
 
 def verify_email(request, uidb64, email64, token):
     # Decode de l'uid et de l'email
@@ -355,11 +444,11 @@ def verify_email(request, uidb64, email64, token):
         ValidationError,
     ):
         user = None
-    
+
     if user is None:
         messages.error(request, "Lien non valide.")
         return redirect(settings.LOGIN_URL)
-    
+
     # On modifie temporairement l'email pour vérifier que le token est bien associé à ce nouvel email
     user.email = new_email
     # Vérification du token
@@ -367,9 +456,7 @@ def verify_email(request, uidb64, email64, token):
         # Le token n'est pas valide car expiré ou modifié/inventé
         messages.error(
             request,
-            mark_safe(
-                "Ce lien a expiré ou n'est plus valide."
-            ),
+            mark_safe("Ce lien a expiré ou n'est plus valide."),
         )
     else:
         # Lien valide
@@ -377,6 +464,7 @@ def verify_email(request, uidb64, email64, token):
         user.save()
         messages.success(request, f"L'email '{user.email}' a bien été vérifié.")
     return redirect(settings.LOGIN_URL)
+
 
 def logout_user(request):
     logout(request)
@@ -425,7 +513,7 @@ def finish_signup_page(request, uidb64, token):
         form = forms.FinishSignupForm(user, data=request.POST, instance=user)
         if form.is_valid():
             updated_user = form.save(commit=False)
-            updated_user.email_verified = (original_email == updated_user.email)
+            updated_user.email_verified = original_email == updated_user.email
             updated_user.date_joined = timezone.now()
             updated_user.save()
             login(request, user)
@@ -452,9 +540,8 @@ def finish_signup_page(request, uidb64, token):
             )
             messages.success(request, "Ton compte a bien été créé !")
             return redirect(settings.LOGIN_REDIRECT_URL)
-        else:
-            for key, value in form.errors.items():
-                messages.error(request, value)
+        for key, value in form.errors.items():
+            messages.error(request, value)
     else:
         form = forms.FinishSignupForm(user, instance=user)
 
@@ -464,7 +551,9 @@ def finish_signup_page(request, uidb64, token):
 @login_required
 def update_user_page(request):
     if request.method == "POST":
-        form = forms.UpdateForm(data=request.POST, instance=request.user, request=request)
+        form = forms.UpdateForm(
+            data=request.POST, instance=request.user, request=request
+        )
         if form.is_valid():
             form.save()
             messages.success(request, "Profile mise à jour.")
@@ -516,7 +605,10 @@ def commande(request):
         ):  # Avec la vérification javascript côté client, ce n'est pas sensé être possible
             messages.error(request, "Sélectionne au moins un article !")
         elif not delivery.is_editable:
-            messages.error(request, "Il n'est plus possible de passer une commande pour cette date, la livraison est peut-être déjà en cours.")
+            messages.error(
+                request,
+                "Il n'est plus possible de passer une commande pour cette date, la livraison est peut-être déjà en cours.",
+            )
         else:
             room = request.POST["room"]
             with transaction.atomic():
@@ -586,7 +678,7 @@ def commande(request):
         messages.warning(
             request,
             mark_safe(
-                f'Avant de pouvoir passer commande, tu dois d\'abord <a href="{reverse('recharge')}" class="font-semibold underline hover:no-underline">alimenter ton compte</a>.'
+                f'Avant de pouvoir passer commande, tu dois d\'abord <a href="{reverse("recharge")}" class="font-semibold underline hover:no-underline">alimenter ton compte</a>.'
             ),
         )
     elif request.user.balance_cache <= 2:
@@ -684,7 +776,9 @@ def livreur(request):
             delivery_status=OrderProduct.OrderProductStatusChoices.VALID,  # Filter the item status
         )
 
-        order_items = current_orderproducts.select_related("product").order_by("product__category", "product__sort")
+        order_items = current_orderproducts.select_related("product").order_by(
+            "product__category", "product__sort"
+        )
         # I had issues with the group_by while keeping the model instances, so I group them manually.
         grouped_data = {}
         for item in order_items:
@@ -835,7 +929,7 @@ def del_order(request, order):
     if query_order.client != request.user:
         messages.error(request, "Tu dois être connecté pour faire cela !")
         return redirect(settings.LOGIN_REDIRECT_URL)
-    elif not query_order.is_editable:
+    if not query_order.is_editable:
         messages.error(
             request,
             "La livraison est déjà en cours ou passée, il n'est plus possible de supprimer la commande.",
@@ -868,5 +962,5 @@ def helloasso_webhook_handler(request):
         case _:
             # Not implemented/not usefull
             pass
-    
+
     return JsonResponse({"status": "success"})

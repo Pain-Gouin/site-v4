@@ -1,33 +1,33 @@
 # authentication/forms.py
-from decimal import Decimal
+import datetime
+from datetime import date
+
+from crispy_forms.helper import FormHelper
+from crispy_forms.layout import Fieldset, Layout
 from django import forms
 from django.conf import settings
-from django.contrib.auth.forms import UserCreationForm, UserChangeForm, SetPasswordForm
-from django.contrib.auth import get_user_model
-from django.utils.translation import gettext_lazy as _
-from django.core.exceptions import ValidationError
 from django.contrib import messages
+from django.contrib.auth import get_user_model
+from django.contrib.auth.forms import SetPasswordForm, UserChangeForm, UserCreationForm
+from django.core.exceptions import ValidationError
 from django.forms import BooleanField
-
-from commande.utils import SendMailVerification, WhitelistEmailValidator, first_editable_day
-from commande.widgets import DateRangeField, MultiDateField
-
-from .models import Delivery
-
-import datetime
-
-
+from django.utils.translation import gettext_lazy as _
+from unfold.contrib.import_export.forms import ExportForm
+from unfold.layout import Submit
 from unfold.widgets import (
     UnfoldAdminEmailInputWidget,
     UnfoldAdminTextInputWidget,
     UnfoldBooleanSwitchWidget,
 )
 
-from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Layout, Fieldset
-from unfold.layout import Submit
-from unfold.contrib.import_export.forms import ExportForm
-from datetime import date
+from commande.utils.utils import (
+    SendMailVerification,
+    WhitelistEmailValidator,
+    first_editable_day,
+)
+from commande.utils.widgets import DateRangeField, MultiDateField
+
+from .models import Delivery
 
 
 class LoginForm(forms.Form):
@@ -58,16 +58,15 @@ class SignupForm(UserCreationForm):
                 # The user had been precreated, but it has not yet been finally created.
                 self.instance = existing_user
                 return email
-            else:
-                self._update_errors(
-                    ValidationError(
-                        {
-                            "email": self.instance.unique_error_message(
-                                self._meta.model, ["email"]
-                            )
-                        }
-                    )
+            self._update_errors(
+                ValidationError(
+                    {
+                        "email": self.instance.unique_error_message(
+                            self._meta.model, ["email"]
+                        )
+                    }
                 )
+            )
         else:
             return email
 
@@ -86,8 +85,8 @@ class FinishSignupForm(SetPasswordForm, forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         # Prevents modification in the UI and ignores POST data for this field
-        if 'email' in self.fields:
-            self.fields['email'].disabled = True
+        if "email" in self.fields:
+            self.fields["email"].disabled = True
 
     class Meta(UserChangeForm.Meta):
         model = get_user_model()
@@ -117,7 +116,7 @@ class FinishSignupForm(SetPasswordForm, forms.ModelForm):
 class UpdateForm(UserChangeForm):
     def __init__(self, *args, **kwargs):
         # Pop 'request' so it doesn't get passed to the parent UserChangeForm
-        self.request = kwargs.pop('request', None)
+        self.request = kwargs.pop("request", None)
         super().__init__(*args, **kwargs)
 
     class Meta(UserChangeForm.Meta):
@@ -131,20 +130,26 @@ class UpdateForm(UserChangeForm):
             "has_drivers_licence",
             "get_order_email",
         )
-    
+
     def save(self, commit=True):
         user = super().save(commit=False)
-        
+
         # Check if the email field is in changed_data
-        if 'email' in self.changed_data:
-            new_email = self.cleaned_data.get('email')
+        if "email" in self.changed_data:
+            new_email = self.cleaned_data.get("email")
 
             # Revert the email on the instance so it doesn't save to the DB yet
-            old_email = self.instance.pk and get_user_model().objects.get(pk=self.instance.pk).email # The instance still has the old email until we save it
+            old_email = (
+                self.instance.pk
+                and get_user_model().objects.get(pk=self.instance.pk).email
+            )  # The instance still has the old email until we save it
             user.email = old_email
-            
+
             SendMailVerification(user, new_email, self.request)
-            messages.success(self.request, "Un lien vient de t'être envoyé afin de finaliser le changement d'email.")
+            messages.success(
+                self.request,
+                "Un lien vient de t'être envoyé afin de finaliser le changement d'email.",
+            )
 
         if commit:
             user.save()
@@ -249,12 +254,20 @@ class CustomOrderProductExportForm(ExportForm):
         max_date=date.today,
     )
 
+
 class CheckGenuineUserForm(forms.Form):
-    email = forms.EmailField(validators=[WhitelistEmailValidator(whitelist=settings.VERIFIED_USER_EMAIL_DOMAINS)])
+    email = forms.EmailField(
+        validators=[
+            WhitelistEmailValidator(whitelist=settings.VERIFIED_USER_EMAIL_DOMAINS)
+        ]
+    )
+
 
 class TopupForm(forms.Form):
-    amount = forms.DecimalField() # Redefined in __init__
+    amount = forms.DecimalField()  # Redefined in __init__
 
-    def __init__(self, min_amount=.5, max_amount=99, *args, **kwargs):
+    def __init__(self, min_amount=0.5, max_amount=99, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['amount'] = forms.DecimalField(min_value=min_amount, max_value=max_amount, decimal_places=2, max_digits=4)
+        self.fields["amount"] = forms.DecimalField(
+            min_value=min_amount, max_value=max_amount, decimal_places=2, max_digits=4
+        )

@@ -1,17 +1,17 @@
-from html2text import HTML2Text
-from functools import wraps
-from django.contrib.auth.decorators import login_required
-from django.core.mail import get_connection, EmailMultiAlternatives
 from datetime import time, timedelta
-from django.utils import timezone
+from functools import wraps
+
 from django.conf import settings
-from django.core.mail import send_mail
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
+from django.core.mail import EmailMultiAlternatives, get_connection, send_mail
+from django.core.validators import EmailValidator
+from django.template.loader import render_to_string
+from django.utils import timezone
+from django.utils.deconstruct import deconstructible
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode
-from django.template.loader import render_to_string
-from django.core.validators import EmailValidator
-from django.utils.deconstruct import deconstructible
+from html2text import HTML2Text
 
 # Configuration of html2text
 text_maker = HTML2Text()
@@ -99,11 +99,11 @@ def first_editable_day():
 
     if current_time_local.time() < cutoff:
         return today
-    else:
-        return today + timedelta(1)
+    return today + timedelta(1)
+
 
 def SendMailVerification(user, new_email, request):
-    from .models import User
+    from ..models import User
 
     # Temporarily set the email to generate the token
     current_email = user.email
@@ -138,11 +138,14 @@ def SendMailVerification(user, new_email, request):
     # Reset user email
     user.email = current_email
 
+
 def PrecreateUserFunction(user, request):
     return PrecreateUsersFunction([user], request)
 
+
 def SendPrecreationMailFunction(user, request):
     return SendPrecreationMailsFunction([user], request)
+
 
 def PrecreateUsersFunction(users, request):
     # Create users in DB
@@ -153,8 +156,10 @@ def PrecreateUsersFunction(users, request):
 
     SendPrecreationMailsFunction(users, request)
 
+
 def SendPrecreationMailsFunction(users, request):
-    from .models import User
+    from ..models import User
+
     # Send pre-creation emails
     emails = []
     template_name = "mail/precreation_mail.html"
@@ -184,6 +189,7 @@ def SendPrecreationMailsFunction(users, request):
 
     send_mass_html_mail(emails, fail_silently=True)
 
+
 @deconstructible
 class WhitelistEmailValidator(EmailValidator):
     def validate_domain_part(self, domain_part):
@@ -193,7 +199,7 @@ class WhitelistEmailValidator(EmailValidator):
 
     def __eq__(self, other):
         return isinstance(other, WhitelistEmailValidator) and super().__eq__(other)
-    
-    def __init__(self, whitelist, message = None, code = None):
+
+    def __init__(self, whitelist, message=None, code=None):
         self.whitelist = set(whitelist)
         super().__init__(message, code)

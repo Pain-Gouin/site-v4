@@ -1,0 +1,56 @@
+volumes:
+  paingouin_dev_mariadb_data: {}
+  paingouin_dev_rabbitmq_data: {}
+
+services:
+  django:
+    build:
+      context: ../
+      dockerfile: docker/Dockerfile.dev
+    container_name: paingouin_dev_django
+    volumes:
+      - ../:/app/
+    depends_on:
+      - rabbitmq
+      - db
+    tty: true
+    stdin_open: true
+
+  # brocker like redis, for celery
+  rabbitmq:
+    image: rabbitmq:4.2
+    container_name: paingouin_dev_rabbitmq
+    volumes:
+      - paingouin_dev_rabbitmq_data:/var/lib/rabbitmq
+    environment:
+      RABBITMQ_DEFAULT_USER: paingouin
+      RABBITMQ_DEFAULT_PASS: xGmyRq8J5CSUT0fgD3m9iGgVs
+      RABBITMQ_DEFAULT_VHOST: paingouinvhost
+
+  # For dev, creates a fake smtp server so we can see outgoing mails
+  mailpit:
+    image: docker.io/axllent/mailpit:latest
+    container_name: paingouin_dev_mailpit
+    ports:
+      - "8025:8025"
+
+  db:
+    image: mariadb:12.2
+    container_name: paingouin_dev_mariadb
+    environment:
+      MYSQL_ROOT_PASSWORD: mysql
+      MYSQL_DATABASE: paingouin
+    volumes:
+      - paingouin_dev_mariadb_data:/var/lib/mysql
+
+  # For dev, GUI to interact directly with DB
+  phpmyadmin:
+    image: phpmyadmin
+    container_name: paingouin_dev_phpmyadmin
+    ports:
+      - 8080:80
+    environment:
+      - PMA_HOST=db
+      - PMA_PORT=3306
+      - PMA_USER=root
+      - PMA_PASSWORD=mysql

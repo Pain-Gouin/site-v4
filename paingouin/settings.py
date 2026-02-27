@@ -10,16 +10,16 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
-import environ # using django-environ for env variables: https://django-environ.readthedocs.io/
 import os
+from datetime import time
+from decimal import Decimal
+from email.utils import formataddr
 
+import environ  # using django-environ for env variables: https://django-environ.readthedocs.io/
 from django.templatetags.static import static
 from django.urls import reverse_lazy
 from django.utils.translation import gettext_lazy as _
-from email.utils import formataddr
-from datetime import time
-from import_export.formats.base_formats import XLSX, CSV, ODS
-from decimal import Decimal
+from import_export.formats.base_formats import CSV, ODS, XLSX
 
 env = environ.Env()
 
@@ -27,13 +27,13 @@ env = environ.Env()
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # Take environment variables from .env file
-environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
+environ.Env.read_env(os.path.join(BASE_DIR, ".env"))
 
-DEBUG = env('DEBUG', bool, False)
+DEBUG = env("DEBUG", bool, False)
 
 DELIVERY_CUTOFF_TIME = time(6, 30)
 
-GIT_COMMIT = env('GIT_COMMIT_SHA', default='Develop')[:7]
+GIT_COMMIT = env("GIT_COMMIT_SHA", default="Develop")[:7]
 
 PROD = env("PROD", default=True)
 
@@ -42,14 +42,16 @@ SECRET_KEY = env(
     default="django-insecure-=5sf8@fhdxzr8(c!%-5xx1!5x6x07$%vc^0rr&$4ljgh&v5!w%",
 )
 
-MINIMAL = env("MINIMAL", bool, True) # Wether only minimal dependencies for prod were included
+MINIMAL = env(
+    "MINIMAL", bool, True
+)  # Wether only minimal dependencies for prod were included
 
-ALLOWED_HOSTS = env("DJANGO_ALLOWED_HOSTS", list, ["paingouin.rezoleo.fr","www.paingouin.rezoleo.fr"])
+ALLOWED_HOSTS = env(
+    "DJANGO_ALLOWED_HOSTS", list, ["paingouin.rezoleo.fr", "www.paingouin.rezoleo.fr"]
+)
 
 CSRF_TRUSTED_ORIGINS = env(
-    "DJANGO_CSRF_TRUSTED_ORIGINS",
-    list,
-    ["https://paingouin.rezoleo.fr"]
+    "DJANGO_CSRF_TRUSTED_ORIGINS", list, ["https://paingouin.rezoleo.fr"]
 )
 
 # HTTPS Enforcing
@@ -105,7 +107,8 @@ MIDDLEWARE = [
 
 if DEBUG and not MINIMAL:
     # Add django_browser_reload only in DEBUG mode
-    INSTALLED_APPS += ["django_browser_reload",       
+    INSTALLED_APPS += [
+        "django_browser_reload",
         "django_watchfiles",
     ]
     MIDDLEWARE += [
@@ -226,7 +229,9 @@ EMAIL_HOST_USER = formataddr(
     )
 )
 EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD", default="")
-SERVER_EMAIL = "admin." + env("EMAIL_HOST_USER", default="noreply@paingouin.rezoleo.fr") # Used for admin emails
+SERVER_EMAIL = "admin." + env(
+    "EMAIL_HOST_USER", default="noreply@paingouin.rezoleo.fr"
+)  # Used for admin emails
 
 UNFOLD = {
     "SITE_TITLE": "Panel administrateur de Pain'Gouin",
@@ -283,7 +288,9 @@ UNFOLD = {
                     {
                         "title": _("HelloAsso Checkout"),
                         "icon": "credit_card",
-                        "link": reverse_lazy("admin:commande_helloassocheckout_changelist"),
+                        "link": reverse_lazy(
+                            "admin:commande_helloassocheckout_changelist"
+                        ),
                     },
                     {
                         "title": _("Logs"),
@@ -350,9 +357,10 @@ UNFOLD = {
                 {
                     "title": _("Utilisateurs"),
                     "link": reverse_lazy("admin:commande_user_changelist"),
-                    "active": lambda request: request.path
-                    == reverse_lazy("admin:commande_user_changelist")
-                    and "status__exact" not in request.GET,
+                    "active": lambda request: (
+                        request.path == reverse_lazy("admin:commande_user_changelist")
+                        and "status__exact" not in request.GET
+                    ),
                 },
                 {
                     "title": _("Précréation d'un utilisateur"),
@@ -437,11 +445,11 @@ CACHES = {
 }
 
 if PROD:
-    HELLOASSO_TOKEN_URL = 'https://api.helloasso.com/oauth2/token'
-    HELLOASSO_API_URL = 'https://api.helloasso.com/v5'
+    HELLOASSO_TOKEN_URL = "https://api.helloasso.com/oauth2/token"
+    HELLOASSO_API_URL = "https://api.helloasso.com/v5"
 else:
-    HELLOASSO_TOKEN_URL = 'https://api.helloasso-sandbox.com/oauth2/token'
-    HELLOASSO_API_URL = 'https://api.helloasso-sandbox.com/v5'
+    HELLOASSO_TOKEN_URL = "https://api.helloasso-sandbox.com/oauth2/token"
+    HELLOASSO_API_URL = "https://api.helloasso-sandbox.com/v5"
 HELLOASSO_CLIENT_ID = env("HELLOASSO_CLIENT_ID", str, "")
 HELLOASSO_CLIENT_SECRET = env("HELLOASSO_CLIENT_SECRET", str, "")
 HELLOASSO_ORG_SLUG = env("HELLOASSO_ORG_SLUG", str, "pain-gouin")
