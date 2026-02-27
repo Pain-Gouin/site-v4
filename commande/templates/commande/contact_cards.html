@@ -1,59 +1,60 @@
 {% load static %}
+
 <div class="shuffle">
-    <a target="_blank"
-       href="https://m.me/maxence.theard.5"
-       class="m-1 flex items-center gap-4 p-2 rounded-3xl hover:bg-blue-100 border-2 border-blue-500">
-        <img class="h-10"
-             src="{% static 'externe/messenger.svg' %}"
-             alt="logo messenger">
-        <div class="font-medium dark:text-white">
-            <div>Maxence Théard</div>
-            <div class="text-sm text-gray-500 dark:text-gray-400">Président</div>
-        </div>
-    </a>
-    <a target="_blank"
-       href="https://m.me/iannluca.dethomassin"
-       class="m-1 flex items-center gap-4 p-2 rounded-3xl hover:bg-blue-100 border-2 border-blue-500">
-        <img class="h-10"
-             src="{% static 'externe/messenger.svg' %}"
-             alt="logo messenger">
-        <div class="font-medium dark:text-white">
-            <div>Iann Rings De Thomassin</div>
-            <div class="text-sm text-gray-500 dark:text-gray-400">Secrétaire</div>
-        </div>
-    </a>
-    <a target="_blank"
-       href="https://m.me/61565483788852"
-       class="m-1 flex items-center gap-4 p-2 rounded-3xl hover:bg-blue-100 border-2 border-blue-500">
-        <img class="h-10"
-             src="{% static 'externe/messenger.svg' %}"
-             alt="logo messenger">
-        <div class="font-medium dark:text-white">
-            <div>Hugo Lucks Pariis</div>
-            <div class="text-sm text-gray-500 dark:text-gray-400">Trésorier</div>
-        </div>
-    </a>
-    <a target="_blank"
-       href="https://m.me/100013626060028"
-       class="m-1 flex items-center gap-4 p-2 rounded-3xl hover:bg-blue-100 border-2 border-blue-500">
-        <img class="h-10"
-             src="{% static 'externe/messenger.svg' %}"
-             alt="logo messenger">
-        <div class="font-medium dark:text-white">
-            <div>Valentin Sylv Grégoire</div>
-            <div class="text-sm text-gray-500 dark:text-gray-400">Co-respo Web</div>
-        </div>
-    </a>
-    <script>
+  <a target="_blank"
+     href="https://m.me/100086555494493"
+     class="m-1 flex items-center gap-4 p-2 rounded-3xl hover:bg-blue-100 border-2 border-blue-500">
+    <img class="h-10"
+         src="{% static 'externe/messenger.svg' %}"
+         alt="logo messenger" />
+    <div class="font-medium dark:text-white">
+      <div>Oscar Pécourt</div>
+      <div class="text-sm text-gray-500 dark:text-gray-400">Président</div>
+    </div>
+  </a>
+  <a target="_blank"
+     href="https://m.me/61579180797591"
+     class="m-1 flex items-center gap-4 p-2 rounded-3xl hover:bg-blue-100 border-2 border-blue-500">
+    <img class="h-10"
+         src="{% static 'externe/messenger.svg' %}"
+         alt="logo messenger" />
+    <div class="font-medium dark:text-white">
+      <div>Martin Yards Hebraud</div>
+      <div class="text-sm text-gray-500 dark:text-gray-400">Secrétaire</div>
+    </div>
+  </a>
+  <a target="_blank"
+     href="https://m.me/basile.perugini"
+     class="m-1 flex items-center gap-4 p-2 rounded-3xl hover:bg-blue-100 border-2 border-blue-500">
+    <img class="h-10"
+         src="{% static 'externe/messenger.svg' %}"
+         alt="logo messenger" />
+    <div class="font-medium dark:text-white">
+      <div>Basile Perugini</div>
+      <div class="text-sm text-gray-500 dark:text-gray-400">Trésorier</div>
+    </div>
+  </a>
+  <a target="_blank"
+     href="https://m.me/61579817976740"
+     class="m-1 flex items-center gap-4 p-2 rounded-3xl hover:bg-blue-100 border-2 border-blue-500">
+    <img class="h-10"
+         src="{% static 'externe/messenger.svg' %}"
+         alt="logo messenger" />
+    <div class="font-medium dark:text-white">
+      <div>Rémi Malbrancke</div>
+      <div class="text-sm text-gray-500 dark:text-gray-400">Respo Web</div>
+    </div>
+  </a>
+  <script>
     const container = document.querySelector(".shuffle");
     const divs = Array.from(container.children);
-    
+
     // Shuffle
     for (let i = divs.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
       [divs[i], divs[j]] = [divs[j], divs[i]];
     }
-    
+
     divs.forEach(div => container.appendChild(div));
-    </script>
+  </script>
 </div>
