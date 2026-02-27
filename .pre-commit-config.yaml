@@ -36,7 +36,9 @@ repos:
     rev: v1.36.4
     hooks:
       - id: djlint-reformat-django
+        exclude: "templates/admin_original/.*|templates/unfold/.*|templates/django_yubin/.*" # https://github.com/djlint/djLint/issues/664
       - id: djlint-django
+        exclude: "templates/admin_original/.*|templates/unfold/.*|templates/django_yubin/.*" # https://github.com/djlint/djLint/issues/664
 
 # sets up .pre-commit-ci.yaml to ensure pre-commit dependencies stay up to date
 ci:
