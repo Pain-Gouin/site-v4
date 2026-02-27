@@ -11,6 +11,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import SetPasswordForm, UserChangeForm, UserCreationForm
 from django.core.exceptions import ValidationError
 from django.forms import BooleanField
+from django.utils.timezone import get_current_timezone
 from django.utils.translation import gettext_lazy as _
 from unfold.contrib.import_export.forms import ExportForm
 from unfold.layout import Submit
@@ -21,9 +22,9 @@ from unfold.widgets import (
 )
 
 from commande.utils.utils import (
-    SendMailVerification,
     WhitelistEmailValidator,
     first_editable_day,
+    send_mail_verification,
 )
 from commande.utils.widgets import DateRangeField, MultiDateField
 
@@ -50,7 +51,9 @@ class SignupForm(UserCreationForm):
         )
 
     def clean_email(self):
-        """Check if user had been precreated, and reject usernames that differ only in case."""
+        """
+        Check if user had been precreated, and reject emails that differ only in case.
+        """
         email = self.cleaned_data.get("email")
         if email and self._meta.model.objects.filter(email__iexact=email).exists():
             existing_user = self._meta.model.objects.get(email__iexact=email)
@@ -67,12 +70,11 @@ class SignupForm(UserCreationForm):
                     }
                 )
             )
-        else:
-            return email
+        return email
 
-    def save(self, commit=True):
+    def save(self, commit=True):  # noqa: FBT002 (Inherited from Django)
         if self.instance.date_joined is None:
-            self.instance.date_joined = datetime.datetime.now()
+            self.instance.date_joined = datetime.datetime.now(tz=get_current_timezone())
 
         if not self.instance.is_active:
             # The user was precreated, but eventually ended-up signing up normally
@@ -99,7 +101,7 @@ class FinishSignupForm(SetPasswordForm, forms.ModelForm):
             "has_drivers_licence",
         )
 
-    def save(self, commit=True):
+    def save(self, commit=True):  # noqa: FBT002 (Inherited from Django)
         user = super().save(commit=False)
         for field in self.Meta.fields:
             setattr(user, field, self.cleaned_data[field])
@@ -131,7 +133,7 @@ class UpdateForm(UserChangeForm):
             "get_order_email",
         )
 
-    def save(self, commit=True):
+    def save(self, commit=True):  # noqa: FBT002 (Inherited from Django)
         user = super().save(commit=False)
 
         # Check if the email field is in changed_data
@@ -145,7 +147,7 @@ class UpdateForm(UserChangeForm):
             )  # The instance still has the old email until we save it
             user.email = old_email
 
-            SendMailVerification(user, new_email, self.request)
+            send_mail_verification(user, new_email, self.request)
             messages.success(
                 self.request,
                 "Un lien vient de t'être envoyé afin de finaliser le changement d'email.",
@@ -226,7 +228,7 @@ class PrecreateUsersFormHelper(FormHelper):
         self.add_input(Submit("submit", _("Pré-créer")))
 
 
-class bulkCreateDeliveriesForm(forms.Form):
+class BulkCreateDeliveriesForm(forms.Form):
     dates = MultiDateField(required=False, min_date=first_editable_day)
     cancel_orders = BooleanField(
         initial=False,

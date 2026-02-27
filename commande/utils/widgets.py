@@ -2,6 +2,7 @@ import json
 from datetime import date, datetime
 
 from django import forms
+from django.utils.timezone import get_current_timezone
 
 
 class MultiDateCalendarWidget(forms.HiddenInput):
@@ -57,7 +58,6 @@ class MultiDateField(forms.Field):
         # Store the callable/value without calculating yet
         self.min_date_source = min_date
         self.max_date_source = max_date
-        options = {}
         super().__init__(**kwargs)
 
     def get_bound_field(self, form, field_name):
@@ -65,7 +65,7 @@ class MultiDateField(forms.Field):
         bound_field = super().get_bound_field(form, field_name)
 
         # Calculate offsets NOW (during the request)
-        today = date.today()
+        today = datetime.now(tz=get_current_timezone()).date()
 
         if self.min_date_source:
             actual_min = (
@@ -93,31 +93,30 @@ class MultiDateField(forms.Field):
             return value
 
         try:
-            return [
-                datetime.strptime(d.strip(), "%Y-%m-%d").date()
-                for d in value.split(",")
-            ]
-        except (ValueError, TypeError):
-            raise forms.ValidationError("Invalid date format detected.")
+            return [date.fromisoformat(d.strip()) for d in value.split(",")]
+        except (ValueError, TypeError) as exc:
+            msg = "Invalid date format detected."
+            raise forms.ValidationError(msg) from exc
 
     def validate(self, value):
         """Check if required input is empty."""
         super().validate(value)
         # Add any extra logic here (e.g., maximum number of dates allowed)
         if self.required and not value:
-            raise forms.ValidationError("Please select at least one date.")
+            msg = "Please select at least one date."
+            raise forms.ValidationError(msg)
 
 
 class DateRangeWidget(forms.widgets.MultiWidget):
     template_name = "widgets/range_date_picker.html"
 
-    def __init__(self, attrs=None, options={}):
+    def __init__(self, attrs=None, options=None):
         # We define two internal widgets for the two inputs
         widgets = [
             forms.widgets.DateInput(attrs={"hidden": True}),
             forms.widgets.DateInput(attrs={"hidden": True}),
         ]
-        self.options = options
+        self.options = {} if options is None else options.copy()
         super().__init__(widgets, attrs)
 
     def get_context(self, name, value, attrs):
@@ -149,7 +148,6 @@ class DateRangeField(forms.MultiValueField):
         # Store the callable/value without calculating yet
         self.min_date_source = min_date
         self.max_date_source = max_date
-        options = {}
         # Define the fields that make up the range
         fields = (
             forms.DateField(error_messages={"incomplete": "Enter a start date."}),
@@ -167,9 +165,8 @@ class DateRangeField(forms.MultiValueField):
 
             # Logic: If both are provided, ensure the range is logical
             if start_date and end_date and start_date > end_date:
-                raise forms.ValidationError(
-                    "The start date cannot be after the end date."
-                )
+                msg = "The start date cannot be after the end date."
+                raise forms.ValidationError(msg)
 
             return [start_date, end_date]
         return [None, None]

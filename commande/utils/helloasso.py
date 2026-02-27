@@ -6,7 +6,7 @@ from django.core.cache import cache
 from django.core.mail import mail_admins
 from helloasso_python import ApiClient, Configuration
 
-TOKEN_CACHE_KEY = "helloasso_token"
+TOKEN_CACHE_KEY = "helloasso_token"  # noqa: S105
 
 
 def update_token(token, refresh_token=None, access_token=None):
@@ -46,8 +46,7 @@ def get_fresh_token():
 def get_api_client():
     config = Configuration(host=settings.HELLOASSO_API_URL)
     config.access_token = get_fresh_token()
-    sdk_client = ApiClient(configuration=config)
-    return sdk_client
+    return ApiClient(configuration=config)
 
 
 def log_api_exception(e, fnct):
