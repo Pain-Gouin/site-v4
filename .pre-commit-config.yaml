@@ -1,4 +1,4 @@
-exclude: '^docs/|/migrations/|devcontainer.json|/static/'
+exclude: '/migrations/|/static/'
 default_stages: [pre-commit]
 minimum_pre_commit_version: "3.2.0"
 
@@ -12,15 +12,14 @@ repos:
       - id: check-toml
       - id: check-xml
       - id: check-yaml
+      - id: check-json
+        exclude: "tasks.json|devcontainer.json"
       - id: debug-statements
       - id: check-builtin-literals
       - id: check-case-conflict
       - id: detect-private-key
-
-  - repo: https://github.com/whtsky/pre-commit-pretty-format-json5
-    rev: "1.0.0"
-    hooks:
-      - id: pretty-format-json5
+      - id: no-commit-to-branch
+        args: [--branch, prod]
 
   # Run the Ruff linter.
   - repo: https://github.com/astral-sh/ruff-pre-commit
@@ -36,9 +35,9 @@ repos:
     rev: v1.36.4
     hooks:
       - id: djlint-reformat-django
-        exclude: "templates/admin_original/.*|templates/unfold/.*|templates/django_yubin/.*" # https://github.com/djlint/djLint/issues/664
+        exclude: "templates/admin_original/.*|templates/django_yubin/.*" # https://github.com/djlint/djLint/issues/664
       - id: djlint-django
-        exclude: "templates/admin_original/.*|templates/unfold/.*|templates/django_yubin/.*" # https://github.com/djlint/djLint/issues/664
+        exclude: "templates/admin_original/.*|templates/django_yubin/.*" # https://github.com/djlint/djLint/issues/664
 
 # sets up .pre-commit-ci.yaml to ensure pre-commit dependencies stay up to date
 ci:

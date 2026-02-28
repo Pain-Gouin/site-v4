@@ -47,7 +47,7 @@
   "remoteUser": "vscode",
   "workspaceFolder": "/app",
   // Those commands setup the dev env.
-  "postCreateCommand": "cp -u .env.dist .env && uv sync && uv run pre-commit install && uv run manage.py tailwind install && uv run manage.py migrate && uv run manage.py createcachetable",
+  "postCreateCommand": "cp -u .env.dist .env && uv sync && uv run prek install -f && uv run manage.py tailwind install && uv run manage.py migrate && uv run manage.py createcachetable && uv run prek install-hooks",
   "forwardPorts": [
     8000,
     "mailpit:8025",
