@@ -374,11 +374,20 @@ UNFOLD = {
             ],
         },
     ],
-    "THEME": "dark",
     "SHOW_HISTORY": False,
+    # To remove the default "view site" button, and add it back just after, to not make it open a new tab
+    "SITE_URL": None,
+    "ACCOUNT": {
+        "navigation": [
+            {
+                "title": _("Voir le site"),
+                "link": reverse_lazy("index"),
+            }
+        ],
+    },
 }
 
-# https://docs.djangoproject.com/en/5.1/ref/settings/#date-input-formats
+# https://docs.djangoproject.com/en/5.2/ref/settings/#date-input-formats
 DATE_INPUT_FORMATS = [
     "%d.%m.%Y",  # Custom input
     "%Y-%m-%d",  # '2006-10-25'
@@ -394,7 +403,7 @@ DATE_INPUT_FORMATS = [
     "%d %B, %Y",  # '25 October, 2006'
 ]
 
-# https://docs.djangoproject.com/en/5.1/ref/settings/#datetime-input-formats
+# https://docs.djangoproject.com/en/5.2/ref/settings/#datetime-input-formats
 DATETIME_INPUT_FORMATS = [
     "%d.%m.%Y %H:%M:%S",  # Custom input
     "%Y-%m-%d %H:%M:%S",  # '2006-10-25 14:30:59'
