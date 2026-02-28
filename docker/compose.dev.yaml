@@ -1,3 +1,4 @@
+# used by .devcontainer
 volumes:
   paingouin_dev_mariadb_data: {}
   paingouin_dev_rabbitmq_data: {}
@@ -10,6 +11,8 @@ services:
     container_name: paingouin_dev_django
     volumes:
       - ../:/app/
+    # ports:
+    #   - "8080:8080"
     depends_on:
       - rabbitmq
       - db
@@ -31,8 +34,8 @@ services:
   mailpit:
     image: docker.io/axllent/mailpit:latest
     container_name: paingouin_dev_mailpit
-    ports:
-      - "8025:8025"
+    # ports:
+    #   - "8025:8025"
 
   db:
     image: mariadb:12.2
@@ -47,8 +50,8 @@ services:
   phpmyadmin:
     image: phpmyadmin
     container_name: paingouin_dev_phpmyadmin
-    ports:
-      - 8080:80
+    # ports:
+    #   - 8080:80
     environment:
       - PMA_HOST=db
       - PMA_PORT=3306

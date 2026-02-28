@@ -49,6 +49,20 @@
   // Those commands setup the dev env.
   "postCreateCommand": "cp -u .env.dist .env && uv sync && uv run pre-commit install && uv run manage.py tailwind install && uv run manage.py migrate && uv run manage.py createcachetable",
   "forwardPorts": [
-    8000
-  ]
+    8000,
+    "mailpit:8025",
+    "phpmyadmin:80"
+  ],
+  "portsAttributes": {
+    "80": {
+      "label": "PhpMyAdmin db navigator"
+    },
+    "8000": {
+      "label": "Django webserver",
+      "onAutoForward": "openBrowser"
+    },
+    "8025": {
+      "label": "Mailpit email server"
+    }
+  }
 }
