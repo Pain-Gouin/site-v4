@@ -1,0 +1,32 @@
+name: Dev QA Approval
+
+on:
+  issue_comment:
+    types: [created]
+
+jobs:
+  approve-test:
+    # Only run if the comment is "/tested" and it's on a Pull Request
+    if: github.event.issue.pull_request && contains(github.event.comment.body, '/tested')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create Success Check
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.checks.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              name: 'Manual QA Approval',
+              head_sha: (await github.rest.pulls.get({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                pull_number: context.issue.number
+              })).data.head.sha,
+              status: 'completed',
+              conclusion: 'success',
+              output: {
+                title: 'QA Verified',
+                summary: `Approved by @${context.payload.sender.login}`
+              }
+            })
