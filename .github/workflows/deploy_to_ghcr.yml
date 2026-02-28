@@ -98,7 +98,6 @@ jobs:
           package: ${{ github.event.repository.name }}
           delete-untagged: true
           older-than: 10 days
-          keep-n-untagged: 3
 
   qa-gatekeeper:
     runs-on: ubuntu-latest
