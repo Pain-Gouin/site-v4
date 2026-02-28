@@ -1,159 +1,78 @@
-﻿# Documentation site Pain'Gouin
+﻿# Documentation — Pain'Gouin
 
-## Introduction
+## Résumé rapide du projet
 
-Bienvenue dans cette documentation sur la quatrième version du site de l'association. Cette version a été initialement développée en 2024 par [Mathis Rimbert](https://github.com/mrimbert). Elle répond à plusieurs besoins notamment celui d'obtenir un site plus "moderne" que le précédent ainsi que de passer sur une architecture plus propre et plus compréhensive.
+Pain'Gouin est une application web développée avec le framework Django pour gérer la vente et la livraison des produits de boulangerie sur la résidence étudiante Léonard de Vinci de Centrale Lille :
+- la gestion des utilisateurs et de leurs soldes,
+- la création et la gestion des livraisons et commandes,
+- l'intégration de moyens de paiement (transactions manuelles, et HelloAsso Checkout pour des paiements par carte bancaire),
+- un backoffice pour administrer produits, livraisons et transactions.
 
-Cette documentation se divise en deux fichiers, le premier (celui-ci) traitera des affaires courantes du responsable web, des perspectives pour développer le site, de l'architecture général du site, ainsi que quelques tutoriels pour bien développer sur le site de Pain'Gouin. La deuxième partie traitera de l'architecture du repo.
+Le site a été initialement développé en 2024 par [Mathis Rimbert](https://github.com/mrimbert), puis réusiné et amélioré par [Valentin Grégoire](https://github.com/vale075) en 2025-2026.
 
-Ce site a été réalisé (et est géré) par des autodidactes et non par des professionnels, il s'agit donc d'une usine à gaz, il faut faire attention à ce qu'on fait et ne pas hésiter à poser des questions en cas de doute. Je m'excuse pour tous les problèmes futurs que le site pourrait causer !
+Ce site a été réalisé (et est géré) par des autodidactes et non par des professionnels, il s'agit donc d'une usine à gaz, il faut faire attention à ce qu'on fait et ne pas hésiter à poser des questions en cas de doute.
 
 ## Généralités sur le site
 
-Ce site a été développé à l'aide du framework Django. C'est un framework Python conçu pour faciliter le développement de site web sécurisé. Ce framework a été choisi pour faciliter les modifications du site web par les futurs responsables web, Python étant un langage bien mieux connu (notamment par la classe préparatoire) que PHP. Si vous désirez vous former à l'utilisation de ce framework, [la documentation officielle](https://docs.djangoproject.com/fr/5.1/) est de très bonne qualité en plus d'être disponible en français.
+Ce site a été développé à l'aide du framework Django. C'est un framework Python conçu pour faciliter le développement de site web sécurisé. Ce framework a été choisi pour faciliter les modifications du site web par les futurs responsables web, Python étant un langage bien mieux connu (notamment par la classe préparatoire) que PHP.  
+Si vous désirez vous former à l'utilisation de ce framework, [la documentation officielle](https://docs.djangoproject.com/fr/5.2/) est de très bonne qualité en plus d'être disponible en français.
 
 En ce qui concerne le style, le site utilise Tailwind CSS et l'implémente dans le projet à l'aide de la librairie django-tailwind. Encore une fois, [la documentation officielle](https://tailwindcss.com/docs/installation) de Tailwind CSS est de très bonne qualité.
 
-## Guide de passations
+La base du code se trouve dans le dossier `commande` (logique métier), `paingouin` (config Django) et `theme` (TailwindCSS et Flowbite).
 
-Lors d'une passation du bureau, il est nécessaire de mettre à jour certaines informations du site. Toutes les modifications peuvent se faire directement depuis GitHub ou sur le site Pain'Gouin, avec des connaissances simples en HTML.
+## Guide de passation
 
-Il faut :
+Lors d'une passation, plusieurs choses sont à mettre à jour sur le site :
 
-- Mettre à jour la page des mentions légales, avec le nouveau responsable de la publication, et le nouveau responsable web. Cela se fait [ici](https://github.com/Pain-Gouin/site-v4/blob/master/commande/templates/commande/mentions.html), en éditant le fichier depuis l'interface web (Attention à ne pas oublier la ligne 76 !).
-- Mettre à jour la liste des personnes à contacter pour recharger son compte via Lyf. Cela se fait [ici](https://github.com/Pain-Gouin/site-v4/blob/master/commande/templates/commande/contact_cards.html), en éditant le fichier depuis l'interface web. Pour obtenir les url, récupérer l'id utilisateur depuis l'url du profil Facebook, et rajouter `https://m.me/` au début.
-- Changer le contact des administrateurs qui vont recevoir un email en cas d'erreur serveur, en modifiant la variable `ADMINS` dans le fichier `settings.docker.py` ([ici](https://github.com/Pain-Gouin/site-v4/blob/master/paingouin/settings.docker.py))
-- Déployer les changements, en poussant les modifications sur la branche de production. Pour ce faire, aller [ici](https://github.com/Pain-Gouin/site-v4/compare/prod...master), cliquer sur `Create pull request`, puis confirmer la création du pull request.
-- Mettre à jour les droits d'accès : tous le bureau doit avoir la permission _is_staff_ qui permet d'accéder au panel administrateur et gérer les produits/soldes/commandes. Les _webmaster_ doivent en plus avoir la permission "is_superuser" pour avoir accès à l'entièreté de la base de donnée et des logs (Attention ! Cela donne le pouvoir de tout casser !). (Cf. la [Documentation Technique](docs/DocumentationTechnique.md#Permissions), dans la section `Permissions`.)
+- [ ] **Organisation GitHub :** Ajouter les nouveaux respos web à l'organisation GitHub de PainGouin.
 
-Il ne vous reste plus qu'à confirmer le Pull request, ce qui mettra à jour la branche `prod`. Les changements devraient alors automatiquement être mise à jour sur le site en production, après **Insérer ici la durée quand ce sera opérationnel**. (Cela n'est pas encore mise en place, il faut donc demander à un membre de Rézoléo de manuellement repull et restart le conteneur sur leurs serveurs)
+- [ ] **Mentions légales :** Mettre à jour la page [`commande/templates/commande/mentions.html`](./commande/templates/commande/mentions.html) avec les nouveaux responsables.
 
+- [ ] **Contacts (rechargements Lyf / support) :** mettre à jour [`commande/templates/commande/contact_cards.html`](./commande/templates/commande/contact_cards.html).  
+(Pour obtenir les url, récupérer l'id utilisateur depuis l'url du profil Facebook, et rajouter https://m.me/ au début)
+
+- [ ] **Alertes administrateurs :** Mettre à jour la variable `ADMINS` dans les paramètres Django (fichier [`paingouin/settings.py`](./paingouin/settings.py)).
+
+- [ ] **Mettre à jour les droits d'accès depuis le panel administrateur :** tout le bureau doit avoir la permission `is_staff`/`Statut équipe` qui permet d'accéder au panel administrateur et gérer les produits/soldes/commandes. Les Webmasters doivent en plus avoir la permission `is_superuser`/`Statut super-utilisateur` pour avoir accès à l'entièreté de la base de donnée et des logs (Attention, cela donne le pouvoir de tout casser !).  
+(Cf. la [Documentation Technique](./docs/DocumentationTechnique.md#Permissions), dans la section `Permissions`.)
 
 ## Comment développer sur le site ?
 
-### Mise en place de l'environnement de dev
+### Mise en place de l'environnement de développement
 
-Pour apporter des modifications sur le site, voici un petit tutoriel. Il est conseillé d'utiliser une distribution linux (soit directement, soit via WSL sur Windows), mais si vous souhaitez ~~vous faire du mal~~ éviter, il est également possible de le faire sur Windows.
+Il existe deux manières de développer sur le site PainGouin.
 
-#### Récupération du repo GitHub
+#### En ligne avec GitHub Codespace
 
-Pour récupérer le contenu du repo, il suffit de le cloner.
+Il est possible de développer sur le site PainGouin entièrement en ligne, depuis n'importe quel navigateur internet, en utilisant la fonctionnalité Codespace de GitHub.
 
-#### Mise en place de l'environnement virtuel
+Bien que cela soit très pratique, il est nécessaire d'être constamment connecté à internet, et certaines choses ne peuvent pas être faites (accéder à Mailpit et PhpMyAdmin).
 
-Pour développer dans de bonnes conditions, il faut mettre en place un environnement virtuel (ou venv), cela permet d'installer toutes les librairies dont nous aurons besoin dans un endroit à part afin d'éviter qu'elles interagissent avec d'autres librairies que vous auriez pu installer sur votre machine (et permettre aussi de lister proprement les librairies dont le projet a besoin pour fonctionner).  
-Pour ce faire dans le dossier exécuter la commande :
+#### Développement en local
 
-```console
-python -m venv .venv
+Ce repo contient un environnement conteneurisé préconfiguré, qui simplifie grandement le développement.  
+Pour s'en servir, il est nécessaire d'avoir installé sur sa machine :
+- [Visual Studio Code](https://code.visualstudio.com/)
+- Docker Desktop sur [Windows](https://docs.docker.com/desktop/setup/install/windows-install/) ou [MacOS](https://docs.docker.com/desktop/setup/install/mac-install/), ou [Docker Engine](https://docs.docker.com/engine/install) sur Linux
+- L'extension VS Code [Dev Container](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers)
+
+Vous pouvez également suivre [ce guide](https://code.visualstudio.com/docs/devcontainers/containers#_installation) qui va notamment un peu plus en détail sur cette technologie.
+
+Il vous faut ensuite cloner ce repo à l'aide de git :
+```bash
+git clone https://github.com/Pain-Gouin/site-v4.git
 ```
+> [!TIP]
+> Si vous n'êtes pas à l'aise avec git, vous pouvez utiliser [Github Desktop](https://desktop.github.com/download/) sur Windows.
 
-Cela crée un environnement virtuel Python intitulé `.venv`.  
-Puis, entrons dans l'environnement avec la commande :
+Une fois ouvert avec VS Code, cliquez sur les doubles flèches en bas à gauche, puis sur `Reopen in container`.  
+![](./docs/images/remote-dev-status-bar.png)
 
-- Linux
+Le premier lancement peut prendre plusieurs minutes, mais les prochains lancements seront beaucoup plus rapides.
 
-```console
-source .venv/bin/activate
-```
+Vous voilà prêt à développer !
 
-- Windows
+## Documentation technique
 
-```console
-.venv/Scripts/activate.bat
-```
-
-On va désormais pouvoir travailler tranquillement et pouvoir installer toutes les librairies dont le site a besoin pour fonctionner à l'aide de la commande :
-
-```console
-pip install -r requirements.txt
-```
-
-#### Mise en place de NodeJS et de TailwindCSS
-
-Afin d'utiliser TailwindCSS, il faut installer NodeJS (22 au moment d'écrire ces lignes). Pour Linux, vous pouvez utiliser ce [site](https://nodesource.com/products/distributions).
-
-#### Test de l'envoi d'emails
-
-Cf. la [Documentation Technique](docs/DocumentationTechnique.md#email), dans la section `email`.
-
-#### Démarrer le serveur local
-
-Une fois tout ceci fait, il faut configurer le site pour tourner sur sa machine local. Pour ce faire, copiez le fichier `paingouin/settings.template.py` vers `paingouin/settings.py`, et modifiez-le pour correspondre à votre base de donnée locale. Vous devez modifier les informations suivantes :
-
-```Python
-DATABASES = {
-'default': {
-    'ENGINE': 'django.db.backends.mysql',
-    'NAME': '<nom de la base>',
-    'HOST': '<ip de la base de donnée>',
-    'PORT': '<port>',
-    'USER': '<utilisateur de la base>',
-    'PASSWORD': '<mot de passe>',
-    'OPTIONS':{
-    "init_command": "SET foreign_key_checks = 0;",
-    }
-},
-}
-```
-
-Pour créer une base de donnée en local, vous pouvez utiliser l'outil Docker : un conteneur est décrit dans le docker compose de dev.
-
-> [!NOTE]
-> Vous pouvez copier la BD de prod afin d'avoir un jeu de test (on passera sous silence les implications niveau réglementation sur la gestion des données utilisateurs...). N'oubliez pas d'également copier le dossier `media/` afin de récupérer les images des produits.
-
-> [!WARNING]
-> Le serveur MySQL doit contenir une table des timezones afin que le panel admin de django-yubin fonctionne (pouvoir voir les logs des emails). Cf https://stackoverflow.com/a/21571350.
-
-Une fois les informations modifiées, exécutez les commandes suivantes :
-
-```console
-python manage.py makemigrations
-python manage.py migrate
-python manage.py createcachetable
-```
-
-Vous venez de mettre en place les différentes tables dont le site (et Django) a besoin pour fonctionner.  
-Il faut maintenant initialiser TailwindCSS. Pour ce faire, utilisez la commande suivante :
-
-```console
-python manage.py tailwind install
-```
-
-Il ne vous reste plus qu'à démarrer le serveur local avec la commande :
-
-```console
-python manage.py tailwind dev
-```
-
-Le serveur est désormais lancé et vous n'avez qu'à cliquer sur le lien renvoyé dans la console par Django pour y accéder.
-
-> [!NOTE]
-> Pour savoir pourquoi cette commande est utilisée au lieu du traditionnel `python manage.py runserver`, rendez-vous dans la [Documentation Technique](docs/DocumentationTechnique.md) à la section traitant de Tailwind.
-
-#### Créer un administrateur local sur le site
-
-Pour créer un utilisateur ayant les permissions super-admin sur le site exécutez dans la console la commande suivante :
-
-```console
-python manage.py createsuperuser
-```
-
-Puis suivez les informations renvoyées dans la console pour créer l'utilisateur.
-
-### Guide de style
-
-Le formateur **Black** est utilisé pour le code python, **djlint** pour les templates, et prettier pour le markdown. Vous pouvez utiliser cette liste d'extensions vs-code pour simplifier le développement :
-
-- https://marketplace.visualstudio.com/items?itemName=monosans.djlint
-- https://marketplace.visualstudio.com/items?itemName=ms-python.black-formatter
-- https://marketplace.visualstudio.com/items?itemName=batisteo.vscode-django
-- https://marketplace.visualstudio.com/items?itemName=bradlc.vscode-tailwindcss
-
-## Déploiement
-
-Cf la [Documentation Technique](docs/DocumentationTechnique.md)
-
-## Axes d'amélioration du site
-
-Cf. l'onglet Projet de Github.
+La documentation technique détaillée se situe ici : [`docs/DocumentationTechnique.md`](./docs/DocumentationTechnique.md).
