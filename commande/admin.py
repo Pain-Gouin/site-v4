@@ -138,7 +138,7 @@ class CustomModelAdmin(ModelAdmin):
         if request.user.is_superuser:
             return [
                 *super().get_readonly_fields(request, obj),
-                ["id"],
+                "id",
             ]  # Else we get an error, because we are showing it but the field cannot be edited.
 
         # Staff (is_staff=True but not superuser)
