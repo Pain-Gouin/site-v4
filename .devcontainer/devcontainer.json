@@ -19,6 +19,7 @@
         "monosans.djlint"
       ],
       "settings": {
+        "remote.autoForwardPortsFallback": 0,
         "editor.formatOnSave": true,
         "editor.rulers": [
           100,
