@@ -180,6 +180,7 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     class Meta:
         verbose_name = _("Utilisateur")
+        ordering = ["-last_login"]
 
 
 class ProductCategory(models.Model):
