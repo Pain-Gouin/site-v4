@@ -176,8 +176,8 @@ class CustomModelAdmin(ModelAdmin):
 @admin.register(User)
 class UserAdmin(CustomModelAdmin):
     list_display = (
-        "__str__",
         "email",
+        "__str__",
         "is_delivery_man",
         "has_drivers_licence",
         "balance_cache",
