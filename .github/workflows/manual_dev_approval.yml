@@ -1,0 +1,32 @@
+name: Vérification manuelle du site de prod
+
+on:
+  issue_comment:
+    types: [created]
+
+jobs:
+  approve-test:
+    # Only run if the comment is "/tested" and it's on a Pull Request
+    if: github.event.issue.pull_request && contains(github.event.comment.body, '/tested')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create Success Check
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.checks.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              name: 'Site dev testé',
+              head_sha: (await github.rest.pulls.get({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                pull_number: context.issue.number
+              })).data.head.sha,
+              status: 'completed',
+              conclusion: 'success',
+              output: {
+                title: 'Site dev testé',
+                summary: `Vérifié par @${context.payload.sender.login}`
+              }
+            })
