@@ -58,7 +58,6 @@ def index(request):
         "commande/main.html",
         context={
             "DELIVERY_CUTOFF_TIME": settings.DELIVERY_CUTOFF_TIME,
-            "GIT_COMMIT": settings.GIT_COMMIT,
         },
     )
 

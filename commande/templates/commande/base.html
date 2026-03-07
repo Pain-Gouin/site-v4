@@ -44,6 +44,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
   </head>
   <body class="bg-quaternary min-h-screen">
+    {% if not IS_PROD %}
+      <div class="sticky top-0 z-[9999] w-full bg-red-600 py-2 text-center shadow-lg select-none">
+        <div class="flex items-center justify-center gap-3 px-4">
+          <span class="text-xl">⚠️</span>
+          <p class="font-bold tracking-wide text-white uppercase sm:text-lg">Environnement de développement</p>
+          <span class="text-xl">⚠️</span>
+        </div>
+      </div>
+    {% endif %}
     {% block header %}
       <header>
         <div class="shadow-md grid grid-cols-2 md:grid-cols-3 bg-white top-0 left-0 right-0 z-40 content-center items-stretch">
@@ -175,4 +184,5 @@
       </footer>
     {% endblock footer %}
   </body>
+  <!-- version: {{ GIT_COMMIT }} -->
 </html>
