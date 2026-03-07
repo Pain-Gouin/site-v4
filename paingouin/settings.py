@@ -33,9 +33,9 @@ DEBUG = env("DEBUG", bool, default=False)
 
 DELIVERY_CUTOFF_TIME = time(6, 30)
 
-GIT_COMMIT = env("GIT_COMMIT_SHA", default="Develop")[:7]
+GIT_COMMIT = env("GIT_COMMIT_SHA", default="na")[:7]
 
-PROD = env("PROD", default=True)
+PROD = env("PROD", default=False)
 
 SECRET_KEY = env(
     "DJANGO_SECRET_KEY",
@@ -130,6 +130,7 @@ TEMPLATES = [
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
                 "django.template.context_processors.media",
+                "commande.utils.context_processors.export_debug_status_data",
             ],
         },
     },
@@ -386,6 +387,9 @@ UNFOLD = {
         ],
     },
 }
+if not PROD:
+    # To add visual styling to destingish dev from prod site
+    UNFOLD["STYLES"] = [lambda request: static("css/unfold_dev.css")]
 
 # https://docs.djangoproject.com/en/5.2/ref/settings/#date-input-formats
 DATE_INPUT_FORMATS = [
