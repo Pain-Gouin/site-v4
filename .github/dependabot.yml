@@ -5,35 +5,64 @@
 
 version: 2
 updates:
-  - package-ecosystem: "uv" # See documentation for possible values
-    directory: "/" # Location of package manifests
+  - package-ecosystem: "uv"
+    directory: "/"
     schedule:
       interval: "weekly"
+    groups:
+      python-deps:
+        patterns:
+          - "*"
     ignore:
       - dependency-name: "Django"
         versions:
           - ">=6.0.0"
+
   - package-ecosystem: "github-actions"
-    directory: "/" # Location of package manifests
+    directory: "/"
     schedule:
       interval: "weekly"
+    groups:
+      actions-deps:
+        patterns:
+          - "*"
+
   - package-ecosystem: "npm"
-    directory: "/theme/static_src" # Location of package manifests
+    directory: "/theme/static_src"
     schedule:
       interval: "weekly"
     ignore:
       - dependency-name: "flowbite"
         versions:
           - ">=4.0.0"
+    groups:
+      npm-deps:
+        patterns:
+          - "*"
+
   - package-ecosystem: "docker"
-    directory: "/docker/" # Location of package manifests
+    directory: "/docker/"
     schedule:
       interval: "weekly"
+    groups:
+      docker-deps:
+        patterns:
+          - "*"
+
   - package-ecosystem: "docker-compose"
-    directory: "/docker/" # Location of package manifests
+    directory: "/docker/"
     schedule:
       interval: "weekly"
-  - package-ecosystem: "devcontainers" # See documentation for possible values
+    groups:
+      compose-deps:
+        patterns:
+          - "*"
+
+  - package-ecosystem: "devcontainers"
     directory: "/"
     schedule:
       interval: weekly
+    groups:
+      devcontainer-deps:
+        patterns:
+          - "*"
