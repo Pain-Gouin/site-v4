@@ -59,7 +59,7 @@
     },
     "8000": {
       "label": "Django webserver",
-      "onAutoForward": "openBrowser"
+      "onAutoForward": "openBrowserOnce"
     },
     "8025": {
       "label": "Mailpit email server"
