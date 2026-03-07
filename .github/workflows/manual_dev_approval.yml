@@ -1,10 +1,33 @@
 name: Vérification manuelle du site de prod
 
 on:
+  pull_request:
+    types: [opened]
+    branches:
+      - prod
   issue_comment:
     types: [created]
+    branches:
+      - prod
 
 jobs:
+  instructions:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+    steps:
+      - name: Comment test instructions
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.payload.pull_request.number,
+              body: `### 🚀 Validation de Production Requise\n\nCette PR cible la branche **prod**. Une vérification manuelle est obligatoire.\n\n1. 🔗 Testez les changements sur l'[environnement de staging](https://paingouindev.rezoleo.fr).\n2. ✅ Si tout est OK, commentez avec :\n\n\`/tested\`\n\n*Le check **Site dev testé** passera alors au vert.*`
+            })
+
   approve-test:
     # Only run if the comment is "/tested" and it's on a Pull Request
     if: github.event.issue.pull_request && contains(github.event.comment.body, '/tested')
