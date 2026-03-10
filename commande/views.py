@@ -144,9 +144,6 @@ def recharge(request):
 
                         new_checkout.checkout_intent_id = api_response.id
                         new_checkout.save()
-                        tasks.check_checkout_status.apply_async_on_commit(
-                            (api_response.id,), countdown=60 * 60
-                        )
 
                         return redirect(api_response.redirect_url)
                     except helloasso_python.ApiException as e:

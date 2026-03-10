@@ -5,18 +5,15 @@ from .models import HelloAssoCheckout
 
 
 @shared_task
-def check_checkout_status(checkout_intent_id):
-    checkout = HelloAssoCheckout.objects.filter(
-        checkout_intent_id=checkout_intent_id
-    ).first()
-    if checkout is None:
-        return
-
-    if checkout.status in (
-        HelloAssoCheckout.HelloAssoCheckoutStatusChoices.INITIATED,
-        HelloAssoCheckout.HelloAssoCheckoutStatusChoices.PENDING,
-    ):
-        checkout.refresh_status()
+def refresh_transactions():
+    checkouts = HelloAssoCheckout.objects.filter(
+        status__in=[
+            HelloAssoCheckout.HelloAssoCheckoutStatusChoices.INITIATED,
+            HelloAssoCheckout.HelloAssoCheckoutStatusChoices.PENDING,
+        ]
+    )
+    for checkout in checkouts:
+        checkout.refresh_from_api()
 
 
 @shared_task

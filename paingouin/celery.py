@@ -15,3 +15,10 @@ app.config_from_object("django.conf:settings", namespace="CELERY")
 
 # Load task modules from all registered Django apps.
 app.autodiscover_tasks()
+
+app.conf.beat_schedule = {
+    "cleanup-transactions-every-10-minutes": {
+        "task": "commande.tasks.refresh_transactions",
+        "schedule": 600.0,  # 600 seconds = 10 minutes
+    },
+}

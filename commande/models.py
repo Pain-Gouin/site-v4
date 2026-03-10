@@ -466,14 +466,13 @@ class HelloAssoCheckout(models.Model):
         return f"#{self.checkout_intent_id} pour {self.amount}€"
 
     def refresh_from_api(self):
-        from .tasks import (  # noqa: PLC0415 (To prevent circular import)
-            check_checkout_status,
-        )
-
         with transaction.atomic(), get_api_client() as api_client:
             api_instance = helloasso_python.CheckoutApi(api_client)
             organization_slug = settings.HELLOASSO_ORG_SLUG
             checkout_intent_id = self.checkout_intent_id
+            if checkout_intent_id is None:
+                self.delete()
+                return True
             try:
                 api_response = api_instance.organizations_organization_slug_checkout_intents_checkout_intent_id_get(
                     organization_slug, checkout_intent_id
@@ -490,9 +489,6 @@ class HelloAssoCheckout(models.Model):
                             HelloAssoCheckout.HelloAssoCheckoutStatusChoices.INITIATED
                         )
                         self.save()
-                        check_checkout_status.apply_async_on_commit(
-                            (self.checkout_intent_id,), countdown=60 * 60
-                        )
                 else:
                     self.parse_order(api_response.order, save=False)
                     self.parse_payment(api_response.order.payments[0], save=False)
