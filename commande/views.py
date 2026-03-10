@@ -161,7 +161,8 @@ def recharge(request):
             else:
                 messages.warning(
                     request,
-                    "Formulaire correct, mais il n'est pas possible d'utiliser l'API en HTTP.",
+                    """Formulaire correct, mais il n'est pas possible d'utiliser l'API en HTTP.
+                    Assure-toi que ENFORCE_HTTPS=True.""",
                 )
 
         else:
