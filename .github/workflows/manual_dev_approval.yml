@@ -25,7 +25,7 @@ jobs:
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: context.payload.pull_request.number,
-              body: `### 🚀 Validation de Production Requise\n\nCette PR cible la branche **prod**. Une vérification manuelle est obligatoire.\n\n1. 🔗 Testez les changements sur l'[environnement de staging](https://paingouindev.rezoleo.fr).\n2. ✅ Si tout est OK, commentez avec :\n\n\`/tested\`\n\n*Le check **Site dev testé** passera alors au vert.*`
+              body: `### 🚀 Validation de Production Requise\n\nCette PR cible la branche **prod**. Une vérification manuelle est obligatoire.\n\n1. 🔗 Testez les changements sur l'[environnement de staging](https://paingouindev.rezoleo.fr).\n2. ✅ Si tout est OK, commentez avec : \`/tested\`\n\n*Le check **Site dev testé** passera alors au vert.*\n\nIl faut ensuite commenter \`/merge\` pour effectuer le merge.`
             })
 
   approve-test:
@@ -53,3 +53,48 @@ jobs:
                 summary: `Vérifié par @${context.payload.sender.login}`
               }
             })
+
+  FastForwardMerge:
+    # Only run if the comment is exactly "/merge".
+    if: ${{ github.event.issue.pull_request && github.event.comment.body == '/merge' }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write  # To push changes
+      pull-requests: write  # To post to PR on failure
+      statuses: write  # To create the commit status
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - name: Get PR refs/shas
+        id: pr_details
+        run: |
+          PR_NUMBER=${{ github.event.issue.number }}
+          echo "PR_NUMBER=$PR_NUMBER" >> $GITHUB_OUTPUT
+          FROM_REF=$(gh pr view $PR_NUMBER --repo ${{ github.repository }} --json headRefName --jq .headRefName)
+          echo "FROM_REF=$FROM_REF" >> $GITHUB_OUTPUT
+          INTO_REF=$(gh pr view $PR_NUMBER --repo ${{ github.repository }} --json baseRefName --jq .baseRefName)
+          echo "INTO_REF=$INTO_REF" >> $GITHUB_OUTPUT
+          FROM_SHA=$(gh pr view $PR_NUMBER --repo ${{ github.repository }} --json headRefOid --jq .headRefOid)
+          echo "FROM_SHA=$FROM_SHA" >> $GITHUB_OUTPUT
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ steps.pr_details.outputs.INTO_REF }}
+      - name: Fast-Forward Merge PR
+        run: |
+          git fetch origin ${{ steps.pr_details.outputs.FROM_REF }}
+          git merge --ff-only origin/${{ steps.pr_details.outputs.FROM_REF }}
+      - name: Register check to the PR to make pushing possible
+        if: ${{ success() || failure() }}
+        run: |
+          gh api \
+            --method POST \
+            -H "Accept: application/vnd.github+json" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+             /repos/${{ github.repository }}/statuses/${{ steps.pr_details.outputs.FROM_SHA }} \
+             -f 'state=${{ job.status }}' \
+             -f 'description=FF Merge ${{ job.status }}' \
+             -f 'context=FF Merge'
+      - name: Push FF-merged changes
+        if: ${{ success() }}
+        run: |
+            git push origin HEAD:${{ steps.pr_details.outputs.INTO_REF }}
