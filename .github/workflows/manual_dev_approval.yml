@@ -18,7 +18,7 @@ jobs:
       pull-requests: write
     steps:
       - name: Comment test instructions
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8
         with:
           script: |
             github.rest.issues.createComment({
@@ -76,7 +76,7 @@ jobs:
           echo "INTO_REF=$INTO_REF" >> $GITHUB_OUTPUT
           FROM_SHA=$(gh pr view $PR_NUMBER --repo ${{ github.repository }} --json headRefOid --jq .headRefOid)
           echo "FROM_SHA=$FROM_SHA" >> $GITHUB_OUTPUT
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           ref: ${{ steps.pr_details.outputs.INTO_REF }}
       - name: Fast-Forward Merge PR
