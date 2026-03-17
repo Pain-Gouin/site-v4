@@ -220,8 +220,8 @@ MEDIA_ROOT = BASE_DIR / "media"
 
 EMAIL_BACKEND = "django_yubin.backends.QueuedEmailBackend"
 MAILER_USE_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
-EMAIL_USE_TLS = env("EMAIL_USE_TLS", bool, default=True)
-EMAIL_USE_SSL = env("EMAIL_USE_SSL", bool, default=True)
+EMAIL_USE_TLS = env("EMAIL_USE_TLS", bool, default=False)
+EMAIL_USE_SSL = env("EMAIL_USE_SSL", bool, default=False)
 EMAIL_HOST = env("EMAIL_HOST", default="smtp.rezoleo.fr")
 EMAIL_PORT = env("EMAIL_PORT", int, 1025)
 EMAIL_HOST_USER = formataddr(
