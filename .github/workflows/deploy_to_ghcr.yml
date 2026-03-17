@@ -61,11 +61,36 @@ jobs:
           tags: |
             type=raw,value=dev,enable=${{ github.event_name == 'pull_request' }}
             type=raw,value=prod,enable=${{ github.ref == 'refs/heads/prod' }}
-            type=sha,enable=true
+            type=sha,prefix=sha-,format=long,enable=true
+
+      - name: Check if image exists
+        id: check_image
+        run: |
+          # We look for the long SHA tag specifically
+          IMAGE_TAG="${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:sha-${{ github.sha }}"
+          if docker manifest inspect $IMAGE_TAG > /dev/null 2>&1; then
+            echo "exists=true" >> $GITHUB_OUTPUT
+            echo "✅ Existing image found for this SHA: $IMAGE_TAG"
+          else
+            echo "exists=false" >> $GITHUB_OUTPUT
+            echo "❌ No existing image found. A full build is required."
+          fi
+
+      # If it exists, just create the new tags (retagging)
+      - name: Retag existing image
+        if: steps.check_image.outputs.exists == 'true'
+        run: |
+          # Build-push-action tags are newline separated; convert them to --tag arguments
+          TAG_ARGS=$(echo "${{ steps.meta.outputs.tags }}" | xargs -I {} echo "--tag {}")
+
+          docker buildx imagetools create \
+            $TAG_ARGS \
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:sha-${{ github.sha }}
 
       # Build and push Docker image with Buildx
       # https://github.com/docker/build-push-action
       - name: Build and push Docker image
+        if: steps.check_image.outputs.exists != 'true'
         id: build-and-push
         uses: docker/build-push-action@v7
         with:

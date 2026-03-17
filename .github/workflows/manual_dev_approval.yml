@@ -62,6 +62,7 @@ jobs:
       contents: write  # To push changes
       pull-requests: write  # To post to PR on failure
       statuses: write  # To create the commit status
+      actions: write # To manually launch the deploy workflow
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
@@ -98,3 +99,9 @@ jobs:
         if: ${{ success() }}
         run: |
             git push origin HEAD:${{ steps.pr_details.outputs.INTO_REF }}
+      - name: Trigger Deploy Workflow
+        if: ${{ success() }}
+        run: |
+          gh workflow run deploy_to_ghcr.yml --ref prod
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
