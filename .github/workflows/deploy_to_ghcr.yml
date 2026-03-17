@@ -68,8 +68,6 @@ jobs:
         uses: docker/metadata-action@v6
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
-          flavor: |
-            lower=true
           tags: |
             type=raw,value=dev,enable=${{ github.event_name == 'pull_request' }}
             type=raw,value=prod,enable=${{ github.ref == 'refs/heads/prod' }}
