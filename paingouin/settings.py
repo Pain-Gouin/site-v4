@@ -62,7 +62,7 @@ if env("ENFORCE_HTTPS", bool, default=True):
     CSRF_COOKIE_SECURE = True
 
 # Admins will reveive an email everytime a server error occurs
-ADMINS = [("vale", "margerite.tonnere@gmail.com")]
+ADMINS = [("vale", "margerite.tonnere@gmail.com");("rémi","malbranckeremi@gmail.com")]
 
 # Allowed verified genuine user emails
 VERIFIED_USER_EMAIL_DOMAINS = {"centrale.centralelille.fr"}
