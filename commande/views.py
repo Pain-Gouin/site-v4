@@ -624,9 +624,13 @@ def commande_makeorder(request, category_dict):
     for product_list in category_dict.values():
         for prod in product_list:
             quantity = int(request.POST["quantity" + str(prod.id)])
+            case_nom = f"option_tranche_{prod.id}"
+            veut_tranche = request.POST.get(case_nom) == "oui"
 
             if quantity > 0:
-                order_list.append([prod, quantity, quantity * prod.resell_price])
+                order_list.append(
+                    [prod, quantity, quantity * prod.resell_price, veut_tranche]
+                )
                 total_commande += order_list[-1][2]
 
     delivery = Delivery.objects.get(id=request.POST["date"])
@@ -675,6 +679,7 @@ def commande_makeorder(request, category_dict):
                     quantity=item[1],
                     total_price_sold=item[2],
                     total_price_bought=item[1] * item[0].purchase_price,
+                    tranche=item[3],
                 )
                 order_product_instances.append(op)
             OrderProduct.objects.bulk_create(order_product_instances)

@@ -223,6 +223,8 @@ class Product(models.Model):
         verbose_name="Prix de revente",
         help_text="Prix de revente aux centraliens sur le site.",
     )
+    tranchable = models.BooleanField(default=False, verbose_name="Peut être tranché")
+
     purchase_price = models.DecimalField(
         max_digits=8,
         decimal_places=2,

@@ -15,13 +15,41 @@
               <p class="order-2 md:order-1 text-lg sm:text-xl text-secondary text-right md:text-center font-semibold md:pb-3 pt-2">
                 {{ prod.name }}
               </p>
+              {% if prod.tranchable %}
+                <div class="option-tranchage"
+                     style="margin: 8px 0;
+                            padding: 6px;
+                            background-color: #fef08a;
+                            border: 1px solid #eab308;
+                            border-radius: 6px;
+                            color: #854d0e;
+                            font-size: 0.875rem">
+                  <label style="display: flex;
+                                align-items: center;
+                                cursor: pointer;
+                                gap: 8px;
+                                justify-content: center">
+                    <input type="checkbox"
+                           name="option_tranche_{{ prod.id }}"
+                           value="oui"
+                           style="cursor: pointer;
+                                  width: 16px;
+                                  height: 16px">
+                    <span>🥖 Trancher ce pain</span>
+                  </label>
+                </div>
+              {% endif %}
               <div class="order-1 row-span-3 md:order-2 md:row-span-1 content-center">
-                <img src="{{ prod.image_resized.url }}"
-                     alt="{{ prod.name }}"
-                     class="rounded-lg md:max-h-80 max-h-60 max-w-[33vw] md:w-full md:max-w-full object-fill xl:pb-0"
-                     height="{{ prod.image_resized.height }}"
-                     width="{{ prod.image_resized.width }}"
-                     fetchpriority="high">
+                {% if prod.image %}
+                  <img src="{{ prod.image.url }}"
+                       alt="{{ prod.name }}"
+                       class="rounded-lg md:max-h-80 max-h-60 max-w-[33vw] md:w-full md:max-w-full object-fill"
+                       fetchpriority="high">
+                {% else %}
+                  <div class="bg-gray-200 rounded-lg flex items-center justify-center text-gray-400"
+                       style="height: 150px;
+                              width: 100%">📸 Image manquante</div>
+                {% endif %}
               </div>
               <p class="order-3 text-lg sm:text-xl font-bebas text-center pt-2">Prix&nbsp;: {{ prod.resell_price }}€</p>
               <div class="order-4">
