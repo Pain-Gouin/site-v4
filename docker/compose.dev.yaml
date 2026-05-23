@@ -21,7 +21,7 @@ services:
 
   # brocker like redis, for celery
   rabbitmq:
-    image: rabbitmq:4.2
+    image: rabbitmq:4.3
     container_name: paingouin_dev_rabbitmq
     volumes:
       - paingouin_dev_rabbitmq_data:/var/lib/rabbitmq
