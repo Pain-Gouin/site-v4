@@ -16,7 +16,7 @@ jobs:
         with:
           python-version-file: '.python-version'
       - name: Run prek
-        uses: j178/prek-action@v1
+        uses: j178/prek-action@v2
 
 # To limit the amount of jobs to one per branch (latest commit)
 concurrency:
