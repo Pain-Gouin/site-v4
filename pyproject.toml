@@ -138,6 +138,7 @@ dev = [
     "django-stubs[compatible-mypy]>=5.2.9",
     "django-watchfiles>=1.4.0",
     "djlint>=1.36.4",
+    "factory-boy>=3.3.3",
     "honcho>=2.0.0",
     "mypy>=1.19.1",
     "prek>=0.3.4",
