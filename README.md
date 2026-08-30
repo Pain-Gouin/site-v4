@@ -71,6 +71,8 @@ Une fois ouvert avec VS Code, cliquez sur les doubles flèches en bas à gauche,
 
 Le premier lancement peut prendre plusieurs minutes, mais les prochains lancements seront beaucoup plus rapides.
 
+Une base de données aléatoire est générée, et un utilisateur admin est créé avec l'email `admin@admin.com` et le mot de passe `admin`.
+
 Vous voilà prêt à développer !
 
 ## Documentation technique
