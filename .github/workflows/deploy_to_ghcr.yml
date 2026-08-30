@@ -25,7 +25,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       # Determine the "True" SHA (Head SHA for PRs, github.sha for others)
       - name: Set consistent SHA
