@@ -25,7 +25,7 @@ jobs:
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: context.payload.pull_request.number,
-              body: `### 🚀 Validation de Production Requise\n\nCette PR cible la branche **prod**. Une vérification manuelle est obligatoire.\n\n1. 🔗 Testez les changements sur l'[environnement de staging](https://paingouindev.rezoleo.fr).\n2. ✅ Si tout est OK, commentez avec : \`/tested\`\n\n*Le check **Site dev testé** passera alors au vert.*\n\nIl faut ensuite commenter \`/merge\` pour effectuer le merge.`
+              body: `### 🚀 Validation de Production Requise\n\nCette PR cible la branche **prod**. Une vérification manuelle est obligatoire.\n\n1. ⏲️ Attendre que les modifications se propagent sur l'[environnement de staging](https://paingouindev.rezoleo.fr) (vérifier avec le hash de version qui est en commentaire de la page d'accueil du site).\n2. 🔗 Testez les changements sur l'environnement de staging.\n3. ✅ Si tout est OK, commentez avec : \`/tested\`\n\n*Le check **Site dev testé** passera alors au vert.*\n\nIl faut ensuite commenter \`/merge\` pour effectuer le merge.`
             })
 
   approve-test:
