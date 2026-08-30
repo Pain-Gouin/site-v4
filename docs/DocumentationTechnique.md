@@ -7,6 +7,8 @@ L'environnement de développement inclus tout le nécessaire pour développer :
 - Une base de donnée RabbitMQ (pour les tâches celery)
 - Un serveur mail de dev Mailpit
 - Une interface de gestion de base de donnée PHPMyAdmin
+- Une génération aléatoire de données de dev à l'aide de `factory_boy`
+- La création d'un utilisateur admin avec l'email `admin@admin.com` et le mot de passe `admin`
 
 Est également mis en place des outils pour assurer la qualité du formatage et du code :
 - `ruff` pour le code python
