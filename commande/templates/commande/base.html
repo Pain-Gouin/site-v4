@@ -111,7 +111,7 @@
                       <a href="{% url 'recharge' %}"
                          class="block px-4 py-2 hover:bg-gray-200 hover:font-bold">Recharger mon compte</a>
                     </li>
-                    {% if user.is_delivery_man %}
+                    {% if user.is_delivery_man or user.is_staff %}
                       <li>
                         <a href="{% url 'livreur' %}"
                            class="block px-4 py-2 hover:bg-gray-200 hover:font-bold">Espace livreur</a>
@@ -148,7 +148,7 @@
             </div>
           {% endif %}
         </div>
-        <div class="bg-white flex flex-col  items-center" id="messages-div">{% include "commande/messages.html" %}</div>
+        <div class="bg-white flex flex-col items-center" id="messages-div">{% include "commande/messages.html" %}</div>
       </header>
     {% endblock header %}
     {% block content %}
