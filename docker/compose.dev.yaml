@@ -21,7 +21,7 @@ services:
 
   # brocker like redis, for celery
   rabbitmq:
-    image: rabbitmq:4.2
+    image: rabbitmq:4.3
     container_name: paingouin_dev_rabbitmq
     volumes:
       - paingouin_dev_rabbitmq_data:/var/lib/rabbitmq
@@ -38,7 +38,7 @@ services:
     #   - "8025:8025"
 
   db:
-    image: mariadb:12.2
+    image: mariadb:12.3
     container_name: paingouin_dev_mariadb
     environment:
       MYSQL_ROOT_PASSWORD: mysql
