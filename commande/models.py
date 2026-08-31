@@ -88,9 +88,6 @@ class User(AbstractBaseUser, PermissionsMixin):
         help_text="Désigne la chambre de l'utilisateur. "
         "Permet de préremplir la chambre de livraison lors d'une commande",
     )
-    phone = models.CharField(
-        "Numéro de téléphone", max_length=20, blank=False, default=""
-    )
     created_at = models.DateTimeField(default=timezone.now, verbose_name=_("Créé le"))
     balance_cache = models.DecimalField(
         "Dernier solde calculé",

@@ -27,7 +27,6 @@ class Command(BaseCommand):
                 "verified_genuine_user": True,
                 "is_delivery_man": True,
                 "room": "000",
-                "phone": "0123456789",
             },
         )
 

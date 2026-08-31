@@ -46,7 +46,6 @@ class SignupForm(UserCreationForm):
             "first_name",
             "last_name",
             "room",
-            "phone",
             "has_drivers_licence",
         )
 
@@ -97,7 +96,6 @@ class FinishSignupForm(SetPasswordForm, forms.ModelForm):
             "first_name",
             "last_name",
             "room",
-            "phone",
             "has_drivers_licence",
         )
 
@@ -128,7 +126,6 @@ class UpdateForm(UserChangeForm):
             "first_name",
             "last_name",
             "room",
-            "phone",
             "has_drivers_licence",
             "get_order_email",
         )

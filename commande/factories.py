@@ -100,7 +100,6 @@ class UserFactory(DjangoModelFactory):
     first_name = factory.Faker("first_name", locale="fr_FR")
     last_name = factory.Faker("last_name", locale="fr_FR")
     room = factory.Sequence(lambda n: f"R{n:03d}")
-    phone = factory.Faker("numerify", text="06########")
     email_verified = True
     is_staff = factory.Faker("boolean", chance_of_getting_true=10)
     verified_genuine_user = factory.LazyAttribute(

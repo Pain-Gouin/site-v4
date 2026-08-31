@@ -213,7 +213,6 @@ class UserAdmin(CustomModelAdmin):
         "get_order_email",
         "password",
         "balance_cache",
-        "phone",
         "room",
         "is_delivery_man",
         "has_drivers_licence",
