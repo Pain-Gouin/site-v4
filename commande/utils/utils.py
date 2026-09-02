@@ -1,6 +1,7 @@
-from datetime import time, timedelta
+from datetime import timedelta
 from functools import wraps
 
+from constance import config
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
@@ -96,7 +97,7 @@ def append_unique_in_order(list1, list2, *lists):
 def first_editable_day():
     current_time_local = timezone.localtime(timezone.now())
     today = current_time_local.date()
-    cutoff = getattr(settings, "DELIVERY_CUTOFF_TIME", time(6, 30))
+    cutoff = config.DELIVERY_CUTOFF_TIME
 
     if current_time_local.time() < cutoff:
         return today

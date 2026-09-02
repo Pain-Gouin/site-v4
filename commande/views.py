@@ -56,9 +56,6 @@ def index(request):
     return render(
         request,
         "commande/main.html",
-        context={
-            "DELIVERY_CUTOFF_TIME": settings.DELIVERY_CUTOFF_TIME,
-        },
     )
 
 

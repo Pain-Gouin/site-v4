@@ -27,8 +27,8 @@
   <h2 class="text-3xl sm:text-4xl text-center py-10 font-bebas wrap-normal">
     Mais c'est génial&nbsp;!  Comment&nbsp;ça&nbsp;fonctionne&nbsp;?
   </h2>
-  <div class="text-justify lg:text-left text-lg sm:text-xl px-2 ">
-    <div class="grid lg:grid-cols-2  place-items-center pb-10 auto-rows-max">
+  <div class="text-justify lg:text-left text-lg sm:text-xl px-2">
+    <div class="grid lg:grid-cols-2 place-items-center pb-10 auto-rows-max">
       <img src="{% static 'illustration/PainGouinOrdi.webp' %}"
            width="1044"
            height="796"
@@ -39,7 +39,7 @@
         <p class="font-montserrat pb-5">
           Nous livrons <b class="text-secondary">tous les jours</b>, sauf le dimanche et les jours fériés. Passe ta commande depuis ton téléphone ou ton ordinateur et indique simplement le jour de livraison souhaité.
           <br />
-          Tu peux commander jusqu'à <b class="text-secondary">{{ DELIVERY_CUTOFF_TIME|time:"G\hi" }} le jour même</b> — idéal pour les petites faims de fin de soirée 😉
+          Tu peux commander jusqu'à <b class="text-secondary">{{ config.DELIVERY_CUTOFF_TIME|time:"G\hi" }} le jour même</b> — idéal pour les petites faims de fin de soirée 😉
         </p>
         <p class="text-xl font-montserrat">
           <b class="text-secondary">Pour recharger ton compte,</b> <a href="{% url 'recharge' %}"
@@ -47,7 +47,7 @@
         </p>
       </div>
     </div>
-    <div class="grid lg:grid-cols-2  place-items-center pb-10 auto-rows-max">
+    <div class="grid lg:grid-cols-2 place-items-center pb-10 auto-rows-max">
       <div class="max-w-xl order-2 lg:order-1">
         <h3 class="text-3xl sm:text-4xl font-bebas pb-3 lg:pb-10 text-primary">Et puis... c'est tout !</h3>
         <p class="font-montserrat pb-5">
@@ -63,7 +63,7 @@
            height="838"
            class="order-1 lg:order-2 h-[480px] lg:h-[580px]">
     </div>
-    <div class="grid lg:grid-cols-2  place-items-center pb-10 auto-rows-max">
+    <div class="grid lg:grid-cols-2 place-items-center pb-10 auto-rows-max">
       <div>
         <img src="{% static 'illustration/PainGouinBoulangerie.webp' %}"
              width="897"

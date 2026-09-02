@@ -373,6 +373,15 @@ wheels = [
 ]
 
 [[package]]
+name = "django-constance"
+version = "4.3.5"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/9c/95/8eff746544ba8958f431f4cfb162fd632db5f914b05b6a355a98eaf45cfd/django_constance-4.3.5.tar.gz", hash = "sha256:081177483d272b664cf768deae76fc2fbb0a777076f45620b6fde4d9075ee2b3", size = 181943, upload-time = "2026-03-15T11:23:50.799Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/61/aa/3ff4198d02c0cb23c595fcfbed364bcf03b80f9109b7b971eaa34604c349/django_constance-4.3.5-py3-none-any.whl", hash = "sha256:c28f360c2822112772a3e4caf02db758c82cca8de7d0b9f648fef371bf4b8bc6", size = 66907, upload-time = "2026-03-15T11:23:49.166Z" },
+]
+
+[[package]]
 name = "django-crispy-forms"
 version = "2.7"
 source = { registry = "https://pypi.org/simple" }
@@ -1090,6 +1099,7 @@ dependencies = [
     { name = "authlib" },
     { name = "celery" },
     { name = "django" },
+    { name = "django-constance" },
     { name = "django-crispy-forms" },
     { name = "django-environ" },
     { name = "django-imagekit" },
@@ -1125,6 +1135,7 @@ requires-dist = [
     { name = "authlib", specifier = ">=1.6.7" },
     { name = "celery", specifier = ">=5.6.2" },
     { name = "django", specifier = "==5.2.*" },
+    { name = "django-constance", specifier = ">=4.3.5" },
     { name = "django-crispy-forms", specifier = ">=2.5" },
     { name = "django-environ", specifier = ">=0.13.0" },
     { name = "django-imagekit", specifier = ">=6.0.0" },
