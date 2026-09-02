@@ -31,8 +31,6 @@ environ.Env.read_env(BASE_DIR / ".env")
 
 DEBUG = env("DEBUG", bool, default=False)
 
-DELIVERY_CUTOFF_TIME = time(6, 30)
-
 GIT_COMMIT = env("GIT_COMMIT_SHA", default="na")[:7]
 
 PROD = env("PROD", default=False)
@@ -78,6 +76,7 @@ INSTALLED_APPS = [
     "unfold",
     "unfold.contrib.filters",
     "unfold.contrib.import_export",
+    "unfold.contrib.constance",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -90,6 +89,7 @@ INSTALLED_APPS = [
     "django_mjml_template",
     "crispy_forms",
     "imagekit",
+    "constance",
     "import_export",
     "theme",
     "commande",
@@ -125,6 +125,7 @@ TEMPLATES = [
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
+                "constance.context_processors.config",
                 "django.template.context_processors.debug",
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
@@ -467,3 +468,11 @@ else:
 HELLOASSO_CLIENT_ID = env("HELLOASSO_CLIENT_ID", str, "")
 HELLOASSO_CLIENT_SECRET = env("HELLOASSO_CLIENT_SECRET", str, "")
 HELLOASSO_ORG_SLUG = env("HELLOASSO_ORG_SLUG", str, "pain-gouin")
+
+CONSTANCE_BACKEND = "constance.backends.database.DatabaseBackend"
+CONSTANCE_CONFIG = {
+    "DELIVERY_CUTOFF_TIME": (
+        time(6, 30),
+        "Horaire auquel une commande ne peut plus être passée le jour même.",
+    ),
+}
