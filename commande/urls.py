@@ -26,7 +26,6 @@ urlpatterns = [
         views.helloasso_webhook_handler,
         name="helloasso-webhook-handler",
     ),
-    path("recharge-lyf", views.recharge_lyf, name="recharge-lyf"),
     path(
         "account-verification", views.account_verification, name="account-verification"
     ),

@@ -224,19 +224,6 @@ def recharge(request):
     )
 
 
-@login_required_with_message("Authentifie toi avant d'accéder au rechargement")
-def recharge_lyf(request):
-    messages.info(
-        request,
-        format_html(
-            "Vous pouvez également recharger directement en ligne, en "
-            "<a href='{}' class='underline'>payant par carte bancaire</a>",
-            reverse("recharge"),
-        ),
-    )
-    return render(request, "commande/recharge_lyf.html")
-
-
 @login_required
 def account_verification(request):
     if (
