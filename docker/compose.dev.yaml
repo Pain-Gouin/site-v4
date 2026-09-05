@@ -38,7 +38,7 @@ services:
     #   - "8025:8025"
 
   db:
-    image: mariadb:10.11.14 # The current version used on rezoleo servers
+    image: mariadb:12.3.3 # The current version used on rezoleo servers
     container_name: paingouin_dev_mariadb
     environment:
       MYSQL_ROOT_PASSWORD: mysql
