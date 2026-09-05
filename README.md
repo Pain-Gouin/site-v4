@@ -27,10 +27,7 @@ Lors d'une passation, plusieurs choses sont à mettre à jour sur le site :
 
 - [ ] **Organisation GitHub :** Ajouter les nouveaux respos web à l'organisation GitHub de PainGouin.
 
-- [ ] **Mentions légales :** Mettre à jour la page [`commande/templates/commande/mentions.html`](./commande/templates/commande/mentions.html) avec les nouveaux responsables.
-
-- [ ] **Contacts (rechargements Lyf / support) :** mettre à jour [`commande/templates/commande/contact_cards.html`](./commande/templates/commande/contact_cards.html).  
-(Pour obtenir les url, récupérer l'id utilisateur depuis l'url du profil Facebook, et rajouter https://m.me/ au début)
+- [ ] **Mentions légales et contacts :** Mettre à jour les contacts et les mentions légales depuis l'onglet `Constantes` du panel administrateur.
 
 - [ ] **Alertes administrateurs :** Mettre à jour la variable `ADMINS` dans les paramètres Django (fichier [`paingouin/settings.py`](./paingouin/settings.py)).
 
