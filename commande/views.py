@@ -4,6 +4,7 @@ from decimal import Decimal
 from pprint import pformat
 
 import helloasso_python
+from constance import config
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.admin.models import CHANGE, LogEntry
@@ -64,7 +65,15 @@ def mentions(request):
 
 
 def contact(request):
-    return render(request, "commande/contact.html")
+    try:
+        contacts = json.loads(config.CONTACTS)
+    except (json.JSONDecodeError, TypeError):
+        contacts = []
+        messages.error(
+            request,
+            "JSON des contacts mal formé (contacter un membre de l'asso pour résoudre le problème)",
+        )
+    return render(request, "commande/contact.html", {"contacts": contacts})
 
 
 @login_required_with_message("Authentifie toi avant d'accéder au rechargement")

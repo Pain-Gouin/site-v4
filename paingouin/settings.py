@@ -346,6 +346,11 @@ UNFOLD = {
                             "admin:commande_productcategory_changelist"
                         ),
                     },
+                    {
+                        "title": _("Constantes"),
+                        "icon": "lock",
+                        "link": reverse_lazy("admin:constance_config_changelist"),
+                    },
                 ],
             },
         ],
@@ -470,9 +475,62 @@ HELLOASSO_CLIENT_SECRET = env("HELLOASSO_CLIENT_SECRET", str, "")
 HELLOASSO_ORG_SLUG = env("HELLOASSO_ORG_SLUG", str, "pain-gouin")
 
 CONSTANCE_BACKEND = "constance.backends.database.DatabaseBackend"
+CONSTANCE_ADDITIONAL_FIELDS = {
+    "owners_json": [
+        "django.forms.fields.CharField",
+        {
+            "widget": "django.forms.Textarea",
+            "widget_kwargs": {"attrs": {"rows": 12, "cols": 80}},
+        },
+    ],
+}
 CONSTANCE_CONFIG = {
     "DELIVERY_CUTOFF_TIME": (
         time(6, 30),
         "Horaire auquel une commande ne peut plus être passée le jour même.",
+        time,
     ),
+    "PUBLICATION_MANAGER_NAME": (
+        "M. Oscar PECOURT",
+        "Nom du responsable légal de l'association",
+        str,
+    ),
+    "PUBLICATION_MANAGER_EMAIL": (
+        "paingouin.eclille@gmail.com",
+        "Email du responsable de la publication",
+        str,
+    ),
+    "WEB_MANAGER": (
+        "M. Rémi MALBRANCKE - remi.malbrancke@centrale.centralelille.fr",
+        "Responsable web en charge du suivi du site",
+        str,
+    ),
+    "ILLUSTRATOR": (
+        "M. Alexandre MARTEL",
+        "Illustrateur du site web",
+        str,
+    ),
+    "CONTACTS": (
+        """[
+  {"name": "Oscar Pécourt", "role": "Président", "messenger_url": "https://m.me/100086555494493"},
+  {"name": "Rémi Malbrancke", "role": "Respo Web", "messenger_url": "https://m.me/61579817976740"},
+  {"name": "Martin Yards Hebraud", "role": "Secrétaire", "messenger_url": "https://m.me/61579180797591"},
+  {"name": "Basile Perugini", "role": "Trésorier", "messenger_url": "https://m.me/basile.perugini"}
+]""",
+        (
+            "Liste des responsables actuels (JSON) : "
+            '[{"name": "...", "role": "...", "messenger_url": "..."}]'
+        ),
+        "owners_json",  # <- tells Constance to use the field type above
+    ),
+}
+CONSTANCE_CONFIG_FIELDSETS = {
+    "Paramètres du site": ("DELIVERY_CUTOFF_TIME",),
+    "Mentions légales": (
+        "PUBLICATION_MANAGER_NAME",
+        "PUBLICATION_MANAGER_EMAIL",
+        "WEB_MANAGER",
+        "ILLUSTRATOR",
+    ),
+    "Contacts": ("CONTACTS",),
 }
