@@ -1,54 +1,20 @@
 {% load static %}
 
 <div class="shuffle">
-  <a target="_blank"
-     href="https://m.me/100086555494493"
-     class="m-1 flex items-center gap-4 p-2 rounded-3xl hover:bg-blue-100 border-2 border-blue-500">
-    <img height="40px"
-         width="40px"
-         src="{% static 'externe/messenger.svg' %}"
-         alt="logo messenger" />
-    <div class="font-medium dark:text-white">
-      <div>Oscar Pécourt</div>
-      <div class="text-sm text-gray-500 dark:text-gray-400">Président</div>
-    </div>
-  </a>
-  <a target="_blank"
-     href="https://m.me/61579180797591"
-     class="m-1 flex items-center gap-4 p-2 rounded-3xl hover:bg-blue-100 border-2 border-blue-500">
-    <img height="40px"
-         width="40px"
-         src="{% static 'externe/messenger.svg' %}"
-         alt="logo messenger" />
-    <div class="font-medium dark:text-white">
-      <div>Martin Yards Hebraud</div>
-      <div class="text-sm text-gray-500 dark:text-gray-400">Secrétaire</div>
-    </div>
-  </a>
-  <a target="_blank"
-     href="https://m.me/basile.perugini"
-     class="m-1 flex items-center gap-4 p-2 rounded-3xl hover:bg-blue-100 border-2 border-blue-500">
-    <img height="40px"
-         width="40px"
-         src="{% static 'externe/messenger.svg' %}"
-         alt="logo messenger" />
-    <div class="font-medium dark:text-white">
-      <div>Basile Perugini</div>
-      <div class="text-sm text-gray-500 dark:text-gray-400">Trésorier</div>
-    </div>
-  </a>
-  <a target="_blank"
-     href="https://m.me/61579817976740"
-     class="m-1 flex items-center gap-4 p-2 rounded-3xl hover:bg-blue-100 border-2 border-blue-500">
-    <img height="40px"
-         width="40px"
-         src="{% static 'externe/messenger.svg' %}"
-         alt="logo messenger" />
-    <div class="font-medium dark:text-white">
-      <div>Rémi Malbrancke</div>
-      <div class="text-sm text-gray-500 dark:text-gray-400">Respo Web</div>
-    </div>
-  </a>
+  {% for contact in contacts %}
+    <a target="_blank"
+       href="{{ contact.messenger_url }}"
+       class="m-1 flex items-center gap-4 p-2 rounded-3xl hover:bg-blue-100 border-2 border-blue-500">
+      <img height="40px"
+           width="40px"
+           src="{% static 'externe/messenger.svg' %}"
+           alt="logo messenger" />
+      <div class="font-medium dark:text-white">
+        <div>{{ contact.name }}</div>
+        <div class="text-sm text-gray-500 dark:text-gray-400">{{ contact.role }}</div>
+      </div>
+    </a>
+  {% endfor %}
   <script>
     const container = document.querySelector(".shuffle");
     const divs = Array.from(container.children);
