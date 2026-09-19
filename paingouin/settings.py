@@ -63,7 +63,9 @@ if env("ENFORCE_HTTPS", bool, default=True):
 ADMINS = [("vale", "margerite.tonnere@gmail.com"), ("rémi", "malbranckeremi@gmail.com")]
 
 # Allowed verified genuine user emails
-VERIFIED_USER_EMAIL_DOMAINS = {"centrale.centralelille.fr"}
+VERIFIED_USER_EMAIL_DOMAINS = {
+    "centralelille.fr"
+}  # any emails finishing in @value or @*.value will be allowed
 
 MAX_TOPUP_AMOUNT = Decimal(99)
 MAX_BALANCE_ALLOWED = Decimal(150)

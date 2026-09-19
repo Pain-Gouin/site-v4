@@ -265,7 +265,7 @@ def account_verification(request):
         else:
             messages.error(
                 request,
-                "E-mail non valide. Celui-ci doit se finir par: @centrale.centralelille.fr",
+                "E-mail non valide. Celui-ci doit se terminer en: centralelille.fr",
             )
     else:
         form = forms.CheckGenuineUserForm()

@@ -201,4 +201,14 @@ class WhitelistEmailValidator(EmailValidator):  # noqa: PLW1641 (it is not defin
         return isinstance(other, WhitelistEmailValidator) and super().__eq__(other)
 
     def validate_domain_part(self, domain_part):
-        return domain_part in self.whitelist
+        return super().validate_domain_part(domain_part) and is_verified_domain(
+            domain_part
+        )
+
+
+def is_verified_domain(email_domain: str) -> bool:
+    """Checks if the email domain allows to verify the user is a genuine allowed user"""
+    return any(
+        email_domain == domain.lower() or email_domain.endswith(f".{domain.lower()}")
+        for domain in settings.VERIFIED_USER_EMAIL_DOMAINS
+    )

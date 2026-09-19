@@ -19,7 +19,7 @@ from imagekit.models import ImageSpecField
 from imagekit.processors import ResizeToFit
 
 from .utils.helloasso import get_api_client, log_api_exception
-from .utils.utils import first_editable_day
+from .utils.utils import first_editable_day, is_verified_domain
 
 # Create your models here.
 
@@ -119,9 +119,11 @@ class User(AbstractBaseUser, PermissionsMixin):
     def can_be_verified_genuine_user(self):
         if self.verified_genuine_user:  # Why have you called this function ?
             return True
+
+        email_domain = (self.email or "").lower().split("@")[-1]
+
         if self.transaction_set.exists() or (
-            self.email_verified
-            and self.email.split("@")[-1] in settings.VERIFIED_USER_EMAIL_DOMAINS
+            self.email_verified and is_verified_domain(email_domain)
         ):
             self.verified_genuine_user = True
             self.save(update_fields=["verified_genuine_user"])
