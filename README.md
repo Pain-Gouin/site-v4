@@ -79,6 +79,7 @@ Un second conteneur, **facultatif**, permet de travailler avec [Claude Code](htt
 - Claude Code (CLI et extension VS Code) et un Chromium headless (serveur MCP Playwright, limité à `http://localhost:8000`) y sont préinstallés.
 - Votre connexion Claude est stockée dans un volume Docker dédié : lancez `claude` dans le terminal et connectez-vous une fois.
 - Seul le dossier du projet est partagé avec le conteneur, il voit donc votre fichier `.env`. N'y mettez jamais de secrets de production.
+- Vos identifiants Git (et la signature GPG) sont transmis par VS Code comme dans le conteneur normal, vous pouvez donc commiter et pousser. Un fichier de réglages imposé (`.devcontainer/claude/managed-settings.json`, non modifiable par Claude) l'oblige à demander votre accord avant tout `git commit`, `git push` ou commande `gh`.
 - Il n'y a pas de pare-feu : gardez les validations de permissions de Claude activées.
 
 ## Documentation technique

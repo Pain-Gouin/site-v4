@@ -47,6 +47,9 @@ RUN curl -fsSL https://claude.ai/install.sh | bash \
     && mkdir -p /home/vscode/.claude
 ENV PATH="/home/vscode/.local/bin:${PATH}"
 
+# Managed settings (root-owned, so Claude cannot edit them): commits, pushes and `gh` always need an explicit approval
+COPY --chown=root:root .devcontainer/claude/managed-settings.json /etc/claude-code/managed-settings.json
+
 # Chromium + system libs for the Playwright MCP server (headless browser)
 ENV PLAYWRIGHT_BROWSERS_PATH=/home/vscode/.cache/ms-playwright
 RUN eval "$(fnm env)" && fnm use \
