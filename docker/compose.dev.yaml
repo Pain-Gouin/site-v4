@@ -8,6 +8,7 @@ services:
     build:
       context: ../
       dockerfile: docker/Dockerfile.dev
+      target: dev
     container_name: paingouin_dev_django
     volumes:
       - ../:/app/

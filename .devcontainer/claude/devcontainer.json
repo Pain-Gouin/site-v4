@@ -1,0 +1,70 @@
+// Optional isolated container for working with Claude Code (see README). The default one is ../devcontainer.json
+{
+  "name": "PainGouin Dev (Claude Code)",
+  "dockerComposeFile": [
+    "../../docker/compose.dev.yaml",
+    "compose.claude.yaml"
+  ],
+  "service": "django",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "anthropic.claude-code",
+        "actboy168.tasks",
+        // python
+        "ms-python.python",
+        "ms-python.vscode-pylance",
+        "charliermarsh.ruff",
+        // django
+        "batisteo.vscode-django",
+        "bradlc.vscode-tailwindcss",
+        "monosans.djlint"
+      ],
+      "settings": {
+        "remote.autoForwardPortsFallback": 0,
+        "editor.formatOnSave": true,
+        "editor.rulers": [
+          100,
+          120
+        ],
+        "[python]": {
+          "analysis.autoImportCompletions": true,
+          "analysis.typeCheckingMode": "basic",
+          "defaultInterpreterPath": "/app/.venv/bin/python",
+          "editor.codeActionsOnSave": {
+            "source.organizeImports": "always"
+          },
+          "editor.defaultFormatter": "charliermarsh.ruff",
+          "languageServer": "Pylance",
+          "linting.enabled": true,
+          "linting.mypyEnabled": true,
+          "linting.mypyPath": "/app/.venv/bin/mypy"
+        },
+        "[html][django-html][handlebars][hbs][mustache][jinja][jinja-html][nj][njk][nunjucks][twig]": {
+          "editor.defaultFormatter": "monosans.djlint"
+        }
+      }
+    }
+  },
+  "remoteUser": "vscode",
+  "workspaceFolder": "/app",
+  // Those commands setup the dev env.
+  "postCreateCommand": "cp -u .env.dist .env && uv sync && uv run prek install -f && uv run manage.py tailwind install && uv run manage.py migrate && uv run manage.py createcachetable && uv run manage.py seed_db && uv run manage.py create_default_admin && uv run prek install-hooks && (claude mcp get playwright >/dev/null 2>&1 || claude mcp add playwright -s user -- npx -y @playwright/mcp@latest --headless --browser chromium --no-sandbox --allowed-origins http://localhost:8000)",
+  "forwardPorts": [
+    8000,
+    "mailpit:8025",
+    "phpmyadmin:80"
+  ],
+  "portsAttributes": {
+    "80": {
+      "label": "PhpMyAdmin db navigator"
+    },
+    "8000": {
+      "label": "Django webserver",
+      "onAutoForward": "openBrowserOnce"
+    },
+    "8025": {
+      "label": "Mailpit email server"
+    }
+  }
+}

@@ -44,3 +44,6 @@ rabbitmq_data
 
 # Local History for devcontainer
 .devcontainer/bash_history
+
+# Playwirght MCP for Claude
+.playwright-mcp

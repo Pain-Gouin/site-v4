@@ -1,4 +1,4 @@
-FROM buildpack-deps:trixie
+FROM buildpack-deps:trixie AS dev
 
 WORKDIR /app
 
@@ -38,3 +38,17 @@ COPY .python-version /app/
 # Pre-install default versions so the container is ready to go
 RUN uv python install \
     && fnm install
+
+# Optional stage, only built by .devcontainer/claude: adds Claude Code and a headless browser
+FROM dev AS claude
+
+# Claude Code (native installer) and its config dir, so the named volume inherits the right owner
+RUN curl -fsSL https://claude.ai/install.sh | bash \
+    && mkdir -p /home/vscode/.claude
+ENV PATH="/home/vscode/.local/bin:${PATH}"
+
+# Chromium + system libs for the Playwright MCP server (headless browser)
+ENV PLAYWRIGHT_BROWSERS_PATH=/home/vscode/.cache/ms-playwright
+RUN eval "$(fnm env)" && fnm use \
+    && npx --yes playwright@latest install-deps chromium \
+    && npx --yes playwright@latest install chromium

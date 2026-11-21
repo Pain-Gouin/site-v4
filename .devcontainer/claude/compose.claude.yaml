@@ -1,0 +1,14 @@
+# Override used only by .devcontainer/claude (opt-in container for Claude Code)
+volumes:
+  paingouin_claude_config: {}
+
+services:
+  django:
+    build:
+      target: claude
+    volumes:
+      # Claude login/settings live here, never on the host
+      - paingouin_claude_config:/home/vscode/.claude
+    shm_size: 1gb # Chromium needs more than the default 64MB
+    security_opt:
+      - no-new-privileges:true
