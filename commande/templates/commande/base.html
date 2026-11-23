@@ -131,19 +131,17 @@
                 </div>
               </div>
               <div class="hidden md:block justify-self-center content-center max-w-96 w-3/4 min-w-fit mx-auto">
-                <a href="{% url 'commande' %}">
-                  <button class="w-full py-2 px-4 mt-2 bg-inherit border-primary text-primary font-montserrat rounded-lg box-border border-2 rounded-x1 hover:bg-primary hover:text-white duration-100 font-bold align-middle">
-                    Passer une commande !
-                  </button>
+                <a href="{% url 'commande' %}"
+                   class="w-full py-2 px-4 mt-2 bg-inherit border-primary text-primary font-montserrat rounded-lg box-border border-2 rounded-x1 hover:bg-primary hover:text-white duration-100 font-bold align-middle block text-center">
+                  Passer une commande !
                 </a>
               </div>
             </div>
           {% else %}
             <div class="justify-self-center content-center col-span-2 md:col-auto max-w-96 w-3/4 min-w-fit mx-2">
-              <a href="{% url 'login' %}">
-                <button class="bg-inherit w-full py-4 px-2 border-primary text-primary font-montserrat rounded-lg inline-block box-border border-2 rounded-x1 hover:bg-primary hover:text-white duration-100 font-bold align-middle my-5">
-                  Connecte-toi pour commander&nbsp;!
-                </button>
+              <a href="{% url 'login' %}"
+                 class="bg-inherit w-full py-4 px-2 border-primary text-primary font-montserrat rounded-lg flex items-center justify-center box-border border-2 rounded-x1 hover:bg-primary hover:text-white duration-100 font-bold align-middle my-5">
+                Connecte-toi pour commander&nbsp;!
               </a>
             </div>
           {% endif %}
