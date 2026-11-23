@@ -2,7 +2,7 @@ name: Vérification manuelle du site de prod
 
 on:
   pull_request:
-    types: [opened]
+    types: [opened, synchronize]
     branches:
       - prod
   issue_comment:
@@ -21,11 +21,13 @@ jobs:
         uses: actions/github-script@v9
         with:
           script: |
+            // 7 caractères, comme le hash affiché en commentaire HTML sur le site (GIT_COMMIT dans settings.py)
+            const sha = context.payload.pull_request.head.sha.slice(0, 7)
             github.rest.issues.createComment({
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: context.payload.pull_request.number,
-              body: `### 🚀 Validation de Production Requise\n\nCette PR cible la branche **prod**. Une vérification manuelle est obligatoire.\n\n1. ⏲️ Attendre que les modifications se propagent sur l'[environnement de staging](https://paingouindev.rezoleo.fr) (vérifier avec le hash de version qui est en commentaire de la page d'accueil du site).\n2. 🔗 Testez les changements sur l'environnement de staging.\n3. ✅ Si tout est OK, commentez avec : \`/tested\`\n\n*Le check **Site dev testé** passera alors au vert.*\n\nIl faut ensuite commenter \`/merge\` pour effectuer le merge.`
+              body: `### 🚀 Validation de Production Requise\n\nCette PR cible la branche **prod**. Une vérification manuelle est obligatoire.\n\n1. ⏲️ Attendre que les modifications se propagent sur l'[environnement de staging](https://paingouindev.rezoleo.fr) (vérifier que le hash de version en commentaire de la page d'accueil du site est bien \`${sha}\`).\n2. 🔗 Testez les changements sur l'environnement de staging.\n3. ✅ Si tout est OK, commentez avec : \`/tested\`\n\n*Le check **Site dev testé** passera alors au vert.*\n\nIl faut ensuite commenter \`/merge\` pour effectuer le merge.`
             })
 
   approve-test:
