@@ -486,15 +486,16 @@ class TransactionAdmin(CustomModelAdmin):
     STAFF_CREATION_HIDDEN_FIELDS = ["initiator", "order", "created_at"]
     autocomplete_fields = ["user", "initiator", "order"]
 
+    @admin.display(
+        description="Quantité",
+        ordering="amount",
+    )
     def amount_(self, obj):
         return format_html(
             '<div style="text-align: right; color:{}; font-weight: bold;">{}€</div>',
             "red" if obj.amount < 0 else "green",
             obj.amount,
         )
-
-    amount_.admin_order_field = "amount"
-    amount_.short_description = "Quantité"
 
     allowed_codes = [
         Transaction.TransactionTypeChoices.LYF_TOPUP,
