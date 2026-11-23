@@ -1,6 +1,5 @@
 # authentication/forms.py
-import datetime
-from datetime import date
+import datetime as dt
 
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Fieldset, Layout
@@ -73,7 +72,7 @@ class SignupForm(UserCreationForm):
 
     def save(self, commit=True):  # noqa: FBT002 (Inherited from Django)
         if self.instance.date_joined is None:
-            self.instance.date_joined = datetime.datetime.now(tz=get_current_timezone())
+            self.instance.date_joined = dt.datetime.now(tz=get_current_timezone())
 
         if not self.instance.is_active:
             # The user was precreated, but eventually ended-up signing up normally
@@ -250,7 +249,7 @@ class CustomOrderProductExportForm(ExportForm):
         label="Période",
         required=True,
         min_date=lambda: Delivery.objects.order_by("date").first().date,
-        max_date=date.today,
+        max_date=dt.date.today,
     )
 
 

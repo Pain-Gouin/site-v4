@@ -1,5 +1,5 @@
+import datetime as dt
 import json
-from datetime import date, datetime
 
 from django import forms
 from django.utils.timezone import get_current_timezone
@@ -65,7 +65,7 @@ class MultiDateField(forms.Field):
         bound_field = super().get_bound_field(form, field_name)
 
         # Calculate offsets NOW (during the request)
-        today = datetime.now(tz=get_current_timezone()).date()
+        today = dt.datetime.now(tz=get_current_timezone()).date()
 
         if self.min_date_source:
             actual_min = (
@@ -93,7 +93,7 @@ class MultiDateField(forms.Field):
             return value
 
         try:
-            return [date.fromisoformat(d.strip()) for d in value.split(",")]
+            return [dt.date.fromisoformat(d.strip()) for d in value.split(",")]
         except (ValueError, TypeError) as exc:
             msg = "Invalid date format detected."
             raise forms.ValidationError(msg) from exc

@@ -1,4 +1,4 @@
-from datetime import timedelta
+import datetime as dt
 from functools import wraps
 
 from constance import config
@@ -101,7 +101,7 @@ def first_editable_day():
 
     if current_time_local.time() < cutoff:
         return today
-    return today + timedelta(1)
+    return today + dt.timedelta(1)
 
 
 def send_mail_verification(user, new_email, request):

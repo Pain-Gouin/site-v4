@@ -10,7 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
-from datetime import time
+import datetime as dt
 from decimal import Decimal
 from email.utils import formataddr
 from pathlib import Path
@@ -488,9 +488,9 @@ CONSTANCE_ADDITIONAL_FIELDS = {
 }
 CONSTANCE_CONFIG = {
     "DELIVERY_CUTOFF_TIME": (
-        time(6, 30),
+        dt.time(6, 30),
         "Horaire auquel une commande ne peut plus être passée le jour même.",
-        time,
+        dt.time,
     ),
     "PUBLICATION_MANAGER_NAME": (
         "M. Oscar PECOURT",

@@ -1,5 +1,5 @@
+import datetime as dt
 import json
-from datetime import date, time, timedelta
 from decimal import Decimal
 from pprint import pformat
 
@@ -740,7 +740,7 @@ def livreur(request):
     if "date" in request.GET:
         if context["show_calendar"]:
             querystring = request.GET.get("date")
-            target_date = date.fromisoformat(querystring)
+            target_date = dt.date.fromisoformat(querystring)
         else:
             messages.warning(request, "Tu n'as pas le droit d'accéder à cette date !")
             return redirect("livreur")
@@ -751,11 +751,11 @@ def livreur(request):
         except Delivery.DoesNotExist:  # la date de livraison n'existe pas
             delivery = False
     else:
-        show_next_time = time(14, 0)  # Time at wich to show tomorrow's delivery
+        show_next_time = dt.time(14, 0)  # Time at wich to show tomorrow's delivery
         now = timezone.now()
         target_date = now.date()
         if now.time() >= show_next_time:
-            target_date += timedelta(days=1)
+            target_date += dt.timedelta(days=1)
         delivery = (
             Delivery.objects.filter(date__gte=target_date, is_active=True)
             .order_by("date")
