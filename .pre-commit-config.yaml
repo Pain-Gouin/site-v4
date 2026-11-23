@@ -32,7 +32,7 @@ repos:
       - id: ruff-format
 
   - repo: https://github.com/djLint/djLint
-    rev: v1.36.4
+    rev: v1.54.0 # garder aligné avec la version de djlint dans uv.lock (utilisée par VS Code)
     hooks:
       - id: djlint-reformat-django
         exclude: "templates/admin_original/.*|templates/django_yubin/.*" # https://github.com/djlint/djLint/issues/664

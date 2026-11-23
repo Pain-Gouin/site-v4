@@ -3,7 +3,7 @@
        {% if widget.value != None %}value="{{ widget.value|stringformat:'s' }}"{% endif %}
        {% include "django/forms/widgets/attrs.html" %}>
 <div id="{{ widget.attrs.id }}_div"></div>
-<script type="text/javascript">
+<script>
   (function($) {
     $(document).ready(function() {
       var options = {{ widget.options|safe }};

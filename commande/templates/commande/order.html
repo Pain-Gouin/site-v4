@@ -73,7 +73,7 @@
         <label for="room" class="block mb-2 text-sm font-medium text-gray-900">Chambre à livrer&nbsp;:</label>
         <input type="text"
                name="room"
-               class=" max-w-32 font-montserrat w-full p-2 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 text-sm focus:ring-secondary focus:border-secondary"
+               class="max-w-32 font-montserrat w-full p-2 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 text-sm focus:ring-secondary focus:border-secondary"
                value="{{ user.room }}">
       </div>
       <div class="flex flex-row place-content-center items-center gap-3 py-3">
@@ -85,8 +85,7 @@
                 class="font-montserrat {% if livraison %}text-gray-900{% else %}text-red-600 font-bold{% endif %} border border-gray-300 rounded-lg bg-gray-50 text-sm focus:ring-secondary focus:border-secondary">
           {% if livraison %}
             {% for liv in livraison %}
-              <option value={{ liv.id }}>{{ liv.date }}
-              </option>
+              <option value="{{ liv.id }}">{{ liv.date }}</option>
             {% endfor %}
           {% else %}
             <option value="None">Pas de dates disponibles</option>

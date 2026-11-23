@@ -2,11 +2,7 @@
   {% for subwidget in widget.subwidgets %}
     {% include subwidget.template_name with widget=subwidget %}
   {% endfor %}
-  <calendar-range min="{{ widget.options.minDate|date:'Y-m-d' }}" max="{{ widget.options.maxDate|date:'Y-m-d' }}"
-  {% if widget.value.0 and widget.value.1 %}
-    value="{{ widget.value.0|date:'Y-m-d' }}/{{ widget.value.1|date:'Y-m-d' }}"
-  {% endif %}
-  locale="FR-fr" class="border border-base-200 rounded-default p-2">
+  <calendar-range min="{{ widget.options.minDate|date:'Y-m-d' }}" max="{{ widget.options.maxDate|date:'Y-m-d' }}" {% if widget.value.0 and widget.value.1 %} value="{{ widget.value.0|date:'Y-m-d' }}/{{ widget.value.1|date:'Y-m-d' }}" {% endif %} locale="FR-fr" class="border border-base-200 rounded-default p-2">
   <svg aria-label="Previous"
        slot="previous"
        xmlns="http://www.w3.org/2000/svg"

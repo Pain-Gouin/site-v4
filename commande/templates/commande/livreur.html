@@ -32,18 +32,16 @@
           <br>
           Ne t'inquiète pas, on t'explique tout. 😉
         </p>
-        <div class="grid lg:grid-cols-2  place-items-center pb-10">
+        <div class="grid lg:grid-cols-2 place-items-center pb-10">
           <div class="max-w-xl order-1">
             <h3 class="text-2xl sm:text-3xl font-bebas pb-4 text-primary">1°) Coordonne toi avec ton binôme</h3>
           </div>
           <div class="order-2 text-md sm:text-lg font-montserrat">
+            <p class="pb-5">Prends contact avec ton binôme et choisissez votre mode de transport.</p>
             <p class="pb-5">
-              Prends contact avec ton binôme et choisissez votre mode de transport.
-              <br>
-              <br>
               - La voiture demande moins d'efforts, mais vous courez le risque d'une panne, ou de devoir la dégivrer.
-              <br>
-              <br>
+            </p>
+            <p class="pb-5">
               - Le vélo peut être plus rapide que la voiture, et est nettement plus écologique. Rien de mieux qu'un peu d'exercice matinal&nbsp;! C'est d'autant plus confortable si vous avez vos propres vélos.
             </p>
             <p class="pb-5">
@@ -51,8 +49,8 @@
             </p>
             <p class="pb-5">
               La boulangerie ouvre à 6h30 (tu peux vérifier <a target="_blank"
-    href="https://maps.app.goo.gl/6yipBHCXESL41VWf7"
-    class="underline hover:text-primary">ici</a>). Le temps que prend une livraison dépend de ton expérience, du nombre de commandes et des conditions météorologiques (faudra-t-il dégivrer la voiture ?). Cela peut prendre entre 15 et 30 minutes. Pour une première fois, tu peux prévoir de te lever à 6h30.
+                                                               href="https://maps.app.goo.gl/6yipBHCXESL41VWf7"
+                                                               class="underline hover:text-primary">ici</a>). Le temps que prend une livraison dépend de ton expérience, du nombre de commandes et des conditions météorologiques (faudra-t-il dégivrer la voiture ?). Cela peut prendre entre 15 et 30 minutes. Pour une première fois, tu peux prévoir de te lever à 6h30.
             </p>
           </div>
         </div>
@@ -74,12 +72,12 @@
             </div>
             <p class="py-5">
               La boulangerie n'est qu'à 1km, c'est <a target="_blank"
-    href="https://maps.app.goo.gl/6yipBHCXESL41VWf7"
-    class="underline hover:text-primary">L'Aziza à Triolo</a>.
+                                                      href="https://maps.app.goo.gl/6yipBHCXESL41VWf7"
+                                                      class="underline hover:text-primary">L'Aziza à Triolo</a>.
             </p>
           </div>
         </div>
-        <div class="grid lg:grid-cols-2  place-items-center pb-10">
+        <div class="grid lg:grid-cols-2 place-items-center pb-10">
           <div class="lg:max-w-xl order-1 lg:order-2">
             <h3 class="text-2xl sm:text-3xl font-bebas pb-10 text-primary text-center lg:text-left">3°) Récupérez la commande</h3>
             <p class="text-md sm:text-lg font-montserrat pb-5">
@@ -96,7 +94,7 @@
             </div>
           </div>
         </div>
-        <div class="grid lg:grid-cols-2  place-items-center pb-10">
+        <div class="grid lg:grid-cols-2 place-items-center pb-10">
           <div class="lg:max-w-xl order-1 text-md sm:text-lg font-montserrat">
             <h3 class="text-2xl sm:text-3xl font-bebas pb-10 text-primary text-center lg:text-left">
               4°) Rentrez à la résidence et livrez
@@ -116,7 +114,7 @@
             </div>
           </div>
         </div>
-        <div class="grid lg:grid-cols-2  place-items-center pb-10">
+        <div class="grid lg:grid-cols-2 place-items-center pb-10">
           <div class="lg:max-w-xl order-1 lg:order-2 text-base sm:text-lg font-montserrat">
             <h3 class="text-2xl sm:text-3xl font-bebas pb-10 text-primary text-center lg:text-left">
               5°) Fin de la livraison&nbsp;!
@@ -187,7 +185,7 @@
     {% if products %}
       <div class="grid md:grid-cols-2 grid-cols-1 justify-around pb-10">
         <div class="px-2">
-          <h2 class="text-xl md:text-3xl text-primary text-center py-2 font-bold ">Commande globale :</h2>
+          <h2 class="text-xl md:text-3xl text-primary text-center py-2 font-bold">Commande globale :</h2>
           <div class="relative overflow-x-auto pb-10 pt-5">
             <table class="w-full text-sm text-left rtl:text-right text-secondary">
               <thead class="text-xs text-gray-700 uppercase bg-orangemoinsclair">
@@ -209,7 +207,7 @@
           </div>
         </div>
         <div class="px-2">
-          <h2 class="text-xl md:text-3xl text-primary text-center py-2 font-bold ">Livraisons par bâtiments :</h2>
+          <h2 class="text-xl md:text-3xl text-primary text-center py-2 font-bold">Livraisons par bâtiments :</h2>
           <div class="relative overflow-x-auto pb-10 pt-5">
             <table class="w-full text-sm text-left rtl:text-right text-secondary">
               <thead class="text-xs text-gray-700 uppercase bg-orangemoinsclair">
@@ -237,78 +235,78 @@
           </div>
         </div>
         <div class="px-2 md:col-span-2">
-          <h2 class="text-xl md:text-3xl text-primary text-center py-2 font-bold ">Liste des livraisons :</h2>
+          <h2 class="text-xl md:text-3xl text-primary text-center py-2 font-bold">Liste des livraisons :</h2>
           <div class="flex flex-row justify-center">
             <div class="relative overflow-x-auto pb-10 pt-5">
               {% if formset %}
                 <form method="post" autocomplete="off">
                   {% csrf_token %}
                   {{ formset.management_form }}
-                {% endif %}
-                <table class="w-full text-sm text-left rtl:text-right text-secondary">
-                  <thead class="text-xs text-gray-700 uppercase bg-orangemoinsclair">
-                    <tr>
-                      <th scope="col" class="px-6 py-3">Chambre à livrer</th>
-                      <th scope="col" class="px-6 py-3">Commande</th>
-                      {% if formset %}<th scope="col" class="px-6 py-3">État de livraison des produits</th>{% endif %}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {% for order in orders %}
-                      {% with products=order.orderproduct_set.all %}
-                        {% for orderproduct in products %}
-                          <tr class="bg-white{% if forloop.last %} border-b{% endif %}">
-                            {% if forloop.first %}
-                              <th scope="row"
-                                  rowspan="{{ products|length }}"
-                                  class="px-6 py-4 font-medium text-secondary whitespace-nowrap ">{{ order.room }}</th>
-                            {% endif %}
-                            <td class="px-6 py-0.5 justify-between items-center{% if forloop.first %} pt-4{% endif %}{% if forloop.last %} pb-4{% endif %}{% if orderproduct.delivery_status != 'NA' %} text-red-700{% if orderproduct.delivery_status != 'NDELIV' %} line-through{% endif %}{% endif %}">
-                              <span class="inline-flex items-center gap-2">
-                                <button data-modal-target="{{ orderproduct.product.name }}-modal"
-                                        data-modal-toggle="{{ orderproduct.product.name }}-modal"
-                                        class="relative inline-flex items-center justify-center border-2 border-secondary hover:border-primary hover:bg-orangemoinsclair bg-none focus:ring-4 focus:outline-none focus:ring-primary rounded-lg h-8 w-8 overflow-hidden shrink-0"
-                                        type="button">
-                                  <img src="{% static 'externe/image_zoom.svg' %}"
-                                       class="relative z-10"
-                                       height="20px"
-                                       width="20px"
-                                       alt="Zoom" />
-                                </button>
-                                <span class="whitespace-nowrap">{{ orderproduct.quantity }} {{ orderproduct.product.name }}</span>
-                              </span>
+              {% endif %}
+              <table class="w-full text-sm text-left rtl:text-right text-secondary">
+                <thead class="text-xs text-gray-700 uppercase bg-orangemoinsclair">
+                  <tr>
+                    <th scope="col" class="px-6 py-3">Chambre à livrer</th>
+                    <th scope="col" class="px-6 py-3">Commande</th>
+                    {% if formset %}<th scope="col" class="px-6 py-3">État de livraison des produits</th>{% endif %}
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for order in orders %}
+                    {% with products=order.orderproduct_set.all %}
+                      {% for orderproduct in products %}
+                        <tr class="bg-white{% if forloop.last %} border-b{% endif %}">
+                          {% if forloop.first %}
+                            <th scope="row"
+                                rowspan="{{ products|length }}"
+                                class="px-6 py-4 font-medium text-secondary whitespace-nowrap">{{ order.room }}</th>
+                          {% endif %}
+                          <td class="px-6 py-0.5 justify-between items-center{% if forloop.first %} pt-4{% endif %}{% if forloop.last %} pb-4{% endif %}{% if orderproduct.delivery_status != 'NA' %} text-red-700{% if orderproduct.delivery_status != 'NDELIV' %} line-through{% endif %}{% endif %}">
+                            <span class="inline-flex items-center gap-2">
+                              <button data-modal-target="{{ orderproduct.product.name }}-modal"
+                                      data-modal-toggle="{{ orderproduct.product.name }}-modal"
+                                      class="relative inline-flex items-center justify-center border-2 border-secondary hover:border-primary hover:bg-orangemoinsclair bg-none focus:ring-4 focus:outline-none focus:ring-primary rounded-lg h-8 w-8 overflow-hidden shrink-0"
+                                      type="button">
+                                <img src="{% static 'externe/image_zoom.svg' %}"
+                                     class="relative z-10"
+                                     height="20px"
+                                     width="20px"
+                                     alt="Zoom" />
+                              </button>
+                              <span class="whitespace-nowrap">{{ orderproduct.quantity }} {{ orderproduct.product.name }}</span>
+                            </span>
+                          </td>
+                          {% if formset %}
+                            <td>
+                              <div class="flex items-center gap-2">
+                                {{ orderproduct.form.non_field_errors }}
+                                {{ orderproduct.form.id }}
+                                {{ orderproduct.form.delivery_status }}
+                                {{ orderproduct.form.delivery_status.errors }}
+                              </div>
                             </td>
-                            {% if formset %}
-                              <td>
-                                <div class="flex items-center gap-2">
-                                  {{ orderproduct.form.non_field_errors }}
-                                  {{ orderproduct.form.id }}
-                                  {{ orderproduct.form.delivery_status }}
-                                  {{ orderproduct.form.delivery_status.errors }}
-                                </div>
-                              </td>
-                            {% endif %}
-                          </tr>
-                        {% endfor %}
-                      {% endwith %}
-                    {% endfor %}
-                  </tbody>
-                  {% if formset %}
-                    <tfoot class="text-xs bg-orangemoinsclair">
-                      <tr>
-                        <td></td>
-                        <td></td>
-                        <td>
-                          <button type="submit"
-                                  class="my-1 w-64 bg-inherit border-gray-700 text-gray-700 font-montserrat rounded-lg inline-block box-border border-2 rounded-x1 hover:bg-gray-700 hover:text-white duration-100 h-10 font-bold">
-                            Sauvegarder l'état des produits
-                          </button>
-                        </td>
-                      </tr>
-                    </tfoot>
-                  {% endif %}
-                </table>
+                          {% endif %}
+                        </tr>
+                      {% endfor %}
+                    {% endwith %}
+                  {% endfor %}
+                </tbody>
                 {% if formset %}
+                  <tfoot class="text-xs bg-orangemoinsclair">
+                    <tr>
+                      <td></td>
+                      <td></td>
+                      <td>
+                        <button type="submit"
+                                class="my-1 w-64 bg-inherit border-gray-700 text-gray-700 font-montserrat rounded-lg inline-block box-border border-2 rounded-x1 hover:bg-gray-700 hover:text-white duration-100 h-10 font-bold">
+                          Sauvegarder l'état des produits
+                        </button>
+                      </td>
+                    </tr>
+                  </tfoot>
+                {% endif %}
+              </table>
+              {% if formset %}
                 </form>
                 <script>
                   document.addEventListener('DOMContentLoaded', function() {

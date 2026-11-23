@@ -7,8 +7,10 @@
         fetchpriority="high"
         as="image"
         href="{% static 'illustration/banner.jpg' %}">
+  {# djlint:off H021 #}
   <div style="background-image: url({% static 'illustration/banner.jpg' %})"
        class="w-full bg-cover">
+    {# djlint:on #}
     <div class="backdrop-blur-xs w-full md:h-[650px] md:grid grid-cols-1 grid-rows-2">
       <div class="flex items-center justify-center w-full self-end md:py-5 pb-15 pt-24 md:px-10 px-2">
         <p class="text-3xl sm:text-5xl font-bebas drop-shadow-[0_0_10px_#000] text-primary text-center">
@@ -42,7 +44,7 @@
         </p>
         <p class="text-xl font-montserrat">
           <b class="text-secondary">Pour recharger ton compte,</b> <a href="{% url 'recharge' %}"
-    class="underline hover:text-primary transition duration-100">ça se passe ici</a>.
+                                                                      class="underline hover:text-primary transition duration-100">ça se passe ici</a>.
         </p>
       </div>
     </div>
@@ -79,7 +81,7 @@
         </p>
         <p class="font-montserrat">
           Si tu désires nous aider, n'hésite pas à <a href="{% url 'contact' %}"
-    class="underline hover:text-primary transition duration-100">contacter un membre de l'association</a> (et on te remercie !)
+                                                      class="underline hover:text-primary transition duration-100">contacter un membre de l'association</a> (et on te remercie !)
         </p>
       </div>
     </div>
